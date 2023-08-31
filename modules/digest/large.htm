@@ -1,0 +1,11 @@
+﻿<!--# foreach($udb as $key=>$v) { #-->
+<ul>
+	<li class='large-img'> <a href='$v[url]'> <img src='$resize'/> </a> </li>
+  	<li class='large-title'> <a href='$v[url]'> $title</a> </li>
+    <!--# if ($v[price]) { #-->
+    <li class='large-price'>价格：$v[price] 元</li>
+    <!--# } #-->
+ </ul>
+<!--# } #-->
+<div class='clear'></div>
+ 

@@ -1,0 +1,67 @@
+﻿<script language="javascript">
+function show_submenu(cid)
+{
+	var i;
+	i=1;
+	
+	while(1)
+	{
+		var sb = document.getElementById('submenu_'+i);
+		if(sb == 'undifined')break;
+		if(sb == null) break;
+		if(cid == i){
+			if(sb.style.display != 'block'){
+				sb.style.display='block';
+			}else{
+				sb.style.display='none';
+			}
+		}
+		else
+		{
+		    sb.style.display='none';
+		}
+		i++;
+	}
+	
+}
+
+
+function onMainMenu(cid)
+{
+    show_submenu(cid);
+}
+
+</script>
+
+<ul class='mainmenu'>
+<li> <a href='$scf[url]' class="hei14 $home_curr_class ">网站首页</a></li>
+<!--#
+$i=1;
+foreach($udb as $key=>$v){
+$curr = "";
+if ($curr_cid === $v['cid'] || $curr_cid === $v['pid']) $curr = "curr";
+#-->
+	<li><a href='$v[url]' class="hei14 $curr" onmouseover ="javascript:onMainMenu('$i')">$v[title]</a></li>	
+<!--# $i++; } #-->
+</ul>
+
+<!--#
+
+$i=1;
+foreach($udb as $key=>$v){
+
+if(is_array($v['pdb'])){
+$show = "hidden";
+if ($curr_cid === $v['cid'] || $curr_cid === $v['pid']) $show = "show";
+
+#-->
+<ul class='submenu $show' id='submenu_$i'>
+<!--#
+
+foreach ($v['pdb'] as $k2=>$v2){
+#-->
+    <li><a href='$v2[url]' class="hei12">$v2[title]</a></li>
+<!--# } #-->
+</ul>
+
+<!--# } $i++; } #-->

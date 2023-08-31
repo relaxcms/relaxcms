@@ -1,0 +1,79 @@
+<style>
+.portlet.smalllist .portlet-title
+{
+	min-height:32px;
+}
+
+.smalllist .title 
+{
+	
+	line-height:48px;
+	font-size:18px !important;
+    font-weight:600; 
+    border-bottom: 3px solid #1E4262 !important;
+    background-color:#1E4262;
+    color:#fff !important;
+    padding:10px !important;
+}
+
+
+.smalllist .widget-news  
+{
+	border-radius: 0px;
+}
+
+.smalllist .widget-news .widget-news-left-elem 
+{
+	width:72px;
+}
+.smalllist .widget-news .widget-news-right-body
+{
+    height:72px;
+}
+
+
+.bigtitle 
+{
+	font-size:20px;
+}
+     
+.number { font-size:10px; }            
+</style>
+
+<!-- BEGIN WIDGET WRAP IMAGE -->
+<div class="portlet light smalllist">
+    	<div class="portlet-title">
+    		<div class="caption title"> 
+    		    $title
+            </div>
+  		</div>
+    	<div class="portlet-body t3">
+            
+        <div class="scroller" style="height: 350px;" data-always-visible="1" data-rail-visible1="0" data-handle-color="#D7DCE2">
+
+        <!--# foreach($udb as $key=>$v){ #-->
+
+        <div class="widget-news margin-bottom-10">
+            <a href="$v[videoUrl]" class="videobox" data-vplayurl="$v[vplayurl]"> <img class="widget-news-left-elem" src="$v[photo]" alt="$v[name]" /></a>
+            
+            <div class="widget-news-right-body ">
+                <a href="$v[videoUrl]" class="videobox bigtitle" data-vplayurl="$v[vplayurl]">$v[name]</a>
+                <div class='x-clear'></div>
+                <i class='number'> 发布：$v[longtime] 播放：$v[hits] 次</i>
+            </div>
+        </div>
+        <!--# } #-->
+
+        </div>
+	
+    		
+        </div>
+    </div>
+    <!-- END WIDGET WRAP IMAGE -->
+    
+    
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+                
+    });
+</script>

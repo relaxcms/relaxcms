@@ -1,0 +1,31 @@
+<div class='side'>			
+    <div class='catalog fr'>	
+    <div  class='curved'>
+    <b class="b1"></b><b class="b2"></b><b class="b3"></b><b class="b4"></b>
+    <div class='top'>$name<span> <a href='{$udb[0][listurl]}'>$str_more</a></span></div>
+    <div class='content wbg h240'>
+	    <ul class='rec'>
+<!--#
+
+foreach($udb as $key=>$v){
+$resize = image_resize($v[photo], $width, $height);
+$resize == "" && $resize = "images/nopic.gif";
+$title = Utility::substr($v[title], 32);
+#-->
+		    <li><a href='$v[url]'><img src='$resize' /> </a></li>
+<!--# } #-->
+		    <div class='x-clear'></div>	
+	    </ul>											
+	    <ul>
+		    <li>
+			    <a href='{$udb[0][url]}' class='t'>{$udb[0][summary]}</a>
+		    </li>	
+	    </ul>
+	    <div class='x-clear'></div>									
+    </div>
+    <b class="xbottom"><b class="xb4-bottom"></b><b class="xb3-bottom"></b><b class="xb2-bottom"></b><b class="xb1-bottom"></b></b>
+
+    </div>
+    </div>
+    <div class='x-clear'></div>	
+</div>

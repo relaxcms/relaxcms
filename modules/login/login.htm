@@ -1,0 +1,477 @@
+
+        <!-- BEGIN LOGION WRAPPER -->
+<div class="login-wrapper">
+<!-- BEGIN LOGIN BANNER -->
+<div class="banner">
+    <i class="icon-lock"></i> @t[Welcome login]
+</div>
+<!-- END LOGIN BANNER -->
+        <!-- BEGIN LOGIN -->
+        <div class="content">
+            <!-- BEGIN LOGIN FORM -->
+            <form class="login-form" action="index.html" method="post">
+                <input type="hidden" name="pkey" value="$__aeskey" id="param_pkey" />
+                <input type="hidden" name="sbt" value="$sbt" />
+                
+                <div class="alert alert-danger display-hide">
+                    <button class="close" data-close="alert"></button>
+                    <span> @t[Please enter username and password.] </span>
+                </div>
+                <div class="form-group">
+                    <!--ie8, ie9 does not support html5 placeholder, so we just show field title for that-->
+                    <label class="control-label visible-ie8 visible-ie9">@t[Username]</label>
+                    <div class="input-icon">
+                        <i class="fa fa-user"></i>
+                        <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="@t[Username]" name="params[username]" /> </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">@t[Password]</label>
+                    <div class="input-icon">
+                        <i class="fa fa-lock"></i>
+                        <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="@t[Password]" name="params[password]" /> </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-icon sec-icon">
+                    <label class="control-label visible-ie8 visible-ie9">@t[captcha]</label>
+                    <i class="fa fa-lock"></i>
+                    <input class="form-control placeholder-no-fix rccode " type="text" name="params[captcha]" autocomplete="off" required placeholder="@t[captcha]" value="" id="seccode"  />
+                    <img src="$_libroot/common/img/hidden.gif" class="captcha" id="capimg" alt="@t[captcha]" title="@t[Cannot see the captcha, please click me for reloading]"/>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <label class="rememberme mt-checkbox mt-checkbox-outline">
+                        <input type="checkbox" name="params[remember]" value="1" /> @t[Remember]
+                        <span></span>
+                    </label>
+                    <button type="submit" class="btn btn-primary pull-right"> @t[Login] <i class="m-icon-swapright m-icon-white"></i> </button>
+                </div>
+                              
+                <style> .alipay { padding:0px;} </style>
+                
+                <div class="login-options">
+                    
+                    <div class="pull-left">
+                    	<!--# foreach($thirdAccountLoginOptions as $key=>$v) { #-->
+                        <a href="$v[url]" class="btn btn-circle btn-icon-only $v[class]">
+                            $v[_icon]
+                        </a>
+                        <!--# } #-->
+                        
+                        
+                    </div>
+                    <div class="clearfix">
+                    
+                    <ul class="pull-right">
+                    		<a href="javascript:;" id="forget-password">@t[Forget Password] ?</a> 
+                  			<a href="javascript:;" id="register-btn">@t[Register a account]</a> 
+                    </ul>
+                    </div>
+                </div>
+                
+                
+            </form>
+            <!-- END LOGIN FORM -->
+            
+            <!-- BEGIN FORGOT PASSWORD FORM -->
+            <form class="forget-form" action="index.html" method="post">
+                <h3>@t[Forget Password] ?</h3>
+                <p> @t[Enter your e-mail address below to reset your password]. </p>
+                <div class="form-group">
+                    <div class="input-icon">
+                        <i class="fa fa-envelope"></i>
+                        <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="@t[Email]" name="email" /> </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="back-btn" class="btn blue">@t[Back]</button>
+                    <button type="submit" class="btn btn-primary pull-right" id="forgetPassword"> @t[Submit] </button>
+                </div>
+            </form>
+            <!-- END FORGOT PASSWORD FORM -->
+            
+            
+            
+            <!-- BEGIN REGISTRATION FORM -->
+            <form class="register-form" action="index.html" method="post">
+                <h3>注册新帐户</h3>
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">@t[Username]</label>
+                    <div class="input-icon">
+                        <i class="fa fa-user"></i>
+                        <input class="form-control placeholder-no-fix" type="text" autocomplete="off" placeholder="Username/Mobile/Email" name="username" /> </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">Password</label>
+                    <div class="input-icon">
+                        <i class="fa fa-lock"></i>
+                        <input class="form-control placeholder-no-fix" type="password" autocomplete="off" id="register_password" placeholder="Password" name="password" /> </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label visible-ie8 visible-ie9">Re-type Your Password</label>
+                    <div class="controls">
+                        <div class="input-icon">
+                            <i class="fa fa-check"></i>
+                            <input class="form-control placeholder-no-fix" type="password" autocomplete="off" placeholder="Re-type Your Password" name="rpassword" /> </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="mt-checkbox mt-checkbox-outline">
+                        <input type="checkbox" name="tnc" /> 我接受
+                        <a href="javascript:;">服务协议 </a> 
+                        <span></span>
+                    </label>
+                    <div id="register_tnc_error"> </div>
+                </div>
+                <div class="form-actions">
+                    <button id="register-back-btn" type="button" class="btn blue"> Back </button>
+                    <button type="submit" id="register-submit-btn" class="btn green pull-right"> Sign Up </button>
+                </div>
+            </form>
+            <!-- END REGISTRATION FORM -->
+            
+            
+        </div>
+
+<!-- END LOGIN -->
+</div>
+<!-- END LOGION WRAPPER -->
+<script language="javascript">
+
+jQuery(document).ready(function() {	
+
+	var doLogin = function(form)
+	{
+
+		//取 key
+		var pkey = $('#param_pkey').val();
+		
+		var formData = $(form).serializeArray();
+		
+	    for (i=0; i<formData.length; i++) {
+	  		if (formData[i].name == "params[password]") {
+	  			var val = formData[i].value;
+	  			var _val = encrypt(val, pkey);
+	  			formData[i].value = _val;
+	  		}
+	   }
+	           
+       rui.post(G.base+'/login', formData).then(function(res) {
+            if (res.status == 0) {
+                rui.redirect(G.basename);                
+            } else {
+               rui.showTError('操作失败:'+res.status, '.content');
+            }
+        });  
+	}
+	
+	var genSecCode = function() {
+	        $("#capimg").attr("src", G.basename+"/seccode/?r="+Math.random());
+    }
+
+	var handleLogin = function() {
+		$('.login-form').validate({
+	            errorElement: 'span', //default input error message container
+	            errorClass: 'help-block', // default input error message class
+	            focusInvalid: false, // do not focus the last invalid input
+	            rules: {
+	                'params[username]': {
+	                    required: true
+	                },
+	                'params[password]': {
+	                    required: true
+	                },
+
+	                'params[captcha]': {
+	                    required: true
+	                },
+	                	                
+	                remember: {
+	                    required: false
+	                }
+	            },
+
+	            messages: {
+	                'params[username]': {
+	                    required: t("Username is required.")
+	                },
+	                'params[password]': {
+	                    required: t("Password is required.")
+	                },
+	                'params[captcha]': {
+	                    required: t("Captcha is required.")
+	                }
+	            },
+
+	            invalidHandler: function (event, validator) { //display error alert on form submit   
+	                $('.alert-danger', $('.login-form')).show();
+	            },
+
+	            highlight: function (element) { // hightlight error inputs
+	                $(element)
+	                    .closest('.form-group').addClass('has-error'); // set error class to the control group
+	            },
+
+	            success: function (label) {
+	                label.closest('.form-group').removeClass('has-error');
+	                label.remove();
+	            },
+
+	            errorPlacement: function (error, element) {
+	                error.insertAfter(element.closest('.input-icon'));
+	            },
+
+	            submitHandler: function (form) {
+	            	if (!doLogin(form)){
+	            		//$('.alert-danger', $('.login-form')).show();	            		
+	            	}
+	            }
+	        });
+
+	        $('.login-form input').keypress(function (e) {
+	            if (e.which == 13) {
+	                if ($('.login-form').validate().form()) {
+	                    $('.login-form').submit();
+	                }
+	                return false;
+	            }
+	        });
+	        $("#capimg").on('click', genSecCode);
+	        genSecCode();
+	        
+	}
+	
+	function doForgetPassword(form)
+	{
+	    console.log('doForgetPassword todo...');
+	
+	    var formData = $(form).serializeArray();
+	    rui.post(G.base+'/forgetPassword', formData).then(function(res) {
+            if (res.status == 0) {
+                 rui.showTSuccess('操作成功，请查收邮件');                
+            } else {
+               rui.showTError('操作失败:'+res.status, '.content');
+            }
+        });  
+	    
+	}
+	
+	var handleForgetPassword = function () {
+		$('.forget-form').validate({
+	            errorElement: 'span', //default input error message container
+	            errorClass: 'help-block', // default input error message class
+	            focusInvalid: false, // do not focus the last invalid input
+	            ignore: "",
+	            rules: {
+	                email: {
+	                    required: true,
+	                    email: true
+	                }
+	            },
+
+	            messages: {
+	                email: {
+	                    required: "@t[Email is required]."
+	                }
+	            },
+
+	            invalidHandler: function (event, validator) { //display error alert on form submit   
+
+	            },
+
+	            highlight: function (element) { // hightlight error inputs
+	                $(element)
+	                    .closest('.form-group').addClass('has-error'); // set error class to the control group
+	            },
+
+	            success: function (label) {
+	                label.closest('.form-group').removeClass('has-error');
+	                label.remove();
+	            },
+
+	            errorPlacement: function (error, element) {
+	                error.insertAfter(element.closest('.input-icon'));
+	            },
+
+	            submitHandler: function (form) {
+	                doForgetPassword(form);
+	            }
+	        });
+
+	        $('.forget-form input').keypress(function (e) {
+	            if (e.which == 13) {
+	                if ($('.forget-form').validate().form()) {
+	                   $('.forget-form').submit();
+	                }
+	                return false;
+	            }
+	        });
+	        
+	       
+
+	        jQuery('#forget-password').click(function () {
+	            jQuery('.login-form').hide();
+	            jQuery('.forget-form').show();
+	        });
+
+	        jQuery('#back-btn').click(function () {
+	            jQuery('.login-form').show();
+	            jQuery('.forget-form').hide();
+	        });
+
+	}
+	var handleRegister = function () {
+
+		function format(state) {
+            if (!state.id) { return state.text; }
+            var _state = $(
+             '<span><img src="../assets/global/img/flags/' + state.element.value.toLowerCase() + '.png" class="img-flag" /> ' + state.text + '</span>'
+            );
+            
+            return _state;
+        }
+
+        if (jQuery().select2 && $('#country_list').size() > 0) {
+            $("#country_list").select2({
+	            placeholder: '<i class="fa fa-map-marker"></i>&nbsp;Select a Country',
+	            templateResult: format,
+                templateSelection: format,
+                width: 'auto', 
+	            escapeMarkup: function(m) {
+	                return m;
+	            }
+	        });
+
+
+	        $('#country_list').change(function() {
+	            $('.register-form').validate().element($(this)); //revalidate the chosen dropdown value and show error or success message for the input
+	        });
+    	}
+
+
+         $('.register-form').validate({
+	            errorElement: 'span', //default input error message container
+	            errorClass: 'help-block', // default input error message class
+	            focusInvalid: false, // do not focus the last invalid input
+	            ignore: "",
+	            rules: {
+	                
+	                fullname: {
+	                    required: true
+	                },
+	                email: {
+	                    required: true,
+	                    email: true
+	                },
+	                address: {
+	                    required: true
+	                },
+	                city: {
+	                    required: true
+	                },
+	                country: {
+	                    required: true
+	                },
+
+	                username: {
+	                    required: true
+	                },
+	                password: {
+	                    required: true
+	                },
+	                rpassword: {
+	                    equalTo: "#register_password"
+	                },
+
+	                tnc: {
+	                    required: true
+	                }
+	            },
+
+	            messages: { // custom messages for radio buttons and checkboxes
+	                tnc: {
+	                    required: "Please accept TNC first."
+	                }
+	            },
+
+	            invalidHandler: function (event, validator) { //display error alert on form submit   
+
+	            },
+
+	            highlight: function (element) { // hightlight error inputs
+	                $(element)
+	                    .closest('.form-group').addClass('has-error'); // set error class to the control group
+	            },
+
+	            success: function (label) {
+	                label.closest('.form-group').removeClass('has-error');
+	                label.remove();
+	            },
+
+	            errorPlacement: function (error, element) {
+	                if (element.attr("name") == "tnc") { // insert checkbox errors after the container                  
+	                    error.insertAfter($('#register_tnc_error'));
+	                } else if (element.closest('.input-icon').size() === 1) {
+	                    error.insertAfter(element.closest('.input-icon'));
+	                } else {
+	                	error.insertAfter(element);
+	                }
+	            },
+
+	            submitHandler: function (form) {
+	                form.submit();
+	            }
+	        });
+
+			$('.register-form input').keypress(function (e) {
+	            if (e.which == 13) {
+	                if ($('.register-form').validate().form()) {
+	                    $('.register-form').submit();
+	                }
+	                return false;
+	            }
+	        });
+
+	        jQuery('#register-btn').click(function () {
+	            jQuery('.login-form').hide();
+	            jQuery('.register-form').show();
+	        });
+
+	        jQuery('#register-back-btn').click(function () {
+	            jQuery('.login-form').show();
+	            jQuery('.register-form').hide();
+	        });
+	}
+
+            if (!_.isUndefined(G._i18ndb)) {
+        	    I18N.register(G._i18ndb); 
+        	} 
+        	
+        	if (typeof G_i18ndb != "undefined") {
+        		I18N.register(G_i18ndb); 
+        	}
+        	
+        	handleLogin(); 
+            handleForgetPassword();
+            handleRegister(); 
+           
+           var bgdb = G._bgdb;
+
+           var bgdir = G._dstroot+'/img/bg/';
+           var defaultbg = [
+						bgdir + '1.jpg',  
+						bgdir + '2.jpg', 
+						bgdir + '3.jpg'];
+				
+           if (!_.isArray(bgdb) || bgdb.length == 0)
+                bgdb = defaultbg;
+            // init background slide images
+            $.backstretch(bgdb, {
+			      fade: 1000,
+			      duration: 8000
+					});
+});
+
+
+</script>    

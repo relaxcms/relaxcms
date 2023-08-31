@@ -1,0 +1,33 @@
+<div class="portlet light tasks-widget ">
+    <div class="portlet-title">
+            <div class="caption">
+                <i class="icon-share font-dark hide"></i>
+                <span class="caption-subject font-green-steel bold uppercase">$title</span>
+                <span class="caption-helper"></span>
+            </div>
+            <div class="actions">
+                <div class="btn-group">
+                    <a class="btn btn-sm"  href="$moreurl" > 更多 </i>
+                    </a>                           
+                </div>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="task-content">                                                                                                                            
+                <div class="scroller tlist" style="height: 360px;" data-always-visible="1" data-rail-visible1="1">
+                <ul>
+                <ul>
+<!--#
+foreach($udb as $key=>$v){
+#-->
+                    <li>
+	                    <span><a href="$v[url]" title="$v[_title]" >$v[subtitle]</a></span>
+	                    <span class='date pull-right'>$v[show_time]</span>
+                    </li>
+<!--# } #-->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+

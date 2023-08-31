@@ -1,0 +1,117 @@
+
+<div class="download bg-white" id="param_catalog_$catalog[id]">
+    <div class="tc container">
+        <div class="c-title animated fadeInUp wow">$catalog[name]</div>
+        <div class="c-sub-title animated fadeInDown wow">
+        $catalog[description]</div>
+
+        <!--#  for($i=0; $i<$nr; ) { #-->
+        <div class="row tl">
+            <!--# for($j=0; $j<$cols && $i<$nr; $j++) { $v = $_udb[$i++]; $fade = ($j==0)?'fadeInLeft':($j == $cols-1?'fadeInRight':($i<=$cols?'fadeInDown':'fadeInUp'));  #-->
+            <div class="col-md-$col_width animated $fade wow">
+                <h2> $v[name] </h2>
+                <table class="table table-striped table-bordered table-hover">            
+                    <tr>
+                        <td width="200"> 版本： </td>
+                        <td> $v[version] </td>
+                    </tr>
+
+                    <tr>
+                        <td> 发布时间： </td>
+                        <td> $v[_ctime] </td>
+                    </tr>
+
+                    <tr>
+                        <td> 下载链接 : </td>
+                        <td> 
+                            <a href="$v[_downloadurl]" target="_blank">$v[_downloadurl]</a> 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> 类型 : </td>
+                        <td> 
+                            $v[_type]
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td> 发布类型 : </td>
+                        <td> 
+                            $v[_packtype]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> 平台 : </td>
+                        <td> 
+                            <div class="col-md-12">$v[_platform]</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td> LTS : </td>
+                        <td> 
+                            $v[_lts]
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td> 稳定 : </td>
+                        <td> 
+                            $v[_stable]
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td> 加密 : </td>
+                        <td> 
+                            $v[_rkey]
+                        </td>
+                    </tr>
+
+
+
+                    <!--
+                    <tr>
+                        <td> GITHUB： </td>
+                        <td> <a href="https://github.com/relaxcms/relaxcms-0.8.8.1234.tar.gz" target="_blank">https://github.com/relaxcms/relaxcms-0.8.8.1234.tar.gz</a> </td>
+                    </tr> -->
+                    <tr>
+                        <td> SHA1 : </td>
+                        <td> $v[sha1] </td>
+                    </tr>
+                    <tr>
+                        <td> MD5 : </td>
+                        <td> $v[md5] </td>
+                    </tr>
+
+                    <tr>
+                        <td> 大小： </td>
+                        <td> $v[_size] </td>
+                    </tr>
+                    <tr>
+                        <td> 下载： </td>
+                        <td> $v[downloads] </td>
+                    </tr>
+
+
+                    <tr>
+                        <td> 更新日志： </td>
+                        <td> 
+                            <span id="param_changelog" class="param_changelog">
+                                   $v[_changelog]
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--# } #-->
+            
+        </div>
+        <!--# } #-->
+
+        <div class="row tl">
+            <div class="col-md-12">
+                <h4> <a href="$_base/list/$cid"> 更多版本 </a></h4>    
+            </div>
+        </div>
+    </div>
+</div>

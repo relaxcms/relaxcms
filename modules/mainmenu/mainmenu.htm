@@ -1,0 +1,6 @@
+﻿<ul class="nav navbar-nav mainmenu">
+	<li class="dropdown $homepage[active]">  <a href='$_webroot/' class="dropdown-toggle $class"> <i class="fa $homepage[icon]"></i> 首页</a></li>
+<!--# foreach($udb as $key=>$v) { #-->
+<li class="dropdown $v[active]" >   <a href='$v[url]' class="dropdown-toggle $class" > <i class="fa $v[icon]"></i> $v[name]</a></li> 
+<!--# } #-->
+</ul>	

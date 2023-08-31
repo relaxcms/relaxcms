@@ -1,0 +1,23 @@
+<div class="btn-group">
+    <span class="btn default">
+        <i class="fa fa-clock-o"></i> <span id="showsystemtime">$system_datatime</span>
+    </span>
+</div>
+
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        function showtime() {
+            $.getJSON("$_base/ajaxSystemTime", function(res) {
+                if (res.status == 0) {
+                    $("#showsystemtime").html(res.data.systime);
+                }
+            });
+            if ($ajaxsystime != 1)
+                return false;
+            setTimeout(showtime, 1000);
+        }
+
+        showtime();
+    });
+
+</script>
