@@ -1,0 +1,47 @@
+﻿软件使用协议声明
+
+The MIT License (MIT)
+
+Copyright 2007-2022 RelaxCMS Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+MIT 许可协议
+
+版权所有 (c) 2007-2022, RelaxCMS 团队
+
+特此向任何得到本软件副本或相关文档的人授权：被授权人有权使用、复制、修改、 合并、出版、发布、散布、再授权和/或贩售软件及软件的副本，及授予被供应人同等权利，只需服从以下义务：
+
+在软件和软件的所有副本中都必须包含以上版权声明和本许可声明。
+
+该软件是"按原样"提供的，没有任何形式的明示或暗示，包括但不限于为特定目的和不侵权的适销性和适用性的保证担保。在任何情况下，作者或版权持有人，都无权要求任何索赔，或有关损害赔偿的其他责任。无论在本软件的使用上或其他买卖交易中， 是否涉及合同，侵权或其他行为。
+
+
+
+关于我们
+
+RelaxCMS是一款基于PHP开发的WEB应用框架,主要用于构建WEB应用系统，如：WEB门户、WEB管理系统及API接口等服务系统。
+
+RelaxCMS官方门户：<a href='https://www.relaxcms.com' target=_blank> www.relaxcms.com </a> 。
+
+RelaxCMS使用MIT许可协议授权发布，核心技术版权归属RelaxCMS团队所有，RelaxCMS团队拥有对授权协议的最终解释权和修改权。
+
+
+免责声明
+
+1. 利用本框架构建的WEB应用系统的任何信息内容以及导致的任何版权纠纷和法律争议及后果，RelaxCMS官方不承担任何责任。
+
+2. 利用本框架构建的WEB应用系统损坏包括程序的使用(或无法再使用)中所有一般化,特殊化,偶然性的或必然性的损坏(包括但不限于数据的丢失,自己或第三方所维护数据的不正确修改,和其他程序协作过程中程序的崩溃等), RelaxCMS官方不承担任何责任。  
+  
+3. 本框架所使用第三方开源项目版本归原作者作有，相关请参第三方开源项目许可声明。
+
+4. 使用本框架构建系统时，须遵守国家法律法规和社会公共利益，否则一切法律责任由使用者承担。
+
+
+
