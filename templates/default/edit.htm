@@ -1,0 +1,208 @@
+
+<div class="portlet box default">
+<!--# if (!$dlg) { #-->
+<div class="portlet-title">
+    <div class="caption">
+        <i class="fa fa-globe"></i>$sys_component_name <small> $str_task  </small>
+    </div>
+    <div class="actions">
+        
+        <!--# if ($toolmenuitems) { foreach ($toolmenuitems as $key=>$v) { if ($v['action'] != 'file') { #-->
+         <a href="$_base/$v[name]" class="btn $v[class]  btn-sm tmilink" action="$v[action]" id="$table_id$v[name]"> 
+            <i class="$v[icon]"></i> $v[title] </a>
+        <!--#  } else { #-->
+            <a href="javascript:;" class='btn $v[class] btn-sm fileinput-button'>
+                        <i class="$v[icon]"></i>
+                        <span>$v[title]</span>
+                        <input id="file1" class="fileimport" type="file" name="upfile" multiple />
+            </a>
+        <!--#  } } } #-->
+
+        
+       <button type="button" class="btn btn-primary btn-sm refresh">
+            <i class="fa fa-refresh"></i> @T[Refresh] </button>
+        <!--# if ($toolmenuitems) {  #-->    
+        <div class="btn-group">    
+        <button type="button" class="btn default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-angle-down"></i></button>
+            <ul class="dropdown-menu pull-right">
+                <!--# if ($toolmenuitems) { foreach ($toolmenuitems as $key=>$v) { #-->
+                <li>
+                    <!--#if ($v['action'] != 'file') { #-->
+                    <a href="$_base/$v[name]" class="tmilink" action="$v[action]" quicklink='tmiquicklink_$table_id' >
+                    <i class="$v[icon]"></i> $v[title] </a>
+                    <!--# } else { #-->
+
+                    <a href="javascript:;" class='fileinput-button'>
+                        <i class="$v[icon]"></i>
+                        <span>$v[title]</span>
+                        <input id="fileupload_$key" type="file" name="upfile" multiple />
+                    </a>
+                    <!--# } #-->
+                </li>
+                <!--# } } #-->
+            </ul>
+        </div><!--# } #-->
+    </div>
+</div>
+<!--# } #-->
+<div class="portlet-body form">
+
+				<!-- BEGIN FORM-->
+				<form action="$_basename" name='ruiform' method="POST" id="$table_id" class="form-horizontal">
+					<input type="hidden" name="sbt" value="$sbt" id="sbt" >
+					<input type="hidden" name="component" value="$component">
+					<input type="hidden" name="task" value="$task">
+					<input type="hidden" name="id" value="$id">
+					<input type="hidden" name="params[id]" value="$id">
+					<input type="hidden" name="dlg" value="$dlg">
+					<input type="hidden" name="modname" value="$modname">
+					
+					<div class="form-body">
+					    <div class="alert alert-danger display-hide">
+							<button class="close" data-close="alert"></button>
+							You have some form errors. Please check below.
+						</div>
+						<div class="alert alert-success display-hide">
+							<button class="close" data-close="alert"></button>
+							Your form validation is successful!
+						</div>
+						
+					    <!--# for($i=0; $i<$nr_field;) { #-->					
+					    <div class="row">
+					        <!--# for($j=0; $j<$columns; $j++) { $v=$fdb[$i++]; #-->
+					        <div class="col-sm-$column_width" id="param_$v[name]_wrapper">    					    
+					            <div class="form-group">
+					                <label class="control-label col-md-2">$v[title] 
+					                <!--# if ($v['required'] == 'true') { #-->
+							<span class="required"> * </span>
+							<!--# } if ($v['comment']) { #-->
+                            <span>                            
+                                <i class="fa  fa-question-circle  tooltips" 
+                                    data-style="default" data-placement="bottom" 
+                                    data-container="body" data-original-title="$v[comment]"></i>                            
+                            </span>
+                           <!--# } #-->
+					                </label>
+					                <div class="col-md-9">  <div class="form-group"> $v[input]</div> </div>
+					            </div>
+					        </div>					        
+					        <!--# if ($i>=$nr_field)break; } #-->					    
+					    </div>
+					    <!--# } #-->
+					</div>
+					<div class="form-actions">
+						<div class="row">
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+		                    </div>
+			                <div class="col-md-offset-4 col-lg-8 col-md-8 col-sm-8 col-xs-8">
+								<button type="submit" class="btn btn-primary" id="btnSubmit">@T[Submit]</button>
+								
+                                <!--# if ($dlg == 1 ) { #-->
+                                <button type="button" class="btn default" id="btnClose">@t[Close]</button>
+                                <!--# } else { #-->
+                                <button type="button" class="btn default" onclick="javascript:history.go(-1);">@t[Back]</button>
+                                <!--# }  #-->
+
+                            </div>
+						</div>
+					</div>
+				</form>
+				<!-- END FORM-->
+</div>
+</div>
+
+<script type="text/javascript">
+
+jQuery(document).ready(function() {
+    
+    $('#btnClose').on("click", function(e){
+        //假设这是iframe页
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭  
+    });
+    
+    var doSubmit=function(form) {
+        if (typeof CKEDITOR != "undefined") { //CKEDITOR提交空值 ？？
+            for ( instance in CKEDITOR.instances )
+                CKEDITOR.instances[instance].updateElement(); 
+        }
+
+       var  formData = $(form).serializeArray();
+       //console.log(formData);
+       
+       $.post(form.action, formData, function(res) {
+            if (res.status == 0) {
+                var autobackurl = G.base;
+                if (!_.isUndefined(res.data.autobackurl))
+                    autobackurl = res.data.autobackurl;
+                //$("#sbt").val("");
+                rui.showTSuccess('操作成功.');
+                
+                //parent refresh
+               if (_.isFunction(parent.reload))
+                    parent.reload();
+                 
+                 if (!_.isUndefined(res.data.autobackurl) || "$dlg" == "0")
+                    rui.redirect(autobackurl, 1);              
+            } else {
+               rui.showTError('操作失败:'+res.status);
+            }
+        }).error(function(){
+              rui.showTError('系统错误！');      
+        });        
+    }
+
+	 $('#$table_id').validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+                <!--# foreach($fields as $key=>$v) { if (!$v['edit']) continue; #-->
+                    'params[$key]': {
+                        required: $v[required]
+                    },
+                <!--# } #-->
+                },
+
+                messages: {
+                <!--# foreach($fields as $key=>$v) { if (!$v['edit']) continue; #-->
+                    'params[$key]': {
+                        required: t("The field is required.")
+                    },
+                <!--# } #-->
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit   
+                    $('.alert-danger', $('.login-form')).show();
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label.closest('.form-group').removeClass('has-error');
+                    label.remove();
+                },
+
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element);
+                },
+
+                submitHandler: function (form) {
+                    showWaiting("请稍后。。。");       
+                    doSubmit(form);
+                    closeWaiting();
+                }
+            });
+            
+            //dlg
+            if ($dlg) {
+                parent.$(".layui-layer-title")[0].innerText = t('Edit');//'$mi18n[modelname]$str_task';    
+            }
+
+});
+
+</script>
+

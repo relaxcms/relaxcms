@@ -1,0 +1,165 @@
+
+<link href="$_dstroot/plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet" type="text/css" id='css_jquery_fileupload_blueimp' />
+<script src="$_dstroot/plugins/blueimp/js/blueimp-gallery.min.js" type="text/javascript" id='Script1'></script>
+
+<form name="form" method="post" onkeypress="return event.keyCode != 13;">
+<div class="portlet box default" id='table_wrapper_$table_id'>
+<!--# if (!$dlg) { #-->
+<div class="portlet-title">
+    <div class="caption">
+        <i class="fa fa-globe"></i>$sys_component_name
+    </div>
+    <div class="actions">
+         <!--# if ($toolmenuitems) { foreach ($toolmenuitems as $key=>$v) { if ($v['action'] != 'file') { #-->
+         <button type="button" href="$_base/$v[name]" class="btn $v[class]  btn-sm tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]"  msg="$v[msg]"> 
+            <i class="$v[icon]"></i> $v[title] </button>
+        <!--#  } else { #-->
+    <button type="button" class="btn btn-sm green tileupload mt-ladda-btn ladda-button mt-progress-demo" 
+	data-loading-text="Loading..." 
+	data-style="zoom-in"
+	data-tpl="simplebutton" 
+	data-maxsize="$uploadmaxsize" 
+    data-url="$_base/$v[name]"
+    <!--# if ($v[uptype]) { #-->
+    data-uptype="$v[uptype]"
+    <!--# } #-->
+	data-sbt="$sbt">	
+	<span class="ladda-label fileinput-button"> 
+	    <i class="$v[icon]"></i>$v[title]<input type="file" name="files[]" multiple="" class="inputfile"></span>
+</button>
+        <!--#  } } } #-->
+
+        
+        <a href="$_base/$task" class="btn btn-primary btn-sm tmilink">
+            <i class="fa fa-refresh"></i> @T[Refresh] </a> 
+        
+        <div class="btn-group">
+            <!--# if ($toolmenuitems) { #-->
+            <button type="button" class="btn default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-angle-down"></i></button>
+            <ul class="dropdown-menu pull-right">
+                <!--#  foreach ($toolmenuitems as $key=>$v) { #-->
+                <li>
+                    <!--#if ($v['action'] != 'file') { #-->
+                    <a href="$_base/$v[name]" class="tmilink" action="$v[action]" quicklink='tmiquicklink_$table_id' >
+                    <i class="$v[icon]"></i> $v[title] </a>
+                    
+                    <!--# } #-->
+                </li>
+                <!--# } #-->
+            </ul>
+            <!--# } #-->
+        </div>
+    </div>
+</div>
+<!--# } #-->
+
+<div class="portlet-body" >
+
+<div class="listview" id="listview$table_id" 
+    data-url="$_base/listview"
+    data-col="6"
+    data-modname="$_modname"
+    data-keyword="$_keyword"
+    data-treeview="$treeview"
+    data-defaultviewtype="$defaultviewtype"
+    data-vmask="$vmask"
+	>
+
+	<template name="toolbar">
+	
+	<div id="toolbar$table_id" class="form-inline searchbar">
+<!--# foreach($sfdb as $key=>$v) { if (!$v['searchinput']) continue; #-->
+    <div class="form-group">
+            $v[searchinput]
+    </div>
+<!--# } #-->
+
+<!--# foreach($sfdb as $key=>$v) { if (($v['searchable'] & 2) == 2) { #-->
+    <div class="form-group">
+            $v[input]
+    </div>
+<!--# }} #-->
+    <input type="button" class="btn btn-primary filter-field btnSearch" id="query$table_id" value="搜索"/>
+    
+    <!--# foreach($requestparams as $key=>$v) { #-->
+    <input type="hidden" name="$key" value="$v" class="form-filter"/>
+    <!--# } #-->
+</div> 
+
+		
+	</template>
+</div>
+
+
+</div>
+</div>
+
+</form>
+
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    if (!$.fn.listview)
+    	return false;
+    	
+    var lv = $("#listview$table_id");
+	var lvObj = new Listview(lv);
+    
+    var lvContainer = $('#table_wrapper_$table_id');
+    var btnAdd = $("#{$table_id}add", lvContainer);
+    var btnEdit = $("#{$table_id}edit", lvContainer);
+    var btnDetail = $("#{$table_id}detail", lvContainer);
+    var btnDel = $("#{$table_id}del", lvContainer);
+    var btnRefresh = $("#{$table_id}refresh", lvContainer);
+
+     //按钮可用与否
+    btnEdit.prop('disabled', true);
+    btnDetail.prop('disabled', true);
+    btnDel.prop('disabled', true);
+   
+	//onSelect
+	lvObj.on('onSelect', function(rows){
+	    var len = rows.length;
+	    if (len == 0) {
+            btnEdit.prop('disabled', true);
+            btnDetail.prop('disabled', true);
+            btnDel.prop('disabled', true);
+        } else if (len == 1) {
+            btnEdit.prop('disabled', false);
+            btnDetail.prop('disabled', false);
+            btnDel.prop('disabled', false);
+        } else {
+            btnEdit.prop('disabled', true);
+            btnDetail.prop('disabled', true);  
+            if ($disabledeleteall)                      
+                btnDel.prop('disabled', true);
+            else
+                btnDel.prop('disabled', false);
+        }
+	});
+	//optmenuItem, true:接管消息管理，不使用默认处理，false将使用默认处理
+	lvObj.on('onOptmenuItem', function(action,rows) {
+		return false;
+	});
+	
+	lvContainer.on('click', '.tmilink', function(e) {
+	    e.preventDefault(); 
+	    var res = lvObj.tmilink($(this));
+	    
+    });
+    
+    //select2
+     $('.select2me').select2({
+        language: 'zh-CN',
+        width: '200'
+    });
+    
+    var reload = function()
+    {
+       lvObj.reload(); 
+    }
+    
+    window.reload = reload;
+});	
+</script>
+

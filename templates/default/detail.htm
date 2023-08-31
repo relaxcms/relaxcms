@@ -1,0 +1,288 @@
+
+<div class="portlet box default">
+<!--# if (!$dlg) { #-->
+<div class="portlet-title">
+    <div class="caption">
+        <i class="fa fa-globe"></i>$mi18n[modelname] <small> @t[Detail]  </small>
+    </div>
+    <div class="actions">
+        
+        
+        
+       <button type="button" class="btn btn-primary btn-sm refresh">
+            <i class="fa fa-refresh"></i> @T[Refresh] </button>
+    </div>
+</div>
+<!--# } #-->
+
+<div class="portlet-body form">
+
+	<div class="form-body">
+	    
+	    <!--# for($i=0; $i<$nr_field;) { #-->					
+	    <div class="row">
+	        <!--# for($j=0; $j<$columns; $j++) { $v=$fdb[$i++]; #-->
+	        <div class="col-lg-$column_width col-md-$column_width col-sm-$column_width col-xs-$column_width">    					    
+	            <div class="form-group">
+	                <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">$v[title] 
+	                <!--# if ($v['required'] == 'true') { #-->
+			<span class="required"> * </span>
+			<!--# } if (isset($v['comment']) && $v['comment']) { #-->
+
+            <span>
+            
+                <i class="fa  fa-question-circle  tooltips" 
+                    data-style="default" data-placement="bottom" 
+                    data-container="body" data-original-title="$v[comment]"></i>
+            
+            </span>
+           <!--# } #-->
+	                </label>
+	                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8"><span class="form-control-static"> 
+	                
+	                <!--# if ($edit) { #-->
+	                 $v[input] 
+	                 <!--# } else { #-->
+	                 $v[value]
+	                 <!--# } #-->
+	                 
+	                 </span> </div>
+	            </div>
+	        </div>					        
+	        <!--# if ($i>=$nr_field)break; } #-->					    
+	    </div>
+	    <!--# } #-->
+	</div>
+	<div class="form-actions">
+		<div class="row">
+		    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+		    </div>
+			<div class="col-md-offset-4 col-lg-8 col-md-8 col-sm-8 col-xs-8">
+            <!--# foreach ($params[optdb] as $key=>$v) { #-->
+            <button type="button" href="$_base/$v[name]?dlg=$dlg&modname=$modname&id=$id" class="btn $v[class]  tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]"  msg="$v[msg]"> 
+            <i class="$v[icon]"></i> $v[title] </button>
+            <!--#  } if ($dlg == 1 ) { #-->
+            <button type="button" class="btn default" id="btnClose">@t[Close]</button>
+            <!--# } else { #-->
+            <button type="button" class="btn default" onclick="javascript:history.go(-1);">@t[Back]</button>
+            <!--# }  #-->
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+<script language="javascript">
+     
+    
+    
+jQuery(document).ready(function() {
+
+    $('#btnClose').on("click", function(e){
+        //假设这是iframe页
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭  
+    });  
+    
+    
+    var doSubmit=function(form) {
+        if (typeof CKEDITOR != "undefined") { //CKEDITOR提交空值 ？？
+            for ( instance in CKEDITOR.instances )
+                CKEDITOR.instances[instance].updateElement(); 
+        }
+
+       var  formData = $(form).serializeArray();
+       
+       $.post(form.action, formData, function(res) {
+            if (res.status == 0) {
+                rui.showTSuccess('操作成功.');       
+            } else {
+               rui.showTError('操作失败:'+res.status);
+            }
+        }).error(function(){
+              rui.showTError('系统错误！');      
+        });
+    }
+
+	$('#$table_id').validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+                <!--# foreach($fields as $key=>$v) { if (!$v['edit']) continue; #-->
+                    'params[$key]': {
+                        required: $v[required]
+                    },
+                <!--# } #-->
+                },
+
+                messages: {
+                <!--# foreach($fields as $key=>$v) { if (!$v['edit']) continue; #-->
+                    'params[$key]': {
+                        required: "$key is required."
+                    },
+                <!--# } #-->
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit   
+                    $('.alert-danger', $('.login-form')).show();
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label.closest('.form-group').removeClass('has-error');
+                    label.remove();
+                },
+
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element);
+                },
+
+                submitHandler: function (form) {
+                    doSubmit(form);
+                }
+            });    
+            
+
+            var doTmiLinkButton = function(el, url)
+            {
+                var id = "$id";
+                
+                url += '?id='+id;
+                rui.redirect(url);
+                return true;
+            }
+
+            
+
+            var doTmiLinkSubmit = function(el, url)
+            {
+                var id = "$id";
+                
+                //console.log(ids);
+
+                //确认
+                var msg = el.attr('msg');
+                if (_.isString(msg) && msg != '') {
+                    bootbox.confirm(msg, function(result) {
+                        if (result) {
+                           $.post(url, {id:id}, function(res) {
+                                if (res.status == 0) {
+                                   rui.showTSuccess('操作成功.');  
+                                   //console.log(res.data);
+                                   if (!_.isUndefined(res.data.refresh)) {
+                                       rui.refresh(1); 
+                                   }
+                                   if (!_.isUndefined(res.data.redirect)) {
+                                       rui.redirect(res.data.redirect); 
+                                   }
+                                    
+                                    //
+                                    
+                                   //rui.refresh(1);         
+                                    //parent refresh
+                                   if (_.isFunction(parent.reload))
+                                        parent.reload();
+                                    else
+                                        rui.refresh(1);
+                                } else {
+                                    //msg
+                                    var err = (_.isString(res.msg) && res.msg != '')?res.msg:'操作失败';
+                                    err += ':' + res.status;
+                                    if (!_.isUndefined(res.data.msg))
+                                        err += '<br>' + res.data.msg;
+
+                                    rui.showTError(err);
+                                    /*if (!_.isUndefined(res.data.redirect)) {
+                                        rui.redirect(res.data.redirect, 3); 
+                                    }*/
+                                }
+                            })
+                            .error(function() { 
+                                 rui.showTError("系统错误");
+                            });
+                        }
+                    });
+                } else {
+                    $.post(url, {id:id}, function(res) {
+                        if (res.status >= 0) {
+                           rui.showTSuccess('操作成功.'); 
+                           rui.refresh(1);
+                           //rui.redirect(G.base, 1);
+                        } else {
+                            rui.showTError('操作失败:'+res.status);
+                        }
+                    })
+                    .error(function() { 
+                         rui.showTError("系统错误");
+                    });                    
+                }
+                
+                return true;
+            }
+            
+            var showTmbox = function(el, url)
+            {
+                var url = url+'?dlg=1';
+                var title = el.attr("title");
+                if (_.isUndefined(title))
+                    title = "详细";
+                
+                
+                top.layer.open({
+                    type: 2, 
+                    title: title, 
+                        shadeClose: false,
+                        maxmin:true,
+                        shade: 0.2,
+                        shift:10,
+                        area: ['70%', '65%'],
+                        content: url
+                });
+           }
+           
+
+            $('.tmilink').on('click', function(e) {
+                var el = $(this);
+                e.preventDefault(); 
+                var url = el.attr('href');
+                var action = el.attr('action');
+                //console.log(action);
+                if (action == 'alink') {
+                    rui.redirect(url);
+                    return true;
+                }  
+                
+                
+                if (action == 'linkbutton') {
+                    res = doTmiLinkButton(el, url);
+                    return true;
+                } else if (action == 'submit' || action == 'button') {
+                    res = doTmiLinkSubmit(el, url);
+                }  else if (action == 'tmbox') {
+                    res = showTmbox(el, url);
+                    return true;
+                } else {
+                    rui.redirect(url);
+                    return true;
+                }
+
+                return true;
+            });   
+});
+
+
+function copyToClipBoard(){
+    var clipBoardContent = "";
+    clipBoardContent += document.title;
+    clipBoardContent += "";
+    clipBoardContent += this.location.href;
+    window.clipboardData.setData("Text",clipBoardContent);
+}
+    
+    
+</script>

@@ -1,0 +1,491 @@
+<rdoc:include file="head.htm" />
+
+<style type="text/css">
+    
+.portlet .portlet-title .caption i {
+    float: unset !important;
+}
+
+ thead th .sortable {
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
+
+.table thead th .both {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAQAAADYWf5HAAAAkElEQVQoz7X QMQ5AQBCF4dWQSJxC5wwax1Cq1e7BAdxD5SL+Tq/QCM1oNiJidwox0355mXnG/DrEtIQ6azioNZQxI0ykPhTQIwhCR+BmBYtlK7kLJYwWCcJA9M4qdrZrd8pPjZWPtOqdRQy320YSV17OatFC4euts6z39GYMKRPCTKY9UnPQ6P+GtMRfGtPnBCiqhAeJPmkqAAAAAElFTkSuQmCC");
+}
+.table thead th .asc {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZ0lEQVQ4y2NgGLKgquEuFxBPAGI2ahhWCsS/gDibUoO0gPgxEP8H4ttArEyuQYxAPBdqEAxPBImTY5gjEL9DM+wTENuQahAvEO9DMwiGdwAxOymGJQLxTyD+jgWDxCMZRsEoGAVoAADeemwtPcZI2wAAAABJRU5ErkJggg==");
+}
+.table thead th .desc {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAZUlEQVQ4y2NgGAWjYBSggaqGu5FA/BOIv2PBIPFEUgxjB+IdQPwfC94HxLykus4GiD+hGfQOiB3J8SojEE9EM2wuSJzcsFMG4ttQgx4DsRalkZENxL+AuJQaMcsGxBOAmGvopk8AVz1sLZgg0bsAAAAASUVORK5CYII= ");
+}
+
+</style>
+<div class="portlet box default" id='table_wrapper_$table_id'>
+<div class="portlet-title">
+    
+
+    <div class="caption">
+        <i class="fa fa-globe"></i><a href="$_base?id=0">$sys_component_name</a> $nav 
+    </div>
+
+
+        <div class="actions">
+        <!--# foreach ($toolmenuitems as $key=>$v) { if ($v['action'] != 'file') { #-->
+         <button type="button" href="$_base/$v[name]" class="btn $v[class]  btn-sm tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]"  msg="$v[msg]"> 
+            <i class="$v[icon]"></i> $v[title] </button>
+        <!--#  } else { #-->
+    <button type="button" class="btn btn-sm green tileupload mt-ladda-btn ladda-button mt-progress-demo" 
+	data-loading-text="Loading..." 
+	data-style="zoom-in"
+	data-tpl="simplebutton" 
+	data-maxsize="$uploadmaxsize" 
+    data-url="$_base/$v[name]"
+    <!--# if ($v[uptype]) { #-->
+    data-uptype="$v[uptype]"
+    <!--# } #-->
+	data-sbt="$sbt">	
+	<span class="ladda-label fileinput-button"> 
+	    <i class="$v[icon]"></i>$v[title]<input type="file" name="files[]" multiple="" class="inputfile"></span>
+</button>
+        <!--#  } } #-->
+        
+        
+        
+        
+            <a href="$_base/$task" class="btn blue btn-sm tmilink">
+                <i class="fa fa-refresh"></i> @T[Refresh] </a>
+
+        </div>
+        
+        
+    </div>
+    
+</div>
+
+<div class="portlet-body" >
+<form action="$_base" name="ruiform" id="form_$table_id">
+
+<table class="table table-striped table-bordered table-hover " id="$table_id">
+    <thead>
+    <tr class="heading">
+        <th >
+            <input type="checkbox" value="1" class="group-checkable checkbox checkall" />
+        </th>
+        <!--# $nr_col = 1; foreach($fdb as $key=>$v) { if (!$v['show']) continue; $nr_col ++;   $_sortable = $v['sortable']?'sortable both':'';
+            $_sortOrder = ($sortName == $key)?$sortOrder:''; #-->
+        <th data-id="$key">
+            <div class="th-inner $_sortable $_sortOrder ">{$v['title']}</div>
+        </th>
+        <!--# } #-->
+
+        <th>
+             @T[Operate]
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <!--# foreach($tabledata as $key=>$v) { $id = $v[$pkey['name']]; 
+        $treepid = $v['pid']?'treegrid-parent-'.$v['pid']:''; #-->        
+    <tr class="treegrid-$id $treepid" data-id="$id">
+        <td> <input type="checkbox" name="params[{$v[$pkey['name']]}]" value="{$v[$pkey['name']]}" class="checkbox" /> </td>
+
+        <!--# foreach($fdb as $k2=>$v2) { if (!$v2['show']) continue;  #-->
+        <td>
+             $v[$k2]
+        </td>
+        <!--# } #-->
+        
+        <td>
+            $v[operate]
+        </td>
+    </tr>
+    <!--# } #-->
+
+    
+    </tbody>
+    </table>
+    </form>
+</div>
+</div>
+
+<script type="text/javascript">
+  function onClickMultiCheckbox(id, modname, fieldname, key)
+    {
+       // console.log('id='+id+',modname='+modname+',fieldname='+fieldname+',key='+key);
+        var url = '$_base/mck?id='+id+'&modname='+modname+'&fieldname='+fieldname+'&key='+key;
+
+        $.getJSON(url, function(res) {
+            if (res.status == 0) {
+                rui.showTSuccess('操作成功');
+            } else {
+                rui.showTError('操作失败:'+res.status);
+            }
+        })
+        .error(function() { 
+             rui.showTError("系统错误");
+        });
+    }
+    
+    
+jQuery(document).ready(function() { 
+    var table = $('#$table_id');
+    
+    //sort
+    var allsortable = $('.sortable', table);
+    allsortable.on('click', function (e) {        
+        e.preventDefault();      
+        
+        var th = $(this).closest('th');
+        var sortName = th.attr('data-id');
+        var sortOrder = 'asc';
+        if ($(this).hasClass('asc')) {
+            sortOrder = 'desc';
+            allsortable.removeClass('asc');
+            $(this).addClass('desc')
+        } else {
+            sortOrder = 'asc';
+            allsortable.removeClass('desc');
+            $(this).addClass('asc')
+        }
+        console.log('sortName='+sortName+', sortOrder='+sortOrder);
+        rui.cookie('sortName',sortName);
+        rui.cookie('sortOrder',sortOrder);
+        
+        rui.reload();
+    });
+    
+    
+       
+
+    //双击一行
+    $('tr', table).on('dblclick', function(e){
+        e.preventDefault();
+        var id = $(this).attr('data-id');
+        if (typeof id == "undefined") {
+            return false;
+        }
+        
+            var url = G._base+'/detail?dlg=1&id='+id;
+            layer.open({
+                    type: 2,
+                    title: t('Detail'),//详细
+                    shadeClose: false,
+                     maxmin: true,
+                    shade: 0.2,
+                    shift:10,
+                    area: ['70%', '65%'],
+                    content: url
+                });
+                
+    });
+    
+    var table = $("#$table_id");
+    var tableContainer = $("#table_wrapper_$table_id");
+    
+    
+    var btnAdd = $("#{$table_id}add", tableContainer);
+    var btnEdit = $("#{$table_id}edit", tableContainer);
+    var btnLook = $("#{$table_id}detail", tableContainer);
+    var btnDel = $("#{$table_id}del", tableContainer);
+    var btnRefresh = $("#{$table_id}refresh"), tableContainer;
+
+     //按钮可用与否
+    btnEdit.prop('disabled', true);
+    btnLook.prop('disabled', true);
+    btnDel.prop('disabled', true);
+
+    $('.checkbox', table).on('click',
+                function() {
+                    var len = getSelections().length;
+                    
+                    if (len == 0) {
+                        btnEdit.prop('disabled', true);
+                        btnLook.prop('disabled', true);
+                        btnDel.prop('disabled', true);
+                    } else if (len == 1) {
+                        btnEdit.prop('disabled', false);
+                        btnLook.prop('disabled', false);
+                        btnDel.prop('disabled', false);
+                    } else {
+                        btnEdit.prop('disabled', true);
+                        btnLook.prop('disabled', true);  
+                        if ($disabledeleteall)                      
+                            btnDel.prop('disabled', true);
+                        else
+                            btnDel.prop('disabled', false);
+                    }
+            });
+    
+     var doTmiButton = function(el, url) 
+            {
+                var f = el.closest('form');
+                var  formData = f.serializeArray();   
+                //console.log(formData); 
+
+                //确认
+                needconfirm = el.hasClass('needconfirm');
+                if (needconfirm) {
+                    msg = el.attr('msg');
+                    bootbox.setLocale(G.lang);
+                    bootbox.confirm(msg, function(result) {
+                        if (result) {
+                            showWaiting("请稍后...");
+                            $.post(url, formData, function(res) {
+                                closeWaiting();
+                                if (res.status == 0) {                        
+                                   rui.showTSuccess('操作成功.');   
+                                } else {
+                                    rui.showTError('操作失败:'+res.status);
+                                }
+                            })
+                            .error(function() { 
+                                closeWaiting();
+                                rui.showTError("系统错误");
+                            });  
+                        }
+                    });
+                } else {
+                    $.post(url, formData, function(res) {
+                        closeWaiting();
+                        if (res.status == 0) {                        
+                           rui.showTSuccess('操作成功.');   
+                        } else {
+                            rui.showTError('操作失败:'+res.status);
+                        }
+                    })
+                    .error(function() { 
+                        closeWaiting();
+                        rui.showTError("系统错误");
+                    });                 
+                }           
+                
+            };
+
+
+            var doTmiLinkButton = function(el, url)
+            {
+                var data = getSelections();
+                var nr = data.length;
+                var id = 0;
+                var ids = [];     
+
+                //console.log('nr='+nr+',id='+id);
+                if (nr == 0)
+                    return false;
+                    
+                if (nr > 1) {
+                    for(i=0; i<nr; i++) {
+                        ids.push(data[i]);
+                    }
+                    id = ids.join(',');
+                } else {
+                    id = data[0];
+                }
+                
+                url += '?id='+id;
+                rui.redirect(url);
+                return true;
+            }
+
+            var doTmiLinkSubmit = function(el, url)
+            {
+                var nr = 0;
+                var id = 0;
+                var ids = [];                    
+                    
+                var data = getSelections();
+                var nr = data.length;
+
+                if (nr < 1)
+                    return false;
+                
+               
+                if (nr > 1) {
+                    for(i=0; i<nr; i++) {
+                        ids.push(data[i]);
+                    }
+                    id = ids.join(',');
+                } else {
+                    id = data[0];
+                }
+
+                //console.log(ids);
+
+                //确认
+                needconfirm = el.hasClass('needconfirm');
+                if (needconfirm) {
+                    msg = el.attr('msg');
+                    bootbox.setLocale(G.lang);
+                    bootbox.confirm(msg, function(result) {
+                        if (result) {
+                           $.post(url, {id:id}, function(res) {
+                                if (res.status == 0) {
+                                   rui.showTSuccess('操作成功.');   
+                                   rui.refresh(1);         
+                                } else {
+                                    rui.showTError('操作失败:'+res.status);
+                                }
+                            })
+                            .error(function() { 
+                                 rui.showTError("系统错误");
+                            });
+                        }
+                    });
+                } else {
+                    $.post(url, {id:id}, function(res) {
+                        if (res.status == 0) {
+                           rui.showTSuccess('操作成功.'); 
+                           rui.redirect(G.base, 1);
+                        } else {
+                            rui.showTError('操作失败:'+res.status);
+                        }
+                    })
+                    .error(function() { 
+                         rui.showTError("系统错误");
+                    });                    
+                }
+
+                
+                return true;
+            }
+            
+            var showTmbox = function(el, url)
+            {
+                var url = url+'?dlg=1';
+                var title = el.attr("title");
+                if (_.isUndefined(title))
+                    title = "详细";
+                
+                
+                layer.open({
+                    type: 2, 
+                    title: title, shadeClose: false,
+                        shade: 0.2,
+                        shift:10,
+                        area: ['70%', '65%'],
+                        content: url
+                });
+           }
+
+            tableContainer.on('click', '.tmilink', function(e) {
+                var el = $(this);
+                var url = el.attr('href');
+                var action = el.attr('action');
+                //console.log(action);
+
+                if (action == 'alink') {
+                    return true;
+                }  
+                
+                e.preventDefault(); 
+                if (action == 'button') {                      
+                    res = doTmiButton(el, url);
+                } else if (action == 'submit') {
+                    res = doTmiLinkSubmit(el, url);
+                } else if (action == 'linkbutton') {
+                    res = doTmiLinkButton(el, url);
+                    return true;
+                } else if (action == 'tmbox') {
+                    res = showTmbox(el, url);
+                    return true;
+                } else {
+                    rui.redirect(url);
+                    return true;
+                }
+
+                return true;
+            });
+            
+            
+            /**
+             * 获得选中的数据，为一个对象数组
+             */
+            function getSelections() {
+                var nr = 0;
+                var id = 0;
+                var ids = [];   
+                
+                $('input[type="checkbox"]').each(function() {
+                    if ($(this).is(':checked')) {
+                        id = $(this).val();
+                        ids.push(id);
+                        nr ++;
+                    }
+                });
+                
+                return ids;
+            }
+            
+            
+            
+            table.on('click', '.tlink', function (e) {
+                e.preventDefault();
+                var task = $(this).attr('data-task');
+                var url = '$_base/'+task+'?id='+$(this).attr("data-id");
+                
+                if ($(this).hasClass('json')) {                
+                     $.getJSON(url, function(res) {
+                        if (res.status == 0) {
+						    rui.showTSuccess('操作成功');
+						    rui.refresh(1);               
+                        } else {
+                            rui.showTError('操作失败:'+res.status);
+                        }
+                    })
+                    .error(function() { 
+                         rui.showTError("系统错误");
+                    });
+                } else {               
+                    rui.redirect(url); 
+                }
+            });  
+            
+             table.on('click', '.tmbox', function (e) {
+                e.preventDefault();
+                var task = $(this).attr('data-task');
+                var url = '$_base/'+task+'?dlg=1&id='+$(this).attr("data-id");
+                var title = $(this).attr("data-original-title");
+                if (_.isUndefined(title))
+                    title = "详细";
+                
+                
+                layer.open({
+                    type: 2, title: title, shadeClose: false,
+                        shade: 0.2,
+                        shift:10,
+                        area: ['70%', '65%'],
+                        content: url
+                });
+                
+            });  
+            
+            
+            table.on('click', '.delete', function (e) {
+                e.preventDefault();
+                var url = '$_base/del?id='+$(this).attr("data-id");
+                bootbox.setLocale(G.lang);
+                bootbox.confirm("@t[Are you sure to delete?]", function(result) {
+                      if (result) {                        
+                        $.getJSON(url, {o:'json'}, function(res) {
+                            if ( res.status == 0) {
+                               rui.showTSuccess('操作成功.'); 
+                               rui.refresh(1);
+                            } else {
+                                rui.showTError('操作失败:'+res.status);
+                            }
+                        })
+                        .error(function() { 
+                             rui.showTError("系统错误");
+                        });
+                      }
+                });
+             });
+
+
+});
+</script>
+<rdoc:include file="foot.htm" />

@@ -1,0 +1,73 @@
+﻿<rdoc:include file="head.htm" />
+<style type="text/css">
+	.col-lg-12,
+	.col-md-12,
+	.col-sm-12 ,
+	.col-xs-12 
+	{ 
+		margin: 0px !important;
+		padding: 2px !important;
+	}
+</style>
+
+
+ <img src="$_base/nopic/640/480" style="cursor:pointer;" id="cropimg" alt="Avatar Cropping" /> 
+  
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+
+        $("#cropimg").on("click", function(e) {
+            var _self = $(this);
+
+            var index2 = top.layer.open({
+                type: 2,
+                title: '选择图片',
+                shadeClose: false,
+                shade: 0.2,
+                shift: 10,
+                area: ['55%', '70%'],
+                content: '$_base/selectfile?type=4',
+                success: function(layero, index) {
+                    //console.log('success...');
+                    var body = layer.getChildFrame('body', index);
+                },
+                btn: ['确定', '关闭'],
+                yes: function(index, layero) {
+                    //console.log('in yes...');
+                    //console.log(window);
+                    //var t1 = layero.find('iframe');
+                    var iframeWin = top.window[layero.find('iframe')[0]['name']];
+                    //var iframeWin = window["layui-layer-iframe" + index];
+
+                    var row = iframeWin.row;
+
+                    _self.attr('src', row.lpreviewUrl);
+
+                    top.layer.close(index);
+                    initCropImg(row.id);
+                    //console.log('out yes'); 
+                }
+            });
+
+        });
+
+        function initCropImg(id) {
+            $('#cropimg').Jcrop({
+                //aspectRatio: 1,
+                onSelect: updateCoords
+            });
+            window.cropimginfo = { 'id': id };
+            function updateCoords(c) {
+                window.cropimginfo.x = c.x;
+                window.cropimginfo.y = c.y;
+                window.cropimginfo.w = c.w;
+                window.cropimginfo.h = c.h;
+
+                console.log(c);
+            };
+        }
+    });
+    
+   
+</script>
+<rdoc:include file="foot.htm" />

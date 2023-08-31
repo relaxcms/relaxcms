@@ -1,0 +1,147 @@
+<rdoc:include file="head.htm" />
+<div class="portlet box default">
+<div class="portlet-title">
+    <div class="caption">
+        <i class="fa fa-globe"></i>$sys_component_name
+    </div>
+    <div class="actions">
+
+        
+       <button type="button" class="btn btn-primary btn-sm refresh">
+            <i class="fa fa-refresh"></i> @T[Refresh] </button>
+            
+    </div>
+</div>
+
+<div class="portlet-body form">
+
+				<!-- BEGIN FORM-->
+				<form action="$_basename" name='ruiform' method="POST" id="paramsForm" class="form-horizontal">
+					<input type="hidden" name="sbt" value="$sbt" id="sbt" >
+					<input type="hidden" name="component" value="$component">
+					<input type="hidden" name="task" value="$task">
+					<input type="hidden" name="id" value="$id">
+					<input type="hidden" name="params[id]" value="$id">
+					<input type="hidden" name="dlg" value="$dlg">
+					<input type="hidden" name="modname" value="$modname">
+					
+					<div class="form-body">
+					    <div class="alert alert-danger display-hide">
+							<button class="close" data-close="alert"></button>
+							You have some form errors. Please check below.
+						</div>
+						<div class="alert alert-success display-hide">
+							<button class="close" data-close="alert"></button>
+							Your form validation is successful!
+						</div>
+						
+					    <!--# foreach($fields as $key=>$v) { #-->	
+					    <div class="form-group">
+							<label class="control-label col-md-3">$v[title] <span class="required">
+							</span>
+							<span>                            
+                                <i class="fa  fa-question-circle  tooltips" 
+                                            data-style="default" data-placement="bottom" 
+                                            data-container="body" data-original-title="$v[description]"></i>                            
+                            </span>
+                                    
+							</label>
+							<div class="col-md-4">
+								$v[input]
+							</div>
+						</div>
+					    <!--# } #-->
+					</div>
+					<div class="form-actions">
+						<div class="row">
+							<div class="col-md-offset-3 col-md-9">
+								<button type="submit" class="btn green" id="btnSubmit">@T[Submit]</button>
+                            </div>
+						</div>
+					</div>
+				</form>
+				<!-- END FORM-->
+    </div>
+</div>
+<script type="text/javascript">
+
+jQuery(document).ready(function() {
+    
+    
+    var doSubmit=function(form) {
+        if (typeof CKEDITOR != "undefined") { //CKEDITOR提交空值 ？？
+            for ( instance in CKEDITOR.instances )
+                CKEDITOR.instances[instance].updateElement(); 
+        }
+
+       var  formData = $(form).serializeArray();
+       //console.log(formData);
+       
+       $.post(form.action, formData, function(res) {
+            if (res.status == 0) {
+                var autobackurl = G.base;
+                if (!_.isUndefined(res.data.autobackurl))
+                    autobackurl = res.data.autobackurl;
+                $("#sbt").val("");
+                rui.showTSuccess('操作成功.'); 
+                //if ("$dlg" == "0")      
+                 if (!_.isUndefined(res.data.autobackurl))
+                    rui.redirect(autobackurl, 1);              
+            } else {
+               rui.showTError('操作失败:'+res.status);
+            }
+        }).error(function(){
+              rui.showTError('系统错误！');      
+        });        
+    }
+
+	 $('#paramsForm').validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+                <!--# foreach($fields as $key=>$v) { #-->
+                    'params[$key]': {
+                        required: $v[required]
+                    },
+                <!--# } #-->
+                },
+
+                messages: {
+                <!--# foreach($fields as $key=>$v) { #-->
+                    'params[$key]': {
+                        required: t("The field is required.")
+                    },
+                <!--# } #-->
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit   
+                    $('.alert-danger', $('.login-form')).show();
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label.closest('.form-group').removeClass('has-error');
+                    label.remove();
+                },
+
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element);
+                },
+
+                submitHandler: function (form) {
+                    showWaiting("请稍后。。。");       
+                    doSubmit(form);
+                    closeWaiting();
+                }
+            });
+
+});
+
+</script>
+
+<rdoc:include file="foot.htm" />

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <style>
+        body,#mapContainer{
+            margin:0;
+            height:100%;
+            width:100%;
+            font-size:12px;
+        }
+    </style>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main.css?v=1.0?v=1.0" />
+    <script src="https://webapi.amap.com/loader.js"></script>
+<script type="text/javascript" >
+AMapLoader.load({
+    "key": "7eaa5acd64d7477e0b45b135faf94ed1",              // 申请好的Web端开发者Key，首次调用 load 时必填
+    "version": "2.0",   // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+    "plugins": [],           // 需要使用的的插件列表，如比例尺'AMap.Scale'等
+    "AMapUI": {             // 是否加载 AMapUI，缺省不加载
+        "version": '1.1',   // AMapUI 版本
+        "plugins":['overlay/SimpleMarker'],       // 需要加载的 AMapUI ui插件
+    },
+    "Loca":{                // 是否加载 Loca， 缺省不加载
+        "version": '2.0'  // Loca 版本
+    },
+}).then((AMap)=>{
+        var map = new AMap.Map('mapContainer');
+    }).catch((e)=>{
+        console.error(e);  //加载错误提示
+    });   
+</script>
+</head>
+<body>
+<div id="mapContainer" ></div>
+<div class="button-group" id='button_group' style='top:15px;bottom:inherit'>
+</div>
+</body>
+</html>

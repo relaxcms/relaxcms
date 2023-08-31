@@ -1,0 +1,149 @@
+<rdoc:include file="head.htm" />
+
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-4">
+			<div class="portlet light">				
+				<div class="portlet-title">
+					<div class="caption">
+						创建
+					</div>
+				</div>
+				<div class="portlet-body form">
+					<!-- BEGIN FORM-->
+					<form action="$_basename" name='ruiform' method="POST" id="$table_id" class="form-horizontal">
+						<input type="hidden" name="sbt" value="$sbt" id="sbt" >
+						<input type="hidden" name="component" value="$component">
+						<input type="hidden" name="task" value="$task">
+						<input type="hidden" name="id" value="$id">
+						<input type="hidden" name="params[id]" value="$id">
+						<input type="hidden" name="dlg" value="$dlg">
+						<input type="hidden" name="modname" value="$modname">
+						
+						<div class="form-body">
+						    <div class="alert alert-danger display-hide">
+								<button class="close" data-close="alert"></button>
+								You have some form errors. Please check below.
+							</div>
+							<div class="alert alert-success display-hide">
+								<button class="close" data-close="alert"></button>
+								Your form validation is successful!
+							</div>
+							
+						    <!--# foreach($fdb2 as $key=>$v) { #-->					
+						    <div class="row">
+						        <div class="col-sm-$column_width" id="param_$v[name]_wrapper">    					    
+						            <div class="form-group">
+						                <label class="control-label col-md-2">$v[title] 
+						                <!--# if ($v['required'] == 'true') { #-->
+								<span class="required"> * </span>
+								<!--# } if ($v['comment']) { #-->
+	                            <span>                            
+	                                <i class="fa  fa-question-circle  tooltips" 
+	                                    data-style="default" data-placement="bottom" 
+	                                    data-container="body" data-original-title="$v[comment]"></i>                            
+	                            </span>
+	                           <!--# } #-->
+						                </label>
+						                <div class="col-md-9">  <div class="form-group"> $v[input]</div> </div>
+						            </div>
+						        </div>					        
+						    </div>
+						    <!--# } #-->
+						</div>
+						<div class="form-actions">
+							<div class="row">
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+			                    </div>
+				                <div class="col-md-offset-4 col-lg-8 col-md-8 col-sm-8 col-xs-8">
+									<button type="submit" class="btn btn-primary" id="btnSubmit">@T[Submit]</button>
+									
+	                                <!--# if ($dlg == 1 ) { #-->
+	                                <button type="button" class="btn default" id="btnClose">@t[Close]</button>
+	                                <!--# } else { #-->
+	                                <button type="button" class="btn default" onclick="javascript:history.go(-1);">@t[Back]</button>
+	                                <!--# }  #-->
+
+	                            </div>
+							</div>
+						</div>
+					</form>
+					<!-- END FORM-->
+				</div>
+			</div>
+		</div>
+		<div class="col-md-8">
+			<div class="portlet light">
+
+			<div class="portlet-title">
+				<div class="caption">
+					已发布
+				</div>
+							        
+				<div class="actions">
+			        <div class="btn-group">
+			            <a class="btn btn-primary btn-sm refresh">
+                            <i class="fa fa-refresh"></i> @T[Refresh] </a> 
+			        </div>
+			    </div>
+			</div>
+			
+			<div class="portlet-body">
+						<table class="table table-striped table-bordered table-hover">
+							<thead>
+							<tr class="heading">
+								<!--#  foreach($fdb as $key=>$v) { if (!$v['show']) continue;  #-->
+								<th>
+									 {$v['title']}
+								</th>
+								<!--# } #-->
+
+								<th>
+									  @T[Operate]
+								</th>
+							</tr>
+							</thead>
+							<tbody>
+							<!--# foreach($rows as $key=>$v) { #-->		
+							<tr>
+
+								<!--# foreach($fdb as $k2=>$v2) { if (!$v2['show']) continue;  $val = isset($v['_'.$k2])?$v['_'.$k2]:$v[$k2];#-->
+								<td>
+									 $val 
+								</td>
+								<!--# } #-->
+								<td>
+								
+								
+                <a class='btn green btn-xs btn-circle tooltips detail ' data-original-title='选择'  href="$_base/pub?id=$v[id]&cid=$v[cid]">
+			<i class='fa fa-cogs'></i></a> 
+			<a class='btn red btn-xs btn-circle tooltips del ' data-original-title='删除'  href="$_base/delpub?dlg=$dlg&id=$v[id]&cid=$v[cid]">
+			<i class='fa fa-trash-o'></i></a> 
+			
+								</td>
+							</tr>
+							<!--# } #-->
+
+                        </tbody>
+                    </table>
+				
+			</div>
+		</div>
+    </div>		
+</div>
+<!-- END PAGE CONTENT -->
+
+
+<script type="text/javascript">
+jQuery(document).ready(function() {    
+    
+    $('#btnClose').on("click", function(e){
+        //假设这是iframe页
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭  
+    });      
+    
+});
+</script>
+
+<rdoc:include file="foot.htm" />			
