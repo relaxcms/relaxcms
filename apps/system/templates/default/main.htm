@@ -1,0 +1,137 @@
+<rdoc:include file="head.htm" />
+
+
+<!-- BEGIN PAGE CONTENT-->
+<div class="page-bar">
+    <ul class="page-breadcrumb">
+        <li>
+            <i class="icon-clock"> </i>
+            $sys_component_name
+        </li>
+    </ul>
+    <div class="page-toolbar">
+      
+    </div>
+</div>
+
+<!--# if ($layout0) { #-->
+
+<!-- BEGIN DASHBOARD STATS -->
+<!--# $nr = count($layout0); for ($i=0; $i<$rows; $i++) { #-->
+	<div class="row">
+	    <!--# for ($j=0; $j<4; $j++) { $idx = $i*4+$j; if ($idx >= $nr) break; $v2 = $layout0[$i*4+$j]; $url = $v2['url']?$v2['url']:'javascript:;';#-->
+		<div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
+			<a class="dashboard-stat dashboard-stat-light $v2[class]" href="$url">
+			<div class="visual">
+				<i class="$v2[icon]"></i>
+			</div>
+			<div class="details">
+				<div class="number">
+					 $v2[number] <span class="h6">$v2[uname]</span>
+				</div>
+				<div class="desc">
+					 $v2[name]
+				</div>
+			</div>
+			</a>
+		</div>
+		<!--# } #-->
+	</div>
+	<!--# } #-->
+	<!-- END DASHBOARD STATS -->
+	
+	<div class="clearfix">
+	</div>
+<!--# } #-->
+
+
+<div class="row">
+<!--# if ($layout1) { #-->
+<div class="col-lg-6_width col-md-6 col-sm-6 col-xs-12">
+
+<div class="row">
+<!--# foreach($layout1 as $key=>$v) {$murl = isset($v['murl'])?$v['murl']:$v[url]; #-->
+<div class="col-lg-3 col-md-6 col-sm-6 col-xs-6">
+
+<div class="dashboard-stat white $v[class]">
+<a href="$v[url]" title="$v[description]" class="action" data-name="$v[name]" > 
+    <div class="visual">
+        <i class="$v[icon]"></i>
+    </div>
+    <div class="details">
+        <div class="number" title="$v[description]"> $v[name] </div>
+    </div>
+</a>
+    
+    <a class="more action" href="$murl"> &nbsp;
+        <i class="m-icon-swapright m-icon-white"></i>
+    </a>
+</div>
+
+
+</div>
+<!--# } #-->
+</div>
+
+
+
+
+</div>
+<!--# } #-->
+
+<!--# if ($layout2) { #-->
+<div class="col-lg-6_width col-md-6 col-sm-6 col-xs-12">
+<!--# foreach($layout2 as $key=>$v) { #-->
+    $v[desc]
+<!--# } #-->
+
+</div>
+<!--# } #-->
+
+
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    $('.tmbox .action').on('click', function(e){
+        e.preventDefault();
+        var url = $(this).attr('href');
+        var pos = url.indexOf('?');
+        if (pos < 0) // eg : '/files/file/download'
+            url += '?dlg=1';
+        else 
+            url += '&dlg=1'; 		     
+       
+        var title = $(this).attr("data-name");
+        
+        layer.open({
+            type: 2, 
+            title: title, 
+            shadeClose: false,
+            maxmin:true,
+            shade: 0.2,
+            shift:10,
+            <!--# if ($_ismobile) { #-->
+            area: ['100%', '100%'],
+            <!--# } else { #-->
+            area: ['70%', '65%'],
+            <!--# } #-->
+            content: url,
+            btn:['确定', '关闭'],
+            yes: function(index, layero) {
+				//console.log('in yes...');
+				var iframeWin = window["layui-layer-iframe" + index];
+				iframeWin.submit();
+				//var row = iframeWin.row;
+				//console.log(row);
+				//_self.closest('.input-group').find('input').val(row.url);
+				//rui.refresh(30);
+				//layer.close(index);
+				//console.log('out yes'); 
+            }
+        });
+    });
+});
+   
+</script>
+
+<rdoc:include file="foot.htm" />

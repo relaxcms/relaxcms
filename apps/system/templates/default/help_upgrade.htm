@@ -1,0 +1,356 @@
+<rdoc:include file="head.htm" />
+
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-12">
+			
+			<div class="portlet box default">
+						<div class="portlet-title">
+							<div class="caption">
+								<i class="fa fa-gift"></i> @t[Upgrade]
+							</div>
+							<div class="tools">								
+							</div>
+						</div>
+						<div class="portlet-body">
+						    <ul class="nav nav-tabs">
+					            <li class="$navtab0[active]">
+						            <a href="#tab_1_1" data-toggle="tab" data-type='-1' class='tabpage' data-id="$navtab0[id]"  >
+						            远程更新 </a>
+					            </li>
+
+					            <li class="$navtab1[active]">
+						            <a href="#tab_1_2" data-toggle="tab" data-type='1' class='tabpage' data-id="$navtab1[id]"  >
+						            本地更新</a>
+					            </li>            					
+				            </ul>
+				            
+				            <div class="tab-content">
+					            <div class="tab-pane $navtab0[active] in" id="tab_1_1">
+							        <div class="portlet-body">
+							            <ul class="list-group">
+								            
+								            <li class="list-group-item">
+										        <label class="list-label">当前版本 :</label>
+											        <span class="list-cotent">
+											        $sys_version</span>
+									        </li>
+									        
+									        <li class="list-group-item">
+										        <label class="list-label">远程更新接口 :</label>
+											        <span class="list-cotent">
+											        $sys_updateapi</span>
+									        </li>
+									        
+									        
+									        <li class="list-group-item">
+										        <span> <button class="btn default " id="checkRemoteVersion" data-update="0"> 检查新版本 </button> </span>
+										        <span id="newVersion"></span>
+									        </li>
+								        </ul>
+							            							        
+							        </div>
+							    </div>
+							    
+							    <div class="tab-pane $navtab1[active]" id="tab_1_2">
+							        <div class="portlet-body">
+							        
+							<div class="alert alert-warning">
+								<h4 class="block">@t[Warning!]</h4>
+								<p>
+									 1. @t[The maximum upgrade file size limited] : <strong>$max_upload_max_filesize</strong> .
+								</p>
+								<p>
+									2. @t[Support upgrade package types] : <strong>ZIP, TGZ, LZ</strong>
+								</p>
+							</div>
+
+							<!--# if ($uploaded) { #-->
+							<div class="alert alert-info">
+								<span> 升级包已准备就绪，大小：$uploadinfo[size]，格式：$uploadinfo[ext]，上传方式：$uploadinfo[from]	
+
+								</span>
+
+
+								<button type="button" class="btn blue start" id="btnDel">
+																<i class="fa fa-trash-o"></i>
+																<span>
+																@T[Delete] </span>
+																</button>			
+
+							</div>
+							<!--# } #-->
+
+
+						     <!-- The global progress bar -->
+						    <div id="progress" class="progress hide">
+						        <div class="progress-bar progress-bar-success al"></div>
+						    </div>
+
+						    
+		    				<div class="form-actions">
+
+		    					<!--# if ($uploaded) { #-->
+
+		    					 
+
+								<button type="button" class="btn red" id="btnUpgrade">
+																<i class="fa fa-gears"></i>
+																<span>
+																@t[Upgrade Now]</span>
+																</button>
+								<!--# } else { #-->
+																
+
+
+								    <span class="btn btn-success fileinput-button">
+								        <i class="glyphicon glyphicon-plus"></i>
+								        <span>@t[Select files...]</span>
+								        
+								        <input id="fileupload2" type="file" name="upfile" multiple>
+								    </span>
+								    <button type="button" class="btn blue start" id="btnupload">
+																<i class="fa fa-upload"></i>
+																<span>
+																@t[Start upload]</span>
+																</button>
+																
+									<!--# if ($updatetag) { #-->							
+									<button type="button" class="btn blue hidden" id="btnUpdate">
+									<i class="fa fa-gears"></i>
+									<span>版本更新</span>
+									</button>
+
+								<!--# } }#-->
+							</div>
+							
+							        </div>
+							    </div>
+							    
+							</div>
+        				
+
+										
+
+
+						</div>
+					</div>
+		</div>
+</div>
+<!-- END PAGE CONTENT -->
+
+<script type="text/javascript">
+<!--
+jQuery(document).ready(function() {
+	
+	var url = G.base+'/upload';
+	var currentFile = null;
+
+	//手动验证  
+     var validate = function (file) {  
+            //获取文件名称  
+            var fileName = file.name;  
+            //验证图片格式  
+            if (!/.(lz|lic|zip|gz|tgz|tar)$/.test(fileName)) {  
+                rui.showTError("文件格式不正确!");  
+                return false;  
+            }  
+            
+            //获取文件大小  
+            var fileSize = file.size;  
+            if (fileSize > $_max_upload_max_filesize) {  
+                rui.showTError("文件不得大于 $max_upload_max_filesize")  
+                return false;  
+            }  
+            return true;  
+	}  
+
+    $('#fileupload2').fileupload({
+        url: url,
+        autoUpload: false,
+        dataType: 'json',
+        acceptFileTypes: /(\.|\/)(zip|tar|gz|lz)$/i,
+
+		//添加文件后触发
+	    add: function (ev, data) {
+	    	if (validate(data.files[0]))
+	        	currentFile = data;	        
+	    },
+
+        done: function (e, data) {
+        	res = data.result;
+            if (res.status == 0) {
+            	rui.showTSuccess("@T[Upload upgrade package ok]");
+            	rui.refresh(1);
+            }
+            else {
+            	rui.showTError("上传升级包失败: "+res.status);
+            }
+        },
+
+        fail: function (e, data) {
+        	rui.showTError("系统错误！");        	
+    	},
+
+        progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            console.log('progress='+progress);
+            var el = $('#progress .progress-bar');
+            el.css(
+                'width',
+                progress + '%'
+            );
+
+            el.html('' + progress + '%');
+        }        
+
+    }).prop('disabled', !$.support.fileInput)
+        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+
+    $('#btnupload').click(function() {
+    	if (currentFile) {
+	        //动态的传输参数
+	        //currentFile.formData = {id:123};
+	        $('#progress').removeClass('hide');
+
+	        //进行文件提交
+	        currentFile.submit();
+	    } else {
+	        rui.showTError('请选择文件');
+	    }    	
+    });
+
+    //del
+    $('#btnDel').click(function(e) {
+    	e.preventDefault();        
+        var url = G.base+'/del';
+        bootbox.setLocale(G.lang);
+        bootbox.confirm("@T[Are you sure to delete?]", function(result) {
+              if (result) {
+                
+                $.getJSON(url, function(res) {
+                    if (res.status == 0) {
+                        rui.showTSuccess('操作成功.'); 
+                        rui.refresh(1) ;
+                    } else {
+                        rui.showTError('操作失败:'+res.status);
+                    }
+                })
+                .error(function() { 
+                     rui.showTError("系统错误!");
+                });
+              }
+        });
+    });
+
+    //upgrade
+    $('#btnUpgrade').click(function(e) {
+    	e.preventDefault();  
+    	var url = G.base+'/upgrade';
+        bootbox.setLocale(G.lang);
+        bootbox.confirm("@T[Are you sure to upgrade row ?]", function(result) {
+              if (result) {                
+              	showWaiting("请稍后...");
+                $.getJSON(url, function(res) {
+                    if (res.status == 0) {
+                        rui.showTSuccess('操作成功.'); 
+                        rui.refresh(1) ;
+                    } else {
+                        rui.showTError('操作失败:'+res.status);
+                        closeWaiting();
+                    }
+                })
+                .error(function() { 
+                     rui.showTError("系统错误!");
+                     closeWaiting();
+                });
+              }
+        });
+    });  
+    
+    $('#btnUpdate').click(function(e) {
+    	e.preventDefault();  
+    	var url = G.base+'/update';
+        bootbox.setLocale(G.lang);
+        bootbox.confirm("@T[Are you sure to upgrade row ?]", function(result) {
+              if (result) {                
+              	showWaiting("请稍后...");
+                $.getJSON(url, function(res) {
+                    if (res.status == 0) {
+                        rui.showTSuccess('操作成功.'); 
+                        rui.refresh(1) ;
+                    } else {
+                        rui.showTError('操作失败:'+res.status);
+                        closeWaiting();
+                    }
+                })
+                .error(function() { 
+                     rui.showTError("系统错误!");
+                     closeWaiting();
+                });
+              }
+        });
+    });     
+
+    var doUpdateVersion = function (url, el) {
+        showWaiting("请稍后...");
+        $.getJSON(url, function(res) {
+            if (res.status == 0) {
+                rui.showTSuccess('操作成功.'); 
+                if (res.data.status == 1) 
+                    el.html("立即更新");
+                else 
+                    el.prop('disabled', true);
+                       
+                el.attr("data-update", res.data.status);
+                
+                //tips
+                //console.log(res.data);
+
+                var elNewVersion = $("#newVersion");
+                var tips = '<i class="fa fa-question-circle  tooltips " data-style="default" data-placement="bottom" data-container="body" data-original-title="'+res.data.changeLog+'"></i>';
+                
+                
+                elNewVersion.html(res.data.msg+tips);
+                
+                 $('.tooltips', elNewVersion).tooltip();
+               
+                closeWaiting();
+                if (res.data.status == 2) //升级成功
+                    rui.refresh(1);
+                    
+            } else {
+                rui.showTError('操作失败:'+res.status);
+                closeWaiting();
+            }
+        })
+        .error(function() { 
+             rui.showTError("系统错误!");
+             closeWaiting();
+        });
+    }
+    
+    //检查远程版本
+    $('#checkRemoteVersion').click(function(e) {
+    	e.preventDefault();  
+    	var el = $(this);
+    	var update = el.attr("data-update");
+    	var url = G.base+'/checkRemoteVersion?update='+update;
+        if (update == 0) { //检查
+            doUpdateVersion(url, el);
+        } else { //升级
+            bootbox.confirm("@T[Are you sure to upgrade row ?]", function(result) {
+              if (result) {            
+                doUpdateVersion(url, el);
+              }
+            });
+        }    	    
+    }); 
+    
+});
+
+-->
+</script>
+
+<rdoc:include file="foot.htm" />

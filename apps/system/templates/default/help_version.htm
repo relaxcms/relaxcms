@@ -1,0 +1,75 @@
+<rdoc:include file="head.htm" />
+
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-12">
+			<div class="portlet box default">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-gift"></i>版本信息
+				</div>
+				<div class="actions">
+			        <div class="btn-group">
+
+			            
+			        </div>
+			    </div>
+			</div>
+			<div class="portlet-body">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#tab_1_1" data-toggle="tab" data-type='-1' class='tabpage' >
+						当前版本 </a>
+					</li>
+
+					<li>
+						<a href="#tab_1_2" data-toggle="tab" data-type='1' class='tabpage' >
+						版本历史记录</a>
+					</li>	
+					
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active in" id="tab_1_1">
+							<div class="portlet-body">
+								<h4 class="block"></h4>
+								<ul class="list-group">
+								    <li class="list-group-item">
+										<label class="list-label">产品ID :</label>
+											<span class="list-cotent">
+											$sys_product_id</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">软件版本 :</label>
+											<span class="list-cotent">
+											$sys_product_version</span>
+									</li>
+									<!--# if ($sys_version != $sys_product_version) { #-->
+									<li class="list-group-item">
+										<label class="list-label">核心版本<span>                            
+                                <i class="fa  fa-question-circle  tooltips" 
+                                    data-style="default" data-placement="bottom" 
+                                    data-container="body" data-original-title="软件构建所依赖的基础架构核心版本ID"></i>                            
+                            </span> :</label>
+											<span class="list-cotent">
+											$sys_version</span>
+									</li>
+									<!--# } #-->
+								</ul>
+							</div>
+					</div>
+					<div class="tab-pane in" id="tab_1_2">
+							$changelog
+					</div>
+				</div>
+				
+			</div>
+		</div>
+
+
+		</div>
+		
+</div>
+<!-- END PAGE CONTENT -->
+
+<rdoc:include file="foot.htm" />

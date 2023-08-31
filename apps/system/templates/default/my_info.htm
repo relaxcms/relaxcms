@@ -1,0 +1,224 @@
+﻿<rdoc:include file="head.htm" />
+
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-12">
+			<div class="portlet box default">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-gift"></i>个人信息
+				</div>
+				<div class="actions">
+			        <div class="btn-group">
+			            <a class="btn btn-primary btn-sm refresh">
+            <i class="fa fa-refresh"></i> @T[Refresh] </a> 
+			        </div>
+			    </div>
+			</div>
+			
+			<div class="portlet-body">
+				<ul class="nav nav-tabs">
+					<li class="$navtab0[active]">
+						<a href="#myinfo0" data-toggle="tab" data-type='-1' class='tabpage' data-id="$myinfo0" >
+						 基本信息 </a>
+					</li>
+					<!--# $i=0; foreach($extinfo as $key=>$v) { $i++; #-->
+					<li class="$v[active]">
+						<a href="#myinfo$i" data-toggle="tab" data-type='$i' class='tabpage' data-id="myinfo$i" >
+						$v[title]</a>
+					</li>
+					<!--# } #-->
+				</ul>
+				<div class="tab-content">
+				    <!-- BEGIN TAB 1  -->
+					<div class="tab-pane active" id="myinfo0">
+					
+                     <div class="form">
+
+                        <!-- BEGIN FORM-->
+                        <form action="$_basename" name='ruiform' method="POST" class="form-horizontal" id="myinfo">
+                            <input type="hidden" name="sbt" value="$sbt">
+                            <input type="hidden" name="component" value="$component">
+                            <input type="hidden" name="task" value="edit">
+                        
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">UID
+                                    </label>                
+                                    <div class="col-md-4">
+                                        <span class="form-control-static">$params[id]</span>
+                                    </div>
+                                </div>
+                                
+
+                                 <div class="form-group">
+                                    <label class="control-label col-md-3">用户名
+                                    </label>                
+                                    <div class="col-md-4">
+                                        <span class="form-control-static">$params[name]</span>
+                                    </div>
+                                </div>
+                                
+                                
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">电子邮件</label>
+                                    <div class="col-md-4">
+                                        <input type="text" name="params[email]" value="$params[email]" class='form-control' />
+                                    </div>
+                                </div>
+                                
+                                 <div class="form-group">
+                                    <label class="control-label col-md-3">昵称
+                                    </label>                                    
+                                    <div class="col-md-4">
+                                        <input type="text" name="params[nickname]" value="$params[nickname]" class='form-control' />
+                                    </div>
+                                </div>
+                                  
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">头像
+							        <span>                                    
+                                        <i class="fa  fa-question-circle  tooltips" 
+                                            data-style="default" data-placement="bottom" 
+                                            data-container="body" 
+                                            data-original-title="格式：JPG|PNG，大小：128*128px"></i>
+                                    </span>
+                                    
+							        </label>
+							        <div class="col-md-8">
+							            <div class="fileinput fileinput-new" data-provides="fileinput">
+							            <span class="fileinput-reset"><button type="button" class="btn btn-xs red btn-circle"><i class="fa fa-trash-o"> </i></button></span>
+                                        <div class="fileinput-new thumbnail" style="width: 128px; height: 128px;">
+                                                <a href="#" class="cropimg"><img src="$_base/avatar/128/128" alt="" width="128" /> </a></div>
+                                        
+							        </div>
+							        </div>
+						        </div>       
+        						
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">最后登录时间
+                                    </label>
+                                    
+                                    <div class="col-md-4">
+                                        <span class="form-control-static">$params[last_time]</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">最后登录IP
+                                    </label>
+                                    
+                                    <div class="col-md-4">
+                                        <span class="form-control-static">$params[last_ip]</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">角色
+                                    </label>
+                                    
+                                    <div class="col-md-4">
+                                        <span class="form-control-static">$params[role]</span>
+                                    </div>
+                                </div>
+                                
+                                 <!--# foreach($myinfo as $key=>$v) { #-->
+                                 $v[tplinfo]
+                                 <!--# } #-->
+                            </div>
+                            <div class="form-actions">
+                                <div class="row">
+                                    <div class="col-md-offset-3 col-md-9">
+                                        <button type="submit" class="btn green" id="btnSubmit">@t[Submit]</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- END FORM-->
+                    </div>
+                    
+                    </div>
+                    <!-- END TAB 1 -->
+                    
+                    <!--# foreach($extinfo as $key=>$v) { #-->
+                    <div class="tab-pane" id="myinfo$i">
+                        <div class="form form-horizontal">
+                            <div class="form-body">
+                                $v[tplinfo]
+                            </div>
+                        </div>
+                    </div>
+                    <!--# } #-->
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    
+    $('#myinfo').validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+                    'params[email]': {
+                        required: true,
+                        email:true
+                    },
+                },
+                messages: {  
+                    'params[email]': {
+                        required: t("email is required."),
+                        email:"电子邮件格式错误",
+                    },              
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit   
+                    $('.alert-danger', $('.login-form')).show();
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label.closest('.form-group').removeClass('has-error');
+                    label.remove();
+                },
+
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element);
+                },
+
+                submitHandler: function (form) {
+                    showWaiting("请稍后。。。");       
+                       
+                       var  formData = $(form).serializeArray();
+                       //console.log(formData);
+                       
+                       $.post(form.action, formData, function(res) {
+                            if (res.status == 0) {
+                                rui.showTSuccess('操作成功.');                                
+                            } else {
+                               rui.showTError('操作失败:'+res.status);
+                            }
+                        }).error(function(){
+                              rui.showTError('系统错误！');      
+                        }); 
+                    closeWaiting();
+                }
+       });
+        
+});
+   
+</script>
+       
+<rdoc:include file="foot.htm" />

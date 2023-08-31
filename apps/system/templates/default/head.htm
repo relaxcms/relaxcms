@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+    <!--<![endif]-->
+    <!-- BEGIN HEAD -->
+
+    <head>
+        <meta charset="utf-8" />
+        <title>$sys_title</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta content="$sys_title" name="description" />
+        <meta content="" name="author" />
+        
+        <link href="$_dstroot/css/system.css" rel="stylesheet" type="text/css" />
+
+<!--# foreach($cssdb as $key=>$v) { #-->
+<link href="$v" rel="stylesheet" type="text/css" id='$key' />
+<!--# } #-->
+
+<!--# if ($hasComponentJS) { #-->
+<link href="$_dstroot/css/$component.css" rel="stylesheet" type="text/css" />
+<!--# } #-->
+
+<link href="$_dstroot/themes/system/css/$_thename.min.css" rel="stylesheet" type="text/css" id='css_admin_theme' />
+
+ 
+<!-- BEGIN GLOBAL VARIABLE G -->
+$sys_JS_G
+<!-- END GLOBAL VARIABLE G -->
+ <script src="$_dstroot/js/system.js" type="text/javascript"></script>  
+
+<!--# foreach($jsdb as $key=>$v) { #-->
+<script src="$v" type="text/javascript" id='$key'></script>
+<!--# } #-->
+
+ <script>
+     jQuery(document).ready(function() {
+         if (!_.isUndefined(G._i18ndb)) {
+             I18N.register(G._i18ndb);
+         }
+
+         if (typeof G_i18ndb != "undefined") {
+             I18N.register(G_i18ndb);
+         }
+     });
+    </script>
+    
+    		<link rel="shortcut icon" href="$_webroot/favicon.ico" /> 
+
+    	</head>
+    	<!-- END HEAD -->
+<!--# if ($dlg) { #-->
+<style>
+ .nohead 
+ {
+ 	background:#fff;
+ }
+ .nohead .row {  margin: 0px; }
+    
+</style>
+<body class="nohead">
+<div class="row"> 
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<!--# } else { #-->
+    <body class="$_thename page-boxed page-header-fixed page-sidebar-fixed page-sidebar-closed-hide-logo page-container-bg-solid">
+        <!-- BEGIN HEADER -->
+        <div class="page-header navbar navbar-fixed-top">
+            <!-- BEGIN HEADER INNER -->
+            <div class="page-header-inner $_layout_container">
+                <!-- BEGIN LOGO -->
+                <div class="page-logo">
+                    <a href="$_basename">
+                        <img src="$_logo" alt="logo" class="logo-default" /> </a>
+                    <div class="menu-toggler sidebar-toggler">
+                        <!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
+                    </div>
+                </div>
+                <!-- END LOGO -->
+                <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+                <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse"> </a>
+                <!-- END RESPONSIVE MENU TOGGLER -->
+                <div class="page-actions">
+                    
+                    <rdoc:include type="module" name="mylastaccess" />
+                    
+                    <rdoc:include type="module" name="clock" />
+                    
+                </div>
+
+                <!-- BEGIN PAGE TOP -->
+                <div class="page-top">
+                    
+                    <!-- BEGIN TOP NAVIGATION MENU -->
+                    <div class="top-menu">
+                        <ul class="nav navbar-nav pull-right">
+                            <!-- Msg -->
+                            <rdoc:include type="module" name="msg" />
+                            
+                            <!-- 语言栏模块 -->
+                            <rdoc:include type="module" name="language" />
+                            <!-- 个人管理 -->
+                            <rdoc:include type="module" name="myprofile" />
+							
+                        </ul>
+                    </div>
+                    <!-- END TOP NAVIGATION MENU -->
+                </div>
+                <!-- END PAGE TOP -->
+            </div>
+            <!-- END HEADER INNER -->
+        </div>
+        <!-- END HEADER -->
+        <!-- BEGIN HEADER & CONTENT DIVIDER -->
+        <div class="clearfix"> </div>
+        <!-- END HEADER & CONTENT DIVIDER -->
+        <div class="$_layout_container">
+        <!-- BEGIN CONTAINER -->
+        <div class="page-container">
+            <!-- BEGIN SIDEBAR WRAPPER -->
+            <div class="page-sidebar-wrapper">
+                <!-- BEGIN SIDEBAR -->
+                <div class="page-sidebar navbar-collapse collapse">
+                    <!-- BEGIN SIDEBAR MENU -->
+                    <ul class="page-sidebar-menu  page-header-fixed page-sidebar-menu-compact" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
+                        <rdoc:include type="module" name="sidebar" pkey='$component' />
+                    </ul>
+                    <!-- END SIDEBAR MENU -->
+                </div>
+                <!-- END SIDEBAR -->
+            </div>
+            <!-- END SIDEBAR WRAPPER-->
+            <!-- BEGIN CONTENT -->
+            <div class="page-content-wrapper">
+                <!-- BEGIN CONTENT BODY -->
+                <div class="page-content">
+                    <!--# if (!$_enable_simple_layout) { #-->
+										<!-- BEGIN PAGE HEADER-->
+										<h3 class="page-title">
+											$sys_component_name
+										</h3>
+										<div class="page-bar">
+											<ul class="page-breadcrumb">
+												<li>
+													<i class="fa fa-home"></i>
+													<a href="$_basename">主控面板</a>
+													<i class="fa fa-angle-right"></i>
+												</li>
+												<li>
+													<a href="$_base">$sys_component_name</a>
+												</li>
+											</ul>
+										
+											<div class="page-toolbar">		
+												<div class="btn-group pull-right">
+													<button type="button" class="btn btn-fit-height grey-salt" title="Fresh" id="btnFresh">
+														<i class="icon-refresh"></i>&nbsp;
+													</button>
+												</div>			
+											</div>
+										</div>
+										<!-- END PAGE HEADER-->
+										<!--# }} #-->
+										$sys_errors
+                    
+                    
+
+                    
+                    
+                    
+                    

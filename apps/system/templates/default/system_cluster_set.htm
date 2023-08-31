@@ -1,0 +1,92 @@
+<rdoc:include file="head.htm" />
+<link href="$_libroot/supports/jquery-file-upload/css/jquery.fileupload.css" rel="stylesheet"/>
+<link href="$_libroot/supports/jquery-file-upload/css/jquery.fileupload-ui.css" rel="stylesheet"/>
+<link href="$_libroot/admin/default/css/fileupload.css" rel="stylesheet"/>
+
+<!-- BEGIN PAGE HEADER-->
+<h3 class="page-title">
+	$sys_component_name
+</h3>
+<div class="page-bar">
+	<ul class="page-breadcrumb">
+		<li>
+			<i class="fa fa-home"></i>
+			<a href="$_basename">主控面板</a>
+			<i class="fa fa-angle-right"></i>
+		</li>
+		<li>
+			<a href="site.html">$sys_component_name</a>
+		</li>
+	</ul>
+
+	<div class="page-toolbar">		
+		<div class="btn-group pull-right">
+			<button type="button" class="btn btn-fit-height grey-salt" title="Fresh" id="btnFresh">
+				<i class="icon-refresh"></i>&nbsp;
+			</button>
+		</div>			
+	</div>
+</div>
+<!-- END PAGE HEADER-->
+
+<!-- BEGIN PAGE CONTENT-->
+<div class="row">
+	<div class="col-md-12">
+		<!-- BEGIN CLUSTER FORM -->
+		<div class="portlet box">
+			
+			<div class="portlet-body form">
+				<!-- BEGIN FORM-->
+				<form action="#" method="POST" id="form1" class="form-horizontal">
+					<div class="form-body">
+						<h3 class="form-section">{$str_task}集群节点 <small> </small></h3>
+						<div class="alert alert-danger display-hide">
+							<button class="close" data-close="alert"></button>
+							You have some form errors. Please check below.
+						</div>
+						<div class="alert alert-success display-hide">
+							<button class="close" data-close="alert"></button>
+							Your form validation is successful!
+						</div>
+
+						<!--# foreach($fields as $key=>$v) { if (!$v['edit']) continue; #-->
+
+						<div class="form-group">
+							<label class="control-label col-md-3">$v[title] <span class="required">
+							* </span>
+							</label>
+							<div class="col-md-4">
+								$v[input]								
+							</div>
+							<span>
+							
+							<i class="fa  fa-question-circle  tooltips" data-style="default" data-placement="right" data-container="body" data-original-title="设备唯一标识，用来区别集群管理时设备远程日志输出等"></i></span>
+
+						</div>
+						<!--# } #-->
+
+					</div>
+					<div class="form-actions">
+						<div class="row">
+							<div class="col-md-offset-3 col-md-9">
+								<button type="submit" class="btn green" id="btnSubmit">Submit</button>
+								<button type="button" class="btn default">Cancel</button>
+								<input type="hidden" name="sbt" value="$sbt">
+								<input type="hidden" name="task" value="$task">
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- END FORM-->
+			</div>
+			<!-- END VALIDATION STATES-->
+		</div>
+	</div>
+</div>
+<!-- END PAGE CONTENT-->
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="$_dstroot/js/system_cluster.js"></script>
+<!-- END PAGE LEVEL SCRIPTS -->
+
+<rdoc:include file="foot.htm" />			

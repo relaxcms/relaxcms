@@ -1,0 +1,1161 @@
+<rdoc:include file="head.htm" />
+ 
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-12">
+			<div class="portlet box default">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-gift"></i>$sys_component_name
+				</div>
+				<div class="actions">
+			        <div class="btn-group">
+
+			            
+			        </div>
+			    </div>
+			</div>
+			<div class="portlet-body  ">
+			
+			<div class="form">
+			    <!-- BEGIN FORM-->
+				<form action="#" method="POST" id="system_config_base_form" class="form-horizontal " enctype="multipart/form-data">
+				
+				
+					<ul class="nav nav-tabs">
+				
+				    <li class="$navtab0[active]" >
+					    <a href="#tab_1_0" data-toggle="tab" data-id="$navtab0[id]">
+					    @t[Base] </a>
+				    </li>
+				    
+				    <li class="$navtab1[active]" >
+					    <a href="#tab_1_1" data-toggle="tab" data-id="$navtab1[id]">
+					    @t[UI] </a>
+				    </li>
+				    
+				    <li class="$navtab2[active]" >
+					    <a href="#tab_1_2" data-toggle="tab" data-id="$navtab2[id]">
+					    @t[Safe] </a>
+				    </li>
+				    
+				    <li class="$navtab3[active]" >
+					    <a href="#tab_1_3" data-toggle="tab" data-id="$navtab3[id]">
+					    @t[Service] </a>
+				    </li>
+				    
+				    <li class="$navtab4[active]" >
+					    <a href="#tab_1_4" data-toggle="tab" data-id="$navtab4[id]">
+					    @t[Debug] </a>
+				    </li>
+
+				    <li class="$navtab5[active]" >
+			            <a href="#tab_1_5" data-toggle="tab" data-id="$navtab5[id]"> @t[Sms]</a>
+		            </li>
+		            
+		            <li class="$navtab6[active]" >
+			            <a href="#tab_1_6" data-toggle="tab" data-id="$navtab6[id]"> @t[Email]</a>
+		            </li>
+				    
+                    <li class="$navtab8[active]" >
+					    <a href="#tab_1_8" data-toggle="tab" data-id="$navtab8[id]">
+					    @t[DB] </a>
+				    </li>
+				    
+				    <li class="$navtab9[active]" >
+					    <a href="#tab_1_9" data-toggle="tab" data-id="$navtab9[id]">
+					    @t[Update] </a>
+				    </li>
+                    
+					</ul>										
+					<!-- BEGIN TAB CONENT -->
+					<div class="tab-content ">					
+				
+					    <!-- BEGIN tab_1_0 -->
+						<div class="tab-pane fade $navtab0[in]" id="tab_1_0">
+						
+						        <div class="form-body">
+						        <h3 class="form-section">基本配置 <small> 系统信息/默认语言等</small></h3>
+						        <div class="alert alert-danger display-hide">
+							        <button class="close" data-close="alert"></button>
+							        You have some form errors. Please check below.
+						        </div>
+						        <div class="alert alert-success display-hide">
+							        <button class="close" data-close="alert"></button>
+							        Your form validation is successful!
+						        </div>
+        						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">系统名称 <span class="required">
+							        </span>
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[title]" value="$params[title]" />
+							        </div>
+						        </div>
+        						
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3">默认页面模板 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[tplname]" >
+									        $tplname_select
+								        </select>
+							        </div>
+						        </div>
+
+
+						        
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3">默认语言 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[langname]" id="param_langname">
+									        $language_select
+								        </select>
+							        </div>
+						        </div>
+        						
+						                         
+                            
+					        </div>
+        					
+						</div>						
+						<!-- END tab_1_0 -->
+						
+						<!-- BEGIN tab_1_1 -->
+						<div class="tab-pane fade $navtab1[in]" id="tab_1_1">
+                            <div class="form-body">
+						        <h3 class="form-section">UI配置 <small> 页面布局/默认主题/分页 </small></h3>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">默认页面布局 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[layout]" id='param_layout'>
+									        $layout_select
+								        </select>
+							        </div>
+							        <div class="col-md-3"> 
+							            <label class="checkbox-inline">
+                                            <input type="checkbox" value="1" name="params[enable_simple_layout]" id="params_enable_simple_layout" $enable_simple_layout_Y > 简约模式 
+                                        </label>
+							        </div>
+						        </div>
+
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3">默认主题 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <input type="hidden" value="$params[thename]" name="params[thename]" data-required="1" id="param_theme" />
+								        <div class="input-group">
+									        <ul class="theme-colors">
+										        <li class="default current tooltips" data-style="default" data-container="body" data-original-title="Default">
+											        <i class="lt lt-default"></i>
+										        </li>
+										        <li class="grey tooltips" data-style="grey" data-container="body" data-original-title="Grey">
+											        <i class="lt lt-grey"></i>
+										        </li>
+										        <li class="red tooltips" data-style="red" data-container="body" data-original-title="Red">
+											        <i class="lt lt-red"></i>
+										        </li>
+									        </ul>
+								         </div>
+
+							        </div>
+						        </div>
+						        
+						        <div class="form-group last">
+							        <label class="control-label col-md-3">后端登录背景图 <span class="required">
+							        * </span>
+							        <span>                            
+                                        <i class="fa  fa-question-circle  tooltips" 
+                                            data-style="default" data-placement="bottom" 
+                                            data-container="body" data-original-title="推荐格式：JPG，大小：1920*1080px"></i>
+                                    
+                                    </span>
+                                    
+                                    <a href="#" class="btn btn-small btn-circle" id="updateDesktopBackground"> 
+                                        <i class="fa fa-cloud-download"></i>
+                                     </a>
+                                    
+							        </label>
+							        <div class="col-md-8">
+        								
+								        <div class="fileselector fs" id="fileselector1" 
+		                                    data-url="$_base/fileselector" 
+		                                    data-mid="1"
+		                                    data-width='180' 
+		                                    data-height='120'
+		                                    data-name="bg"
+		                                    data-nosetting="1"
+		                                    >
+	                                    </div>
+                                    	
+        								
+							        </div>
+						        </div>
+        						
+						        <div class="form-group last">
+							        <label class="control-label col-md-3">后端LOGO <span class="required">
+							        * </span>
+							        <span>                            
+                                        <i class="fa  fa-question-circle  tooltips" 
+                                            data-style="default" data-placement="bottom" 
+                                            data-container="body" data-original-title="推荐格式：PNG，透明，大小：160*68px"></i>
+                                    
+                                    </span>
+                                    
+							        </label>
+							        <div class="col-md-8">
+        								
+								        <div class="fileselector fs" id="Div1" 
+		                                    data-url="$_base/fileselector" 
+		                                    data-mid="2"
+		                                    data-width='160' 
+		                                    data-height='68'
+		                                    data-maxnum="1"
+		                                    data-name="logo"
+		                                    data-nosetting="1"
+		                                    >
+	                                    </div>
+							        </div>
+						        </div>  
+						        
+        						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">默认页大小 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[page_size]" value="$params[page_size]" />
+							        </div>
+						        </div>
+                            </div>
+                            
+						</div>						
+						<!-- END tab_1_1 -->
+						
+						<!-- BEGIN tab_1_2 -->						
+						<div class="tab-pane fade $navtab2[in]" id="tab_1_2">
+							<div class="form-body">
+						        <h3 class="form-section">安全配置 <small> 验证码/安全码</small></h3>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">安全码<span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[cookie]" value="$params[cookie]" />
+							        </div>
+						        </div>
+
+						         <div class="form-group">
+							        <label class="control-label col-md-3">安全存取码 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <div class=" form-control-static">
+										        $params[accesskey]
+								        </div>
+							        </div>
+						        </div>
+        						
+        						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">登录验证码 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[enable_captcha]" id="param_seccode">
+								            $enable_captcha_select
+								        </select>
+							        </div>
+						        </div>
+						        <div class="form-group">
+							        <label class="control-label col-md-3">验证码超时 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[seccodetimeout]" value="$params[seccodetimeout]" />
+							        </div>
+							        <div class="col-md-3">
+								        <span class="form-control-static">秒</span>
+							        </div>
+						        </div>
+
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">记忆登录<span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+							            <select class="form-control" name="params[savecookie]">
+								            $savecookie_select
+								        </select>
+							        </div>
+						        </div>
+        						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">强密码<span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+							            <select class="form-control" name="params[safepwd]">
+								            $safepwd_select
+								        </select>
+							        </div>
+						        </div>
+        						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">最密最短<span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+							           <input type="text" class="form-control" name="params[min_passwd_length]" value="$params[min_passwd_length]" />
+							        </div>
+						        </div>
+
+					        </div>    					
+						</div>						
+						<!-- END tab_1_2 -->
+						
+						<!-- BEGIN tab_1_3 服务 -->
+						<div class="tab-pane fade $navtab3[in]" id="tab_1_3">
+						    <div class="form-body">
+						        <h3 class="form-section">基础服务</h3>	
+						        <div class="form-group">
+							        <label class="control-label col-md-3">API授权 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[apiaccess]">
+								            $apiaccess_select
+								        </select>
+							        </div>
+							        <div class="col-md-3"> 
+							            <label class="checkbox-inline">
+                                            <input type="checkbox" value="1" name="updatetoken" $updatetoken_Y > 更新 
+                                        </label>
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">API Token <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <span class=" form-control-static">$params[apiAccessKey]</span>
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">API Secret <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <span class=" form-control-static">$params[apiAccessSecret]</span>
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">API <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <span class=" form-control-static">$apiurl</span>
+							        </div>
+						        </div>
+
+						       
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">根目录
+							        </label>
+							        <div class="col-md-4 form-control-static">
+							           $params[docrootdir]
+							        </div>
+						        </div>
+        											
+						        <div class="form-group">
+							        <label class="control-label col-md-3">默认服务目录
+							        </label>
+							        <div class="col-md-4">
+							            <input type="text" class="form-control" name="params[homedir]" value="$params[homedir]" />							
+							        </div>
+						        </div>
+        						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">数据根目录
+							        </label>
+							        <div class="col-md-4">
+							            <input type="text" class="form-control" name="params[datadir]" value="$params[datadir]" />							
+							        </div>
+						        </div>
+
+
+                                <div class="form-group">
+							        <label class="control-label col-md-3">数据根目录URI
+							        </label>
+							        <div class="col-md-4">
+							            <input type="text" class="form-control" name="params[datauri]" value="$params[datauri]" />							
+							        </div>
+							        <div class="col-md-3"> 
+							            <label class="checkbox-inline">
+                                            <input type="checkbox" value="1" name="newalias" $newalias_Y > 创建 
+                                        </label>
+							        </div>
+						        </div>
+        						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">定时器服务 
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[webtimer]">
+								            $webtimer_select
+								        </select>
+							        </div>
+						        </div>
+        						
+
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3">动态服务时钟 
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[ajaxsystime]">
+								            $ajaxsystime_select
+								        </select>
+							        </div>
+						        </div>
+						         <div class="form-group">
+							        <label class="control-label col-md-3">接口代理服务 
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[proxyapi_enable]">
+								            $proxyapi_select
+								        </select>
+							        </div>
+						        </div>
+						        <div class="form-group">
+							        <label class="control-label col-md-3">接口代理服务地址
+							        </label>
+							        <div class="col-md-4">
+							            <input type="text" class="form-control" name="params[proxyapi]" value="$params[proxyapi]" />							
+							        </div>
+						        </div>
+					        </div>
+						</div>						
+						<!-- END tab_1_3 -->						
+						
+						<!-- BEGIN tab_1_4 -->
+						<div class="tab-pane fade $navtab4[in]" id="tab_1_4">
+						    <div class="form-body">
+						        <h3 class="form-section">调试日志</h3>						
+						        <div class="form-group">
+							        <label class="control-label col-md-3">调试日志 
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[loglevel]">
+								            $loglevel_select
+								        </select>
+							        </div>
+						        </div>
+					        </div>
+						</div>						
+						<!-- END tab_1_4 -->
+						
+						<!-- 短信验证接口 -->
+						<!-- BEGIN tab_1_5 -->
+						<div class="tab-pane fade $navtab5[in]" id="tab_1_5">
+						    <div class="form-body">
+						        <h3 class="form-section">短口验证接口</h3>	
+						        	
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">API接口地址 
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[api_sm_apiurl]" value="$params[api_sm_apiurl]" />	
+							        </div>
+						        </div>
+						        
+						       				
+						        <div class="form-group">
+							        <label class="control-label col-md-3">应用ID 
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[api_sm_app_id]" value="$params[api_sm_app_id]" />	
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">授权码 
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[api_sm_app_sign_id]" value="$params[api_sm_app_sign_id]" />	
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">模板ID 
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[api_sm_template_id]" value="$params[api_sm_template_id]" />	
+							        </div>
+						        </div>
+						        
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">测试手机号 
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[api_sm_test_mobile_no]" value="$params[api_sm_test_mobile_no]" />	
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">重发时间间隔 
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[api_sm_resend_interval]" value="$params[api_sm_resend_interval]" />	
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3"> 
+							        </label>
+							        <div class="col-md-4">
+								        <button type="button" class="btn testsms"> 测试短信发送</button>
+							        </div>
+						        </div>
+						        
+					        </div>
+						</div>						
+						<!-- END tab_1_5 -->
+						
+						
+						<!-- BEGIN tab_1_6 -->
+						<div class="tab-pane fade $navtab6[in]" id="tab_1_6">
+						    <div class="form-body">
+						        <h3 class="form-section">邮件验证接口</h3>	
+						        					
+						        <div class="form-group">
+							        <label class="control-label col-md-3">邮件验证接口 
+							        </label>
+							        <div class="col-md-4">
+								        <select class="form-control" name="params[api_smtp_enable]">
+								            $api_smtp_enable_select
+								        </select>
+							        </div>
+						        </div>
+						        
+					            <div class="form-group">
+							        <label class="control-label col-md-3">SMTP主机 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <label><input type="text" class="form-control" name="params[smtp_server_host]" value="$params[smtp_server_host]" id="param_smtp_server_host" /></label>
+								        <label>
+									        <select class="form-control valselector" data-id="param_smtp_server_host">
+										        <option value=""> 请选择 </option>
+										        <option value="smtp.163.com"> 163邮箱 </option>
+										        <option value="smtp.qq.com"> QQ邮箱 </option>
+
+									        </select>
+
+								        </label>
+							        </div>
+						        </div>
+
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3">SMTP端口 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <label><input type="text" class="form-control" name="params[smtp_server_port]" value="$params[smtp_server_port]" id='param_smtp_server_port' /></label>
+
+								        <label><input type="checkbox" name="params[smtp_auth_type]" value="ssl" $smtp_auth_type_checked class="smtpssl" data-id='param_smtp_server_port'>SSL
+            					        </label>
+							        </div>
+						        </div>
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3">SMTP认证账户 <span class="required">
+							        * </span>
+
+							        <span>
+                                    
+                                        <i class="fa  fa-question-circle  tooltips" 
+                                            data-style="default" data-placement="bottom" 
+                                            data-container="body" data-original-title="发件箱地址如： Jonny@163.com"></i>
+                                    
+                                    </span>
+
+							        </label>
+							        <div class="col-md-4">
+								        <label>
+									        <input type="text" class="form-control" name="params[smtp_auth_account]" value="$params[smtp_auth_account]" /></label>
+        							
+							        </div>
+						        </div>
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3">SMTP认证密码 <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <label><input type="password" class="form-control" name="params[smtp_auth_passwd]" value="$params[smtp_auth_passwd]" /></label>
+        								
+							        </div>
+						        </div>
+
+						        <div class="form-group">
+							        <label class="control-label col-md-3"> 
+							        </label>
+							        <div class="col-md-4">
+								        <button type="button" class="btn testemail"> 测试邮件发送</button>
+							        </div>
+						        </div>
+						    
+						    </div>
+					        
+					        		
+						</div>									
+						<!-- END tab_1_6 -->
+
+						
+						<!-- BEGIN tab_1_8 -->
+						<div class="tab-pane fade $navtab8[in]" id="tab_1_8">
+
+							<div class="row">
+					    		<div class="col-md-3">
+					    			
+					    			<div class="form-body">
+
+							            <h3 class="form-section">DB默认配置</h3>	
+	    						        					
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库类型 
+								            </label>
+								            <div class="col-md-7">
+									            <span class=" form-control-static">$params[dbtype]</span>
+								            </div>
+							            </div>
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库主机名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									           <span class=" form-control-static">$params[dbhost]</span>
+								            </div>
+							            </div>
+							            
+	    						        <div class="form-group">
+								            <label class="control-label col-md-5">数据库端口 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									           <span class=" form-control-static">$params[dbport]</span>
+								            </div>
+							            </div>
+							            
+							            
+						                <div class="form-group">
+								            <label class="control-label col-md-5">数据库用户名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <span class=" form-control-static">$params[dbuser]</span>
+								            </div>
+							            </div>
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <span class=" form-control-static">$params[dbname]</span>
+								            </div>
+							            </div>
+							    	</div> 
+					    		</div>
+					    		<div class="col-md-3">
+					    			<!-- BEGIN DB1 -->
+					    			<div class="form-body">
+
+							            <div class="form-section">
+							            	<span>DB1配置 </span> <label class=" pull-right"><input type="checkbox" name="db1[enable]" value="1" id='db1_checkbox' $db1_enable> 启用 </label>
+							            </div> 
+
+	    						        					
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库类型 
+								            </label>
+								            <div class="col-md-7">
+								            	<select name="db1[dbtype]" class="form-control db1">
+								            		$db1_dbtype_select
+								            	</select>
+								            </div>
+							            </div>
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库主机名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									           <input type="text" class="form-control db1" name="db1[dbhost]" value="$db1[dbhost]" id="db1_dbhost">
+								            </div>
+							            </div>
+							            
+	    						        <div class="form-group">
+								            <label class="control-label col-md-5">数据库端口<span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+								            	<input type="text" class="form-control db1" name="db1[dbport]" value="$db1[dbport]" id="db1_dbport">
+								            </div>
+							            </div>
+							            
+							            
+						                <div class="form-group">
+								            <label class="control-label col-md-5">数据库用户名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+												<input type="text" class="form-control db1" name="db1[dbuser]" value="$db1[dbuser]" id="db1_dbuser">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库用户密码 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+												<input type="password" class="form-control db1" name="db1[dbpassword]" value="$db1[dbpassword]" id="db1_dbpassword">
+								            </div>
+							            </div>
+
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <input type="text" class="form-control db1" name="db1[dbname]" value="$db1[dbname]" id="db1_dbname">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">表前缀 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <input type="text" class="form-control db1" name="db1[prefix]" value="$db1[prefix]" id="db1_prefix">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">
+								            </label>
+								            <div class="col-md-7">
+									            <button type="button" class="btn btn-default db1" id="saveDB1">保存</button>
+								            </div>
+							            </div>
+							    	</div>
+					    		</div>
+					    		<div class="col-md-3">
+					    			<!-- BEGIN DB2 -->
+					    			<div class="form-body">
+
+							            <div class="form-section">
+							            	<span>DB2配置 </span> <label class=" pull-right"><input type="checkbox" name="db2[enable]" value="1" id='db2_checkbox' $db2_enable> 启用 </label>
+							            </div> 
+	    						        					
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库类型 
+								            </label>
+								            <div class="col-md-7">
+								            	<select name="db2[dbtype]" class="form-control db2">
+								            		$db2_dbtype_select
+								            	</select>
+								            </div>
+							            </div>
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库主机名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									           <input type="text" class="form-control db2" name="db2[dbhost]" value="$db2[dbhost]" id="db2_dbhost">
+								            </div>
+							            </div>
+							            
+	    						        <div class="form-group">
+								            <label class="control-label col-md-5">数据库端口<span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+								            	<input type="text" class="form-control db2" name="db2[dbport]" value="$db2[dbport]" id="db2_dbport">
+								            </div>
+							            </div>
+							            
+							            
+						                <div class="form-group">
+								            <label class="control-label col-md-5">数据库用户名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+												<input type="text" class="form-control db2" name="db2[dbuser]" value="$db2[dbuser]" id="db2_dbuser">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库用户密码 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+												<input type="password" class="form-control db2" name="db2[dbpassword]" value="$db2[dbpassword]" id="db2_dbpassword">
+								            </div>
+							            </div>
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <input type="text" class="form-control db2" name="db2[dbname]" value="$db2[dbname]" id="db2_dbname">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">表前缀 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <input type="text" class="form-control db2" name="db2[prefix]" value="$db2[prefix]" id="db2_prefix">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">
+								            </label>
+								            <div class="col-md-7">
+									            <button type="button" class="btn btn-default db2" id="saveDB2">保存</button>
+								            </div>
+							            </div>
+							    	</div>
+
+
+					    		</div>
+					    		<div class="col-md-3">
+					    			<!-- BEGIN DB3 -->
+					    			<div class="form-body">
+
+					    				<div class="form-section">
+							            	<span>DB3配置 </span> <label class=" pull-right"><input type="checkbox" name="db3[enable]" value="1" id='db3_checkbox' $db3_enable> 启用 </label>
+							            </div> 
+	    						        					
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库类型 
+								            </label>
+								            <div class="col-md-7">
+								            	<select name="db3[dbtype]" class="form-control db3">
+								            		$db3_dbtype_select
+								            	</select>
+								            </div>
+							            </div>
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库主机名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									           <input type="text" class="form-control db3" name="db3[dbhost]" value="$db3[dbhost]" id="db3_dbhost">
+								            </div>
+							            </div>
+							            
+	    						        <div class="form-group">
+								            <label class="control-label col-md-5">数据库端口<span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+								            	<input type="text" class="form-control db3" name="db3[dbport]" value="$db3[dbport]" id="db3_dbport">
+								            </div>
+							            </div>
+							            
+							            
+						                <div class="form-group">
+								            <label class="control-label col-md-5">数据库用户名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+												<input type="text" class="form-control db3" name="db3[dbuser]" value="$db3[dbuser]" id="db3_dbuser">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库用户密码 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+												<input type="password" class="form-control db3" name="db3[dbpassword]" value="$db3[dbpassword]" id="db3_dbpassword">
+								            </div>
+							            </div>
+
+							            
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库名称 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <input type="text" class="form-control db3" name="db3[dbname]" value="$db3[dbname]" id="db3_dbname">
+								            </div>
+							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">
+								            </label>
+								            <div class="col-md-7">
+									            <button type="button" class="btn btn-default db3" id="saveDB3">保存</button>
+								            </div>
+							            </div>
+							    	</div>
+
+					    		</div>
+					    	</div>
+
+						    
+						</div>
+						<!-- END tab_1_8 -->
+						
+						<!-- BEGIN tab_1_9 Update -->
+						<div class="tab-pane fade $navtab9[in]" id="tab_1_9">
+						    <div class="form-body">
+						            <h3 class="form-section">更新服务</h3>	
+    						        					
+						            <div class="form-group">
+							            <label class="control-label col-md-3">更新服务
+							            </label>
+							            <div class="col-md-4">
+								            <select class="form-control" name="params[updatetype]">
+								                $updatetype_select
+								            </select>
+								            
+							            </div>
+						            </div>
+						            
+						            <div class="form-group">
+							            <label class="control-label col-md-3">更新API
+							            </label>
+							            <div class="col-md-4 form-control-static">
+							               <input type="text" class="form-control" name="params[updateapi]" value="$params[updateapi]" />							
+							            </div>
+						            </div>
+						            
+						       </div> 
+						</div>
+						<!-- END tab_1_9 -->
+					</div>
+					
+						<div class="form-actions">
+						    <div class="row">
+							    <div class="col-md-offset-3 col-md-9">
+								    <button type="submit" class="btn btn-primary" id="btnSubmit">@T[Submit]</button>
+								    <input type="hidden" name="sbt" value="$sbt">
+								    <input type="hidden" name="task" value="edit">
+							    </div>
+						    </div>
+					    </div>
+					  
+						
+					    
+                    </form>
+                    <!-- END FORM-->
+                    </div>
+				       
+					
+				</div>
+			</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {  
+	//db1
+	function enableDb1(enable)
+	{
+		if (enable) {
+			$('.db1').prop('disabled', false);
+		} else {
+			$('.db1').prop('disabled', true);
+		}
+	}
+
+	$('#db1_checkbox').on('change', function(e){
+		enableDb1 ($(this).is(':checked'));
+	});
+	enableDb1 (parseInt("$db1[enable]"));
+	function saveDB(el)
+	{
+		var formData = {};
+		el.each(function(i){
+			var name = $(this).attr('name');
+			var val = $(this).val();
+
+			formData[name] = val;
+		});
+
+        $.post(G.base+'/saveDB', formData, function(res) {
+            if (res.status == 0) {
+                rui.showTSuccess('操作成功.');                
+            } else {
+               rui.showTError('操作失败:'+res.status);
+            }
+        }).error(function(){
+              rui.showTError('系统错误！');      
+        });
+	}
+
+	$('#saveDB1').on('click', function(e){
+		saveDB($('.db1'))
+	});
+
+	//db2
+	function enableDb2(enable)
+	{
+		if (enable) {
+			$('.db2').prop('disabled', false);
+		} else {
+			$('.db2').prop('disabled', true);
+		}
+	}
+	$('#db2_checkbox').on('change', function(e){
+		enableDb2 ($(this).is(':checked'));
+	});
+	enableDb2 (parseInt("$db2[enable]"));
+	$('#saveDB2').on('click', function(e){
+		saveDB($('.db2'))
+	});
+
+	//db3
+	function enableDb3(enable)
+	{
+		if (enable) {
+			$('.db3').prop('disabled', false);
+		} else {
+			$('.db3').prop('disabled', true);
+		}
+	}
+	$('#db3_checkbox').on('change', function(e){
+		enableDb3($(this).is(':checked'));
+	});
+	enableDb3 (parseInt("$db3[enable]"));
+	$('#saveDB3').on('click', function(e){
+		saveDB($('.db3'))
+	});
+
+	//updateDesktopBackground
+	$("#updateDesktopBackground").on('click', function(e){
+	    e.preventDefault();  
+    	var el = $(this);
+    	var url = G.base+'/updateDesktopBackground';
+    	showWaiting("请稍后...");
+    	$.getJSON(url, function(res) {
+            if (res.status == 0) {
+                closeWaiting();
+                rui.showTSuccess('操作成功.'); 
+                rui.refresh(1);
+            } else {
+                rui.showTError('操作失败:'+res.status);
+                closeWaiting();
+            }
+        })
+        .error(function() { 
+             rui.showTError("系统错误!");
+             closeWaiting();
+        });    
+	});
+	
+	
+	$('.testemail').click(function(){
+        var  formData = $('form').serializeArray();
+        for (i=0; i<formData.length; i++) {
+	  		if (formData[i].name == "task") {
+	  			formData[i].value = 'testemail';
+	  		}
+	   }
+	   
+        $.post(G.base+'/testemail', formData, function(res) {
+            if (res.status == 0) {
+                rui.showTSuccess('操作成功.');                
+            } else {
+               rui.showTError('操作失败:'+res.status);
+            }
+        }).error(function(){
+              rui.showTError('系统错误！');      
+        });
+    });
+
+    $('.smtpssl').click(function(e){
+        var checked = $(this).is(":checked");
+        var pid = $(this).attr('data-id');
+        var val = $('#'+pid).val();
+
+        if (checked){
+            $('#'+pid).val(465);                
+        } else {
+            $('#'+pid).val(25);                
+        }
+    });
+    
+    
+    $('.testsms').click(function(){
+        var  formData = $('form').serializeArray();
+        for (i=0; i<formData.length; i++) {
+	  		if (formData[i].name == "task") {
+	  			formData[i].value = 'testsms';
+	  		}
+	   }
+	   
+        $.post(G.base+'/testsms', formData, function(res) {
+            if (res.status == 0) {
+                rui.showTSuccess('操作成功.');                
+            } else {
+               rui.showTError('操作失败:'+res.status);
+            }
+        }).error(function(){
+              rui.showTError('系统错误！');      
+        });
+    });
+    
+    //
+    $('#testOAuthGithub').click(function(){
+       var url = G._base + '/testOAuthGithub?dlg=1&r='+Math.random();
+        layer.open({
+            type: 2,
+            title: '测试GitHub登录',
+            shadeClose: false,
+            maxmin:true,
+            shade: 0.2,
+            shift: 10,
+            area: ['50%', '60%'],
+            content: url
+        });
+    });
+    
+    //
+    
+});
+</script>
+
+<rdoc:include file="foot.htm" />			

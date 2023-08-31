@@ -1,0 +1,179 @@
+﻿<rdoc:include file="head.htm" />
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-12">
+			
+					
+		 <div class="form">
+
+                        <!-- BEGIN FORM-->
+                        <form action="$_basename" name='ruiform' method="POST" class="form-horizontal" id="myform">
+                            <input type="hidden" name="sbt" value="$sbt">
+                            <input type="hidden" name="component" value="$component">
+                            <input type="hidden" name="task" value="$task">
+                            <input type="hidden" name="params[action]" value="$action">
+                        
+                            <div class="form-body">
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">电子邮件
+                                        <span class="required"> * </span>
+                                        <span>                            
+                                            <i class="fa  fa-question-circle  tooltips" 
+                                                data-style="default" data-placement="bottom" 
+                                                data-container="body" data-original-title="在RelaxCMS官网帐户绑定的电子邮件地址，如果还未获得官网帐，请点击获取帐户申请注册帐并绑定电子邮件地址"></i>
+                                        </span>
+
+                                    </label>
+                                    <div class="col-md-4">
+                                            <div class="input-icon">
+                                                <i class="fa fa-envelope"></i>
+                                                <input type="text" class='form-control placeholder-no-fix'  name="params[account]" value="$params[email]" id='param_account' placeholder="@t[Email]" autocomplete="off"/>                                            
+                                              </div>                                            
+                                    </div>
+                                    <div class="col-md-3">
+                                        <span class="form-control-static"><a href="https://www.relaxcms.com/" target="_blank">申请新帐户</a></span>
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">验证码</label>
+                                    <div class="col-md-4">
+                                             <div class="input-icon" style="display: inline-block;">
+                                                <i class="fa fa-lock"></i>                                           
+                                                <input type="text" class='form-control placeholder-no-fix input-small'  name="params[seccode]" value="" placeholder="@t[Security Code]" />
+                                             </div>
+                                             
+                                            <button class="btn btn-primary fix-btn" style="vertical-align:top;" type="button" id="btnGetSecurityCode"> @t[Get Security Code] </button>
+                                           
+                                    </div>
+                                     
+                                    <div class="col-md-4">
+                                        
+                                    </div>
+                                </div>
+                                
+                        </div> 
+                    
+                    
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="col-md-offset-3 col-md-9">
+                                <!--# if ($action == 1) { #-->
+                                    <button type="submit" class="btn btn-primary" id="btnSubmit">@t[Binding]</button>
+                                <!--# } else { #-->
+                                    <button type="submit" class="btn btn-primary" id="Button1">@t[Unbinding]</button>
+                                <!--# } #-->
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- END FORM-->        
+                    
+                    
+                                
+            </div>
+                            
+    </div>
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    $('#myform').validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+                    'params[account]': {
+                        required: true,
+                    },
+                    'params[seccode]': {
+                        required: true,
+                    },
+                },
+                messages: {  
+                    'params[account]': {
+                        required: t("The field is required."),
+                    },  
+                    'params[seccode]': {
+                        required: t("The field is required."),
+                    },             
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit   
+                    $('.alert-danger', $('.login-form')).show();
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label.closest('.form-group').removeClass('has-error');
+                    label.remove();
+                },
+
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element);
+                },
+
+                submitHandler: function (form) {
+                    showWaiting("请稍后。。。");                              
+                       var  formData = $(form).serializeArray();
+                       //console.log(formData);                       
+                       $.post(form.action, formData, function(res) {
+                            if (res.status == 0) {
+                                rui.showTSuccess('操作成功.');
+                                parent.reload();
+                                
+                            } else {
+                               rui.showTError('操作失败:'+res.status);
+                            }
+                        }).error(function(){
+                              rui.showTError('系统错误！');      
+                        }); 
+                    closeWaiting();
+                }
+       });
+       
+       var timeout = $seccodetimeout;
+       
+       function waitingGetSecurityCode()
+       {    //倒计时
+            var el = $('#btnGetSecurityCode');
+            if (timeout -- > 0) {
+                el.prop('disabled', true);
+                el.html(timeout+'秒后超时');
+                
+                setTimeout(waitingGetSecurityCode, 1000);
+            } else {
+                 el.prop('disabled', false);
+                 el.html("@t[Retry Get Security Code]");
+                 timeout = $seccodetimeout;
+            }
+       }
+       
+       $('#btnGetSecurityCode').on('click', function(e) {
+            var action = $action;
+            var account = $('#param_account').val();
+            if (account == '')
+                return false;
+            
+            $.post('$_base/sendSecurityCode', {'account':account, 'action':action}, function(res) {
+                if (res.status == 0) {
+                    rui.showTSuccess('操作成功.'); 
+                    waitingGetSecurityCode();                                           
+                } else {
+                   rui.showTError('操作失败:'+res.status);
+                }
+            }).error(function(){
+                rui.showTError('系统错误！');      
+            });
+       });
+});
+   
+</script>
+       
+<rdoc:include file="foot.htm" />

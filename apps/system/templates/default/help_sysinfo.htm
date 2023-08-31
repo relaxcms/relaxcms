@@ -1,0 +1,166 @@
+<rdoc:include file="head.htm" />
+
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-12">
+			<div class="portlet box default">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-gift"></i>版本信息
+				</div>
+				<div class="actions">
+			        <div class="btn-group">
+
+			            
+			        </div>
+			    </div>
+			</div>
+			<div class="portlet-body">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#tab_1_1" data-toggle="tab" data-type='-1' class='tabpage' >
+						系统信息 </a>
+					</li>
+
+					<li>
+						<a href="#tab_1_2" data-toggle="tab" data-type='1' class='tabpage' >
+						开源软件许可</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active in" id="tab_1_1">
+							<div class="portlet-body">
+								<h4 class="block"></h4>
+								<ul class="list-group">
+									<li class="list-group-item">
+										<label class="list-label">系统环境 :</label>
+											<span class="list-cotent">
+											$sysinfo[system]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">服务器环境 :</label>
+											<span class="list-cotent">
+											$sysinfo[serverinfo]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">客户端环境 :</label>
+											<span class="list-cotent">
+											$sysinfo[useragentinfo]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">GD :</label>
+											<span class="list-cotent">
+											$sysinfo[gdinfo]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">RKEY :</label>
+											<span class="list-cotent">
+											$sysinfo[rkey]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">最大上传限制 :</label>
+											<span class="list-cotent">
+											$sysinfo[max_upload]</span>
+									</li>
+
+									<li class="list-group-item">
+										<label class="list-label">最大POST限制 :</label>
+											<span class="list-cotent">
+											$sysinfo[post_max_size]</span>
+									</li>
+
+									
+									<li class="list-group-item">
+										<label class="list-label">执行超时 :</label>
+											<span class="list-cotent">
+											$sysinfo[max_execution_time]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">数据库版本 :</label>
+											<span class="list-cotent">
+											$sysinfo[dbinfo]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">数据库使用空间 :</label>
+											<span class="list-cotent">
+											$sysinfo[database_name]/$sysinfo[database_space]</span>
+									</li>
+									
+									<li class="list-group-item">
+										<label class="list-label">存储空间(可用/总） :</label>
+											<span class="list-cotent">
+											$sysinfo[disk_space] / $sysinfo[disk_total] MB</span>
+									</li>
+									
+									
+								</ul>
+							</div>
+					</div>
+					<div class="tab-pane in" id="tab_1_2">
+							        <table class="table table-striped table-bordered table-hover nodblclick">
+							         <thead>
+							            <tr class="heading">
+							                <th width="80">
+								               序号
+							                </th>
+							   	            <th width="100">
+								               名称
+							                </th >
+							                <th width="100">
+							                    版本
+							                </th>
+							                <th>
+							                    描述
+							                </th>
+							                <th width="100">
+							                    许可证
+							                </th>
+								        </tr>	
+								        </thead>
+							            <tbody>
+							            <!--# foreach($plugins as $key=>$v) { #-->
+							             <tr>
+							                    <td>
+								                    $v[id]
+								                </td>
+								                <td>
+								                   $v[name] 
+								                </td>
+								                    
+								                <td>
+								                    $v[version]
+								                </td>
+
+								                 <td>
+								                    $v[description]
+								                 </td>
+								                 <td>
+								                 <a href="$v[licenseurl]" target="_blank"> $v[licensename] </a>
+								                 
+								                 </td>
+							                </tr>
+							                <!--# } #-->
+							                
+							            </tbody>							        
+                                    </table>
+                                    
+					</div>
+				</div>
+				
+			</div>
+		</div>
+
+
+		</div>
+		
+</div>
+<!-- END PAGE CONTENT -->
+
+<rdoc:include file="foot.htm" />

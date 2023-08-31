@@ -1,0 +1,135 @@
+<rdoc:include file="head.htm" />
+
+<rdoc:include file="show.htm" />
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    var lv = $("#listview$table_id");
+    	
+    lv.on('click', '.install', function(e) {
+        var url = $(this).attr('href');
+       
+        e.preventDefault(); 
+        $.post(url, function(res) {
+            if (res.status == 0) {
+               rui.showTSuccess('操作成功.'); 
+               $.get(G.base, function(res) {
+                    rui.redirect(G.base, 1);
+               });
+            } else {
+                rui.showTError('操作失败:'+res.status);
+            }
+        })
+        .error(function() { 
+             rui.showTError("系统错误");
+        }); 
+
+        return true;
+    }); 
+    
+    lv.on('click', '.uninstall', function (e) {
+        e.preventDefault();                
+        var url = $(this).attr('href');
+        bootbox.setLocale(G.lang);
+        bootbox.confirm("确定卸载应用", function(result) {
+              if (result) {                        
+                $.getJSON(url, {o:'json'}, function(res) {
+                    if ( res.status == 0) {
+                       rui.showTSuccess('操作成功.'); 
+                       $.get(G.base, function(res) {
+                            rui.redirect(G.base, 1);
+                       });                                                          
+                    } else {
+                        rui.showTError('操作失败:'+res.status);
+                    }
+                })
+                .error(function() { 
+                     rui.showTError("系统错误");
+                });
+              }
+        });
+     });
+          
+     lv.on('click', '.remove', function (e) {
+        e.preventDefault();                
+        var url = $(this).attr('href');
+        bootbox.setLocale(G.lang);
+        bootbox.confirm(t("确定删除应用？"), function(result) {
+              if (result) {                        
+                $.getJSON(url, {o:'json'}, function(res) {
+                    if ( res.status == 0) {
+                       rui.showTSuccess('操作成功.'); 
+                       $.get(G.base, function(res) {
+                            rui.redirect(G.base, 1);
+                       });                                                          
+                    } else {
+                        rui.showTError('操作失败:'+res.status);
+                    }
+                })
+                .error(function() { 
+                     rui.showTError("系统错误");
+                });
+              }
+        });
+     });
+     
+     lv.on('click', '.installFromRemote', function (e) {
+        e.preventDefault();                
+        var url = "$_base/installFromRemote?id="+$(this).attr('data-app');
+        bootbox.setLocale(G.lang);
+        bootbox.confirm(t("确定安装此应用？"), function(result) {
+              if (result) {                        
+                $.post(url, function(res) {
+                    if ( res.status == 0) {
+                       rui.showTSuccess('操作成功.'); 
+                       $.get(G.base, function(res) {
+                            rui.redirect(G.base, 1);
+                       });                                                                                 
+                    } else {
+                        var err = (_.isString(res.msg) && res.msg != '')?res.msg:'操作失败';
+                          err += ':' + res.status;
+                          if (!_.isUndefined(res.data.msg))
+                              err += '<br>' + res.data.msg;
+                        rui.showTError(err);
+                    }
+                })
+                .error(function() { 
+                     rui.showTError("系统错误");
+                });
+              }
+        });
+     });
+     
+     //
+     lv.on('click', '.upgradeFromRemote', function (e) {
+        e.preventDefault();                
+        var url = "$_base/upgradeFromRemote?id="+$(this).attr('data-app');
+        bootbox.setLocale(G.lang);
+        bootbox.confirm(t("确定升级此应用？"), function(result) {
+              if (result) {                        
+                $.post(url, function(res) {
+                    if ( res.status == 0) {
+                       rui.showTSuccess('操作成功.'); 
+                       $.get(G.base, function(res) {
+                            rui.redirect(G.base, 1);
+                       });                                                                                 
+                    } else {
+                        var err = (_.isString(res.msg) && res.msg != '')?res.msg:'操作失败:'+res.status;
+                          err += ':' + res.status;
+                          if (!_.isUndefined(res.data.msg))
+                              err += '<br>' + res.data.msg;
+                        rui.showTError(err);
+                    }
+                })
+                .error(function() { 
+                     rui.showTError("系统错误");
+                });
+              }
+        });
+     });
+        
+});
+  
+</script>
+
+<rdoc:include file="foot.htm" />

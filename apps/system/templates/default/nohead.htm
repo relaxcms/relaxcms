@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+    <!--<![endif]-->
+    <!-- BEGIN HEAD -->
+
+    <head>
+        <meta charset="utf-8" />
+        <title>$sys_title</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta content="$str_system_title" name="description" />
+        <meta content="" name="author" />
+        
+
+<!--# foreach($cssdb as $key=>$v) { #-->
+<link href="$v" rel="stylesheet" type="text/css" id='$key' />
+<!--# } #-->
+
+<!-- BEGIN GLOBAL VARIABLE G -->
+$sys_JS_G
+<!-- END GLOBAL VARIABLE G -->
+
+<!--# foreach($jsdb as $key=>$v) { #-->
+<script src="$v" type="text/javascript" id='$key'></script>
+<!--# } #-->
+    		<link rel="shortcut icon" href="favicon.ico" /> 
+    	</head>
+    	<!-- END HEAD -->
+<style>
+ .nohead 
+ {
+ 	background:#fff;
+ }
+ .nohead .row {  margin: 0px; }
+    
+</style>
+<body class="nohead">
+<div class="row"> 
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

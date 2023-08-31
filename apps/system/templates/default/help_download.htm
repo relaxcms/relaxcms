@@ -1,0 +1,75 @@
+<rdoc:include file="head.htm" />
+
+<!-- BEGIN PAGE CONTENT-->			
+<div class="row">
+		<div class="col-md-12">
+			<div class="portlet box default">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-download"></i>工具下载
+				</div>
+				<div class="actions">
+			        <div class="btn-group">
+
+			            
+			        </div>
+			    </div>
+			</div>
+			<div class="portlet-body">
+			<table class="table table-striped table-bordered table-hover">
+							<thead>
+							<tr class="heading">
+							    <th>
+									 编号
+								</th>
+								
+								<th>
+									 名称
+								</th>
+								
+								<th>
+									描述
+								</th>
+								
+								<th>
+									下载
+								</th>
+								
+							</tr>
+							</thead>
+							<tbody>
+							<!--# foreach($ddb as $key=>$v) { #-->
+							<tr>
+
+								<td>
+									$v[id]
+								</td>
+								
+								<td>
+								    $v[name]
+								</td>
+								
+								<td>
+								    $v[description]
+								</td>
+								
+								<td>
+								    <a href="$v[url]">下载</a>
+								</td>
+							</tr>
+							<!--# } #-->
+														
+							</tbody>
+						</table>
+						
+				
+			</div>
+		</div>
+
+
+		</div>
+		
+</div>
+<!-- END PAGE CONTENT -->
+
+<rdoc:include file="foot.htm" />

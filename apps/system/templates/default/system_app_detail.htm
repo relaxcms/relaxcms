@@ -1,0 +1,63 @@
+<rdoc:include file="head.htm" />
+<div class="tabbable-line">
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a href="#tab_1_1" data-toggle="tab" data-type='-1' class='tabpage' >
+      详细 </a>
+    </li>
+
+    <li>
+      <a href="#tab_1_2" data-toggle="tab" data-type='1' class='tabpage' >
+      版本</a>
+    </li>
+  </ul>
+</div>
+
+<!-- BEGIN TAB CONENT -->
+<div class="tab-content">
+  <div class="tab-pane active" id="tab_1_1">
+      <rdoc:include file="detail.htm" />
+  </div>
+  <div class="tab-pane " id="tab_1_2">
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Version</th>
+            <th>Size</th>
+            <th>RKEY</th>
+            <th>Bean</th>
+            <th>Downloads</th>
+            <th>OPT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!--# foreach($vdb as $key=>$v) { #-->
+          <tr>
+            <td>$v[id]</td>
+            <td>$v[name]</td>
+            <td>$v[description]</td>
+            <td>$v[version]</td>
+            <td>$v[size]</td>
+            <td>$v[rkey]</td>
+            <td>$v[bean]</td>
+            <td>$v[downloads]</td>
+            <td>安装</td>
+          </tr>
+          <!--# } #-->
+        </tbody>
+      </table>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    
+});
+  
+</script>
+
+<rdoc:include file="foot.htm" />

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <meta charset="utf-8" />
+        <title>ERM INSTALLATION</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta content="$sys_title" name="description" />
+        <meta content="" name="author" />
+        
+        <link href="$_dstroot/css/installation.css" rel="stylesheet" type="text/css" />
+        
+        <link rel="shortcut icon" href="favicon.ico" /> 
+	</head>
+	<body class="page-sidebar-closed-hide-logo page-container-bg-solid page-boxed">  
+		<div class="container">      
+		<div class="page-header navbar">
+			<div class="page-header-top">
+					<div><span class='title'>教育资源综合管理平台安装</span> </div>
+				</div>				
+		</div>
+		
+		
+			<div class="page-container">
+				<div class="page-content-wrapper">
+					<div class="page-content">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="portlet ">
+									<div class="portlet-body">
+										<div class="row">
+										<div class="col-md-3">
+											<div class="portlet light ">
+													<div class="portlet-title">
+														<div class="caption">
+                                        <span class="caption-subject bold uppercase"> 安装步骤
+                                        </span>
+                                    </div>
+														</div>
+													<div class="portlet-body amenu">
+														<ul>
+															<li class='active'>第一步：安装说明</li>
+															<li>第二步：安装协议</li>
+															<li>第三步：安装检查</li>
+															<li>第四步：必选配置</li>
+															<li>第五步：可选配置</li>															
+															<li>第六步：确认安装</li>															
+														</ul>	
+													</div>
+												</div>
+												
+											</div>
+											
+											<div class="col-md-9">
+												<div class="portlet light " id="form_wizard_1">
+                                <div class="portlet-title">
+                                    <div class="caption">
+                                        <i class=" icon-layers font-red"></i>
+                                        <span class="caption-subject font-blue bold uppercase"> 安装向导 -
+                                            <span class="step-title"> 第 1 步 </span>
+                                        </span>
+                                    </div>
+                                    <div class="actions">
+                                        
+                                    </div>
+                                </div>
+                                <div class="portlet-body form">
+                                    <form class="form-horizontal" action="#" id="submit_form" method="POST">
+                                        <div class="form-wizard">
+                                            <div class="form-body">
+                                                <ul class="nav nav-pills nav-justified steps">
+                                                	 <li>
+                                                        <a href="#tab1" data-toggle="tab" class="step">
+                                                            <span class="number"> 1 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 安装说明 </span>
+                                                        </a>
+                                                    </li>
+                                                    
+                                                    <li>
+                                                        <a href="#tab2" data-toggle="tab" class="step">
+                                                            <span class="number"> 2 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 安装协议 </span>
+                                                        </a>
+                                                    </li>
+                                                    
+                                                    <li>
+                                                        <a href="#tab3" data-toggle="tab" class="step">
+                                                            <span class="number"> 3 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 安装检查 </span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#tab4" data-toggle="tab" class="step">
+                                                            <span class="number"> 4 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 必选配置 </span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#tab5" data-toggle="tab" class="step active">
+                                                            <span class="number"> 5 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 可选配置 </span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#tab6" data-toggle="tab" class="step">
+                                                            <span class="number"> 6 </span>
+                                                            <span class="desc">
+                                                                <i class="fa fa-check"></i> 确认安装 </span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <div id="bar" class="progress progress-striped" role="progressbar">
+                                                    <div class="progress-bar progress-bar-success"> </div>
+                                                </div>
+                                                <div class="tab-content">
+                                                    <div class="alert alert-danger display-none">
+                                                        <button class="close" data-dismiss="alert"></button> 输入参数为空或无效，请检查！</div>
+                                                    <div class="alert alert-success display-none">
+                                                        <button class="close" data-dismiss="alert"></button> Your form validation is successful! </div>
+                                                    <div class="tab-pane active" id="tab1">    
+                                                        $params[description]                                                    	
+                                                    </div>
+                                                    <div class="tab-pane" id="tab2">
+                                                    		$params[license]
+                                                    		<p>
+                                                    		
+                                                    		<label class="checkbox-inline">
+                                                    		<input type="checkbox" value="1" name="params[acceptproto]" id="param_acceptproto"> 接授协议 
+                                                    		</label>
+                                                    		</p>
+                                                    </div>
+                                                    <div class="tab-pane" id="tab3">
+                                                    	<table class="table">
+							                                            <thead>
+							                                                <tr>
+							                                                    <th> ID </th>
+							                                                    <th> 描述 </th>
+							                                                    <th> 建议配置 </th>
+							                                                    <th> 当前配置 </th>
+							                                                    <th> 状态 </th>
+							                                                </tr>
+							                                            </thead>
+							                                            <tbody>
+							                                                <tr>
+							                                                    <td> 1 </td>
+							                                                    <td> cache </td>
+							                                                    <td> 读写 </td>
+							                                                    <td id="cstatus-1"> <span class="label label-sm label-danger"> 否 </span> </td>
+							                                                    <td id="cpass-1">
+							                                                        <span class="label label-sm label-danger"> 否 </span>
+							                                                    </td>
+							                                                </tr>
+							                                                
+							                                                <tr>
+							                                                    <td> 2 </td>
+							                                                    <td> data </td>
+							                                                    <td> 读写 </td>
+							                                                    <td id="cstatus-2"> <span class="label label-sm label-danger"> 否 </span>  </td>
+							                                                    <td id="cpass-2">
+							                                                        <span class="label label-sm label-danger"> 否 </span>
+							                                                    </td>
+							                                                </tr>
+
+							                                                <tr>
+							                                                    <td> 3 </td>
+							                                                    <td> config </td>
+							                                                    <td> 读写 </td>
+							                                                    <td id="cstatus-3"> <span class="label label-sm label-danger"> 否 </span>  </td>
+							                                                    <td id="cpass-3">
+							                                                        <span class="label label-sm label-danger"> 否 </span>
+							                                                    </td>
+							                                                </tr>
+							                                                
+							                                                <tr>
+							                                                    <td> 4 </td>
+							                                                    <td> MYSQL </td>
+							                                                    <td> 支持 </td>
+							                                                    <td id="cstatus-4"> <span class="label label-sm label-danger"> 否 </span>  </td>
+							                                                    <td id="cpass-4">
+							                                                        <span class="label label-sm label-danger"> 否 </span>
+							                                                    </td>
+							                                                </tr>
+							                                                
+							                                                <tr>
+							                                                    <td> 5 </td>
+							                                                    <td> Socket </td>
+							                                                    <td> 支持 </td>
+							                                                    <td id="cstatus-5"> <span class="label label-sm label-danger"> 否 </span>  </td>
+							                                                    <td id="cpass-5">
+							                                                        <span class="label label-sm label-danger"> 否 </span>
+							                                                    </td>
+							                                                </tr>
+							                                                
+							                                                <tr>
+							                                                    <td> 6 </td>
+							                                                    <td> CURL </td>
+							                                                    <td> 支持 </td>
+							                                                    <td id="cstatus-6"> <span class="label label-sm label-success"> 是 </span></td>
+							                                                    <td id="cpass-6">
+							                                                        <span class="label label-sm label-danger"> 否 </span>
+							                                                    </td>
+							                                                </tr>
+							                                                
+							                                                <tr>
+							                                                    <td> 7 </td>
+							                                                    <td> SSL </td>
+							                                                    <td> 支持 </td>
+							                                                    <td id="cstatus-7"> <span class="label label-sm label-danger"> 否 </span> </td>
+							                                                    <td id="cpass-7">
+							                                                        <span class="label label-sm label-danger"> 否 </span>
+							                                                    </td>
+							                                                </tr>
+							                                            </tbody>
+							                                        </table>
+                                                    	
+                                                    </div>
+                                                    <div class="tab-pane" id="tab4">
+                                                    	<h3 class="block">基本配置</h3>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">系统名称
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[product_name]" value="ERM" />
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">自定义系统版本
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[product_version]" value="1.0.0" id="param_product_version"  />
+                                                                <span class="help-block"> 自定义系统版本，如：1.0.0 </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">系统ID
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[product_id]" value="7a137eef907a05e24de03a219090ae9d" id="param_product_id"/>
+                                                                <span class="help-block"> 系统ID是系统唯一标，自动生成</span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        
+                                                    		<h3 class="block">数据库配置</h3>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库类型
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <select name="params[dbtype]">
+                                                                	<option value="mysql">MySQL</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库服务器
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[dbhost]" value="localhost"/>
+                                                                <span class="help-block"> 数据库服务IP或域名,如：localhost </span>
+                                                            </div>
+                                                        </div>
+                                                       
+                                                       <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库用户名
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[dbuser]" value="root" />
+                                                                <span class="help-block"> 数据库用户名称，如果不存在，支持通过root新创建 </span>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                            	<label class="checkbox-inline"><input type="checkbox" name="params[newdbuser]" value="1" /> 创建 </label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库用户密码
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[dbpassword]" />
+
+                                                                <span class="help-block"> 数据库用户密码，如果新创建用户，会随数生成数据库用户密码 </span>
+
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库root密码
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[dbroot_password]" />
+                                                                <span class="help-block"> 当数据库用户名不存在，可以通过root自动创建，此时root密码必填 </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库root新密码
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[dbroot_password_reset]" />
+                                                                <span class="help-block"> 支持安装重置数据库root密码，此处填写数据库root新密码 </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库root新密码确认
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[dbroot_password_reset2]" />
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库字符集
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <select name="params[dbcharset]">
+                                                                	<option value="latin1">latin1</option>
+                                                                	<option value="utf8">utf8</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库名
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[dbname]" value="ermdb" />
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                            				<label class="checkbox-inline" > 
+                                                            				<input type="checkbox" class="icheck" name="params[exists_rewrite]" value="1" $exists_rewrite_Y />存在覆盖
+                                                            			</label>
+
+                                                            			<label class="checkbox-inline" > 
+                                                            				<input type="checkbox" class="icheck" name="params[install_sample]" value="1" $install_sample_Y />样本数据
+                                                            			</label>
+
+                                                            			</div>	
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库表前缀
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[prefix]" value="cms_" />
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <h3 class="block">管理员配置</h3>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">管理员
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[manager]" value="admin" />
+                                                                <span class="help-block"> 初始系统管理员 </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">管理员密码
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="password" class="form-control" name="params[manager_pwd]" id="submit_form_password" />
+                                                                <span class="help-block"> 初始管理员密码 </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3"> 管理员密码确认
+                                                                <span class="required"> * </span>
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="password" class="form-control" name="params[manager_pwd2]" />
+                                                                <span class="help-block"> 初始管理员密码确认 </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">管理员邮箱
+                                                            </label>
+                                                            <div class="col-md-4">
+                                                                <input type="text" class="form-control" name="params[manager_email]" />
+                                                                <span class="help-block"> 用于当系统异常发送邮件通知 </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tab-pane" id="tab5">
+                                                    	<h3 class="block">可选应用插件配置</h3>
+                                                        <table class="table ">
+							                                            <thead>
+							                                                <tr>
+							                                                    <th> 
+							                                                    	<label class="checkbox-inline"><input type="checkbox" name="checkall" class="checkall icheck"> ID 
+							                                                    	</label>
+							                                                    </th>
+							                                                    <th> 名称 </th>
+							                                                    <th> 描述 </th>
+							                                                </tr>
+							                                            </thead>
+							                                            <tbody>
+							                                            <!--# foreach($apps as $key=>$v) { #-->
+							                                                <tr>
+							                                                    <td> <label class="checkbox-inline"> 
+							                                                    	<input type="checkbox" class="icheck"  name="params[app][]" value="$v[appname]" > $v[id] </label>
+							                                                    </td>
+							                                                    <td> $v[name] </td>
+							                                                    <td> $v[description] </td>							                                                    
+							                                                </tr>	
+                                                                        <!--# } #-->				                                                
+							                                            </tbody>
+							                                        </table>
+							                                        
+                                                    </div>
+                                                    
+                                                    <div class="tab-pane" id="tab6">
+                                                        <h3 class="block">确认配置</h3>
+                                                        <h4 class="form-section">基本配置</h4>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">系统名称:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[product_name]"> </p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">产品版本:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[product_version]"> </p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">产品ID:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[product_id]"> </p>
+                                                            </div>
+                                                        </div>
+                                                        <h4 class="form-section">数据库配置</h4>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库类型:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbtype]"> </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库服务器 :</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbhost]"> </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库用户名:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbuser]"> </p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库用户密码:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbpassword]"> </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库root密码:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbroot_password]"> </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">重置数据库root密码:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbroot_password_reset]"> </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库字符集:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbcharset]"> </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库名:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[dbname]"> </p>
+                                                            </div>
+                                                        </div>
+
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">数据库表前缀:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[prefix]"> </p>
+                                                            </div>
+                                                        </div>
+
+                                                        
+                                                        <h4>管理员配置</h4>
+                                                        
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">管理员 :</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[manager]"> </p>
+                                                            </div>
+                                                        </div>
+                                                   
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">管理员邮箱 :</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[manager_email]"> </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <h4> 可选应用配置 </h4>
+                                                        
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-3">可选应用:</label>
+                                                            <div class="col-md-4">
+                                                                <p class="form-control-static" data-display="params[app][]"> </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    
+                                                </div>
+                                            </div>
+                                            <div class="form-actions">
+                                                <div class="row">
+                                                    <div class="col-md-offset-3 col-md-9">
+                                                        <a href="javascript:;" class="btn default button-previous">
+                                                            <i class="fa fa-angle-left"></i> 上一步 </a>
+                                                        <a href="javascript:;" class="btn btn-outline green button-next"> 下一步
+                                                            <i class="fa fa-angle-right"></i>
+                                                        </a>
+                                                        <a href="javascript:;" class="btn green button-submit"> 安装
+                                                            <i class="fa fa-check"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                        	</div>
+													<!-- END wizard -->
+												
+											</div>
+											
+										</div>
+										
+									</div>
+								</div>
+							</div>
+							
+							
+							
+							
+						</div>
+					</div>
+				</div>
+				<div class="page-quick-sidebar-wrapper" data-close-on-body-click="false">
+				</div>
+			</div>
+			<div class="page-footer ac">
+				<span class='powerby'>2021&copy;<a href="#">合肥影大电子科技有限责任公司</a></span>
+			</div>
+		</div>
+		
+		<script src="$_dstroot/js/installation.js" type="text/javascript"></script>
+<!-- BEGIN GLOBAL VARIABLE G -->
+$sys_JS_G
+<!-- END GLOBAL VARIABLE G -->
+
+		</body>
+</html>
