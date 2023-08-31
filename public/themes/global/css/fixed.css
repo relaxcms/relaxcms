@@ -1,0 +1,12 @@
+
+.fixed-table-toolbar .bars { height: 40px; display: inline; width: unset;}
+
+/** fixed checkbox-inline */
+.checkbox-list {
+	padding-left: 20px;
+}
+/** fixed for datetimepicker */
+.dropdown-menu 
+{
+	z-index:10000 !important;
+}
