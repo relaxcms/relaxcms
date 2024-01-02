@@ -111,14 +111,14 @@ class CTemplateModel extends CTableModel
 	{
 		$photo = isset($params['photo'])?$params['photo']:'';
 		if ($photo && !is_url($photo) && !is_start_slash($photo)) {
-			$photo = $ioparams['_webroot'].'/themes/'.$tplname.'/'.$photo;
+			$photo = $ioparams['_theroot'].'/'.$tplname.'/'.$photo;
 			$params['photo'] = $photo;
 		}
 
 		$icon = isset($params['icon'])?$params['icon']:'';
 		$pos = strrpos($icon, '.');
 		if ($icon && $pos !== false && !is_url($icon) && !is_start_slash($icon)) {
-			$icon = $ioparams['_webroot'].'/themes/'.$tplname.'/'.$icon;
+			$icon = $ioparams['_theroot'].'/'.$tplname.'/'.$icon;
 			$params['icon'] = $icon;
 		}
 		
@@ -132,7 +132,7 @@ class CTemplateModel extends CTableModel
 		
 		$logo = isset($params['logo'])?$params['logo']:'';
 		if ($logo && !is_url($logo) && !is_start_slash($icon)) {
-			$logo = $ioparams['_webroot'].'/themes/'.$tplname.'/'.$logo;
+			$logo = $ioparams['_theroot'].'/'.$tplname.'/'.$logo;
 			$params['logo'] = $logo;
 		}
 		
@@ -300,7 +300,7 @@ class CTemplateModel extends CTableModel
 		if ($info) {
 			$params['id'] = $info['id'];
 		}
-		
+		//flags?
 				
 		$params['cid'] = $cid;		
 		$params['status'] = 1;
@@ -449,6 +449,14 @@ class CTemplateModel extends CTableModel
 		$res = $m->getOne(array('mid'=>$params['mid']));
 		if ($res)
 			$params['id'] = $res['id'];
+			
+		//
+		//$content = $params['content'];
+		//str_replace('\'', '"', $content);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $content);
+		
+		$params['content'] = htmlspecialchars($params['content']);
+		
 		
 		$res = $m->set($params);										
 		if (!$res) {
@@ -457,9 +465,10 @@ class CTemplateModel extends CTableModel
 		}
 
 		//处理cid
-		$cid = $params['cid']; //可能是个名称
-		if (!is_numeric($cid)) {
+		$cid = isset($params['cid'])?$params['cid']:0; //可能是个名称
+		if (!is_numeric($cid) && !is_start_with($cid, '$')) {
 			$m2 = Factory::GetModel('catalog');
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "cid", $cid);
 			$cid = $m2->genCatalog(array('name'=>$cid));
 		}
 		
@@ -587,17 +596,17 @@ class CTemplateModel extends CTableModel
 		
 		$hdb = array('.svn');	
 		foreach ($udb as $key=>$v) {
-			$name = $v;			
-			if (in_array($name, $hdb))
+			$name = $filename = $v;			
+			if (in_array($filename, $hdb))
 				continue;	
 			
-			$extname = s_fileext($name);
+			$extname = s_extname($name);
 			if ($extname != 'htm')
 				continue;
 			
 			$nr_total ++;
 			
-			$tplfile = $tpldir.DS.$name;
+			$tplfile = $tpldir.DS.$filename;
 			if (is_dir($tplfile))
 				continue;
 			
@@ -606,24 +615,24 @@ class CTemplateModel extends CTableModel
 			//template file
 			$params = array();
 			$params['name'] = $name;
-			$params['filename'] = $name;
+			$params['title'] = $name;
+			$params['filename'] = $filename;
 			$params['pid'] = $tinfo['id'];
 			$params['isdir'] = 0;
 			
-			$res = $this->getOne(array('filename'=>$name, 'pid'=>$tinfo['id']));
+			$res = $this->getOne(array('filename'=>$filename, 'pid'=>$tinfo['id']));
 			if ($res) {
 				$params['id'] = $res['id'];
 			}
 			$res = $this->set($params);
 			if (!$res) {
-				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "set template failed!", $params);
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "set template failed!", $params);
 				return false;
 			}
 			
-			$tinfo['tplfileinfo'] = $params;
-			
-			$res = $this->parseTemplateFile($tplfile, $tinfo, $ioparams);
-			if (!$res) {
+			$tinfo['tplfileinfo'] = $params;			
+			$res2 = $this->parseTemplateFile($tplfile, $tinfo, $ioparams);
+			if (!$res2) {
 				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "parse template file '$tplfile' failed!");
 				$nr_errors ++;
 				continue;
@@ -631,8 +640,8 @@ class CTemplateModel extends CTableModel
 			
 			$nr_success ++;
 		}
-		rlog('$nr_success='.$nr_success);
-		return $nr_success > 0;
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, '$nr_success='.$nr_success,'$nr_errors='.$nr_errors);
+		return $res;
 	}
 	
 	public function install($tinfo, &$ioparams=array())
@@ -727,38 +736,29 @@ class CTemplateModel extends CTableModel
 	}
 	
 	
-	public function get2($key=null)
-	{
-		if (!$this->_templates) {
-			$file = RPATH_CONFIG.DS.'templates.php';
-			if (file_exists($file)) {
-				require $file;
-				if ($templates) {
-					$this->_templates = $templates;					
-				}
-			}
-		}
-		
-		
-		if ($key) {
-			return isset($this->_templates[$key])?$this->_templates[$key]:array();
-		} else {
-			return $this->_templates;
-		}
-	}	
-	
-	
 	protected function doUninstall($tinfo)
 	{
 		$res = true;
 		
-		$name = $tinfo['name'];
+		$name = $tinfo['appname'];
 		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "TODO ...");
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "IN ...");
 		
 		$tcfg = $this->getcfg($name);
 		
-		return $res;
+		//
+		$res = $this->getOne(array('filename'=>$name, 'pid'=>0));
+		if (!$res) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "no name '$name'!");
+			return false;
+		}
+		$id = $res['id'];
+		
+		$res1 = $this->delete(array('pid' => $id));
+		
+		$res2 = $this->del($id);
+		
+		return $res1 || $res2;
 	}
 	
 	public function uninstall($tinfo)

@@ -54,11 +54,11 @@ class CConfigComponent extends CFileDTComponent
 		$params['dbuser'] = $options['dbuser'];
 		$params['dbtype'] = $options['dbtype'];
 		$params['dbname'] = $options['dbname'];
+		$params['dbcharset'] = $options['dbcharset'];
 		
 		$this->assignArray(ifcheck($params['newalias'], "newalias")); 	
 
 		
-		$this->assign('params', $params);
 		//loglevel
 		/*
 		<option value="7">开启</option>
@@ -87,7 +87,23 @@ class CConfigComponent extends CFileDTComponent
 		$apiurl = $ioparams['_weburl'].'/api';
 		
 		$this->assign('apiurl', $apiurl);
+		!isset($params['apiurl']) && $params['apiurl'] = $apiurl;
+		//xss_access
+		$this->assign('xss_access_select', get_common_select('enable', $params['xss_access']));
+		//seccodeonleynum
+		$this->assign('seccodeonleynum_select', get_common_select('enable', $params['seccodeonleynum']));
 		
+		
+		
+		//local timer
+		if (!isset($params['webtimer_request_api'])) {
+			$apiurl = $ioparams['_weburl'].'/api';	
+			$hostname = s_url2hostname($apiurl);
+			$params['webtimer_request_api'] = str_replace($hostname, "127.0.0.1", $apiurl);
+		}
+		
+		
+		$this->assign('params', $params);
 		
 		
 		return $params;	
@@ -193,7 +209,7 @@ class CConfigComponent extends CFileDTComponent
 				$finfo = $m->get($fid);
 				if ($finfo) {
 					$id = $nr+1;
-					$filename = $id.'_'.$finfo['filename'];
+					$filename = $id.'_'.$finfo['fileid'];
 					$src = $finfo['opath'];
 					$dst = $tdir.DS.$filename;
 					$res = $m->resizeImage($src, $dst, $width, $height, $resizeinfo, true);
@@ -325,9 +341,13 @@ class CConfigComponent extends CFileDTComponent
 			}
 			
 			//local timer
-			$apiurl = $ioparams['_weburl'].'/api';
-			$hostname = s_url2hostname($apiurl);
-			$apiurl = str_replace($hostname, "127.0.0.1", $apiurl);
+			if (isset($params['webtimer_request_api'])) {
+				$apiurl = $params['webtimer_request_api'];				
+			} else {
+				$apiurl = $ioparams['_weburl'].'/api';	
+				$hostname = s_url2hostname($apiurl);
+				$apiurl = str_replace($hostname, "127.0.0.1", $apiurl);
+			}
 			$this->setWebTimer($apiurl);
 			
 			//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, 'update system config', $apiurl);	

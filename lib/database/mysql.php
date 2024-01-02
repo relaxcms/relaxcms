@@ -264,28 +264,6 @@ class MysqlDatabase extends CDatabase
 		return $res;		
 	}
 	
-	
-	public function update($tablename, $pkey, $id, $params) 
-	{
-		$k2v = array();
-		foreach ($params as $k=>$v) {
-			$k2v[] = "`$k`='$v'";
-		}
-		
-		$keyvals = implode(',', $k2v);
-		$sql = "update $tablename set $keyvals where $pkey=$id";
-		
-		$res = $this->exec($sql);
-		if (!$res) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "update failed!sql=$sql", $params);
-		}
-		
-		return $res;
-	}
-	
-	
-	
-	
 	function fetch_array($query, $result_type = MYSQL_ASSOC) 
 	{
 		return mysql_fetch_array($query, $result_type);
@@ -351,9 +329,13 @@ class MysqlDatabase extends CDatabase
 		$errno = $this->__errno();
 		$error = $this->__error();
 		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "MYSQL Halt: errno=$errno, error=$error!");
 		
-		return false;
+		$last_error = "$error($errno)";
+		
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "MYSQL Halt: $last_error!");
+		
+		$this->_last_error = $last_error;
+		
 	}	
 	
 	
@@ -622,21 +604,19 @@ class MysqlDatabase extends CDatabase
 			} 
 			
 			$pre = strtolower(substr($v, 0, 4));
-			rlog('$pre='.$pre);
 			if ($pre == "drop" || $pre == "crea")
 			{
-				rlog($v);
 				$res = $this->query($v);
-			} else {
-				rlog('unknown sql='.$v);
-			}
+			} 
 		}
 		return $res;				
 	}
 	
 	function get_last_error()
 	{
-		return mysql_error($this->_link);
+		$res = mysql_error($this->_link).$this->_last_error;
+					
+		return $res;
 	}
 	
 	

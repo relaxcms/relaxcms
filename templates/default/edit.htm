@@ -142,8 +142,9 @@ jQuery(document).ready(function() {
                if (_.isFunction(parent.reload))
                     parent.reload();
                  
-                 if (!_.isUndefined(res.data.autobackurl) || "$dlg" == "0")
-                    rui.redirect(autobackurl, 1);              
+                if (!_.isUndefined(res.data.autobackurl) || "$dlg" == "0")
+                    rui.redirect(autobackurl, 1);       
+                           
             } else {
                rui.showTError('操作失败:'+res.status);
             }
@@ -199,7 +200,7 @@ jQuery(document).ready(function() {
             
             //dlg
             if ($dlg) {
-                parent.$(".layui-layer-title")[0].innerText = t('Edit');//'$mi18n[modelname]$str_task';    
+                parent.$(".layui-layer-title")[0].innerText = '$sys_position';//'$mi18n[modelname]$str_task';    
             }
 
 });

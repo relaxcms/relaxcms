@@ -10,7 +10,7 @@
 
 defined( 'RMAGIC' ) or die( 'Restricted access' );
 
-class CTreeDTComponent extends CDTComponent
+class CTreeDTComponent extends CDTFileComponent
 {
 	function __construct($name, $options=null)
 	{

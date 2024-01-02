@@ -1,6 +1,6 @@
 <?php
 defined( 'RMAGIC' ) or die( 'Request Forbbiden' );
-define('DEFAULT_DATABASE_NAME', 'rcdb8');
+define('DEFAULT_DATABASE_NAME', 'rcdb9');
 
 class CDBConfig extends CConfig
 {

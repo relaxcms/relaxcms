@@ -32,9 +32,15 @@ class MyModel extends CUserModel
 	{
 		//当前用户
 		$myinfo = get_userinfo();
+		if (!$myinfo) {
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "no login!");
+			return false;
+		}
 
 		$myinfo['name'] = s_hidestr($myinfo['name'], 4,4);
 		return $myinfo;
 	}
+
+
 
 }

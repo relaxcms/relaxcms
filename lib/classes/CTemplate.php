@@ -101,6 +101,10 @@ class CTemplate extends CObject
 			$params['id'] = $res['id'];
 		
 		//content
+		//$content = $params['content'];
+		//str_replace('\'', '"', $content);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $content);
+		
 		$params['content'] = htmlspecialchars($params['content']);
 		
 		$res = $m->set($params);										
@@ -289,6 +293,16 @@ class CTemplate extends CObject
 					//content
 					$mid = $res['id'];
 					
+					//check cid
+					if (isset($attribs['cid']) && !is_numeric($attribs['cid']) 
+							&& !is_start_with($attribs['cid'], '$')) {
+						$modcatalog = Factory::GetModel('catalog');
+						$cid = $modcatalog->genCatalog(array('name'=>$attribs['cid']));
+						if ($cid) {
+							$attribs['cid'] = $cid;
+						}
+					}
+					
 					//查询 module_params
 					$res2 = $m2->getOne(array('mid'=>$mid));
 					if ($res2) {
@@ -307,6 +321,7 @@ class CTemplate extends CObject
 					if ( !isset($attribs['title']) ) {
 						$attribs['title'] = $res['title']?$res['title']:$res['name'];
 					}
+					
 					
 					$newattrs = array2attr($attribs);
 					$content = str_replace($old_attribs, $newattrs, $content);

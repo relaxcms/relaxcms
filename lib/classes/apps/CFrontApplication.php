@@ -27,16 +27,47 @@ class CFrontApplication extends CMainApplication
 		return false;
 	}
 	
+	/*
+	array(
+	'index_open'=>'1',
+	'login_access'=>'1',
+	'name'=>'the RelaCMS sample site',
+	'metakeyword'=>'the RelaCMS sample site',
+	'metadescrip'=>'the RelaCMS sample site',
+	'template'=>'index',
+	'theme'=>'dark',
+	'page_size'=>'12',
+	'searchtime'=>'1',
+	'searchmax'=>'100',
+	'htmlpub'=>'0',
+	'htmlupdate'=>'3',
+	'is_open_comment'=>'0',
+	'company'=>'',
+	'company_person'=>'',
+	'company_tel'=>'',
+	'company_email'=>'',
+	'wap_online_qq'=>'',
+	'company_qq'=>'',
+	'company_img_qq'=>'',
+	'company_wx'=>'',
+	'company_img'=>'',
+);*/
+	protected function initAppTemplate(&$ioparams=array())
+	{
+		$scf  = Factory::GetSiteConfiguration();
+		$this->setAppTemplateDir($scf['template'], $ioparams);			
+	}
+	
 	protected function initSession()
 	{
 		$this->_session = Factory::GetUser();
 	}
 	
 		
-	/*protected function isComponent($cname)
+	protected function isComponent2($cname)
 	{
 		return true;
-	}*/
+	}
 
 	protected function getDefaultComponent()
 	{

@@ -24,7 +24,7 @@ class CLoginComponent extends CUIComponent
 	{
 		//fixed js and css
 		//$this->enableJSCSS(array('datatables', 'jquery_blockui', 'jquery_fileupload', 'datatable'), false);
-		$this->enableJSCSS(array('jquery_backstretch', 'crypto', 'encrypt', 'bootstrap_toastr'), true);
+		//$this->enableJSCSS(array('jquery_backstretch', 'crypto', 'encrypt', 'bootstrap_toastr'), true);
 		
 		//bg
 		$bg = Factory::GetModel('splashclient');
@@ -32,13 +32,10 @@ class CLoginComponent extends CUIComponent
 		
 	}
 
-	
-	protected function initloginsession(&$ioparams=array())
+		
+	protected function initLoginToken(&$ioparams=array())
 	{
-		//公key
-		$pkey = md5(time());
-		$this->assignSession('__aeskey', $pkey);
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, '$__aeskey='.$pkey);
+		$token = $this->genRequestToken($ioparams);
 
 		//背景
 		$bgdb = loadgb();
@@ -48,20 +45,18 @@ class CLoginComponent extends CUIComponent
 			$v['url'] = $url;
 			$bgurls[] = $url;
 		}
-
-		$initlogindata['pkey'] = $pkey;
-		$initlogindata['bgurls'] = $bgurls;
-
-		return $initlogindata;
+		
+		$token['bgurls'] = $bgurls;
+		return $token;
 
 	}
 
 	protected function show(&$ioparams=array())
 	{
 		$this->initBG($ioparams);	
-		$initlogindata = $this->initloginsession($ioparams);	
+		$token = $this->initLoginToken($ioparams);	
 		
-		$this->assign('_bgdb', $initlogindata['bgurls']);
+		$this->assign('_bgdb', $token['bgurls']);
 		$cf = get_config();
 		$savecookie = $cf['savecookie'];	
 		$enable_captcha = $cf['enable_captcha'];	
@@ -75,6 +70,9 @@ class CLoginComponent extends CUIComponent
 		
 		//rlog(RC_LOG_DEBUG, __FUNCTION__, $backurl);
 		$this->assign('backurl', $backurl);	
+
+		$this->assign('seccodeimg', $token['seccodeimg']);	
+
 		
 		return true;
 	}
@@ -91,12 +89,20 @@ class CLoginComponent extends CUIComponent
 
 	protected function gentoken(&$ioparams=array())
 	{
-		$initlogindata = $this->initloginsession($ioparams);
-		$this->setSbt($initlogindata);
-		
-		showStatus(0, $initlogindata);
+		$token = $this->initLoginToken($ioparams);		
+		showStatus(0, $token);
+	}
+
+
+	protected function getLoginToken(&$ioparams=array())
+	{
+
+		$token = $this->initLoginToken($ioparams);
+
+		showStatus(0, $token);
 		return 0;
 	}
+
 
 
 	protected function checkSecCode($captcha)
@@ -119,15 +125,15 @@ class CLoginComponent extends CUIComponent
 	{
 		if ($this->_sbt) {
 			$this->getParams($params);
-			if (isset($params['captcha']))
-				$captcha = $params['captcha'];
+			if (isset($params['seccode']))
+				$seccode = $params['seccode'];
 			else 
-				$captcha = '';	
+				$seccode = '';	
 
 			if (!isset($params['account']) 
 				&& !isset($params['seccode']) 
-				&& !$this->checkSecCode($captcha)) {
-				rlog(RC_LOG_INFO, __FILE__, __LINE__, "invalid captcha!");
+				&& !$this->checkSecCode($seccode)) {
+				rlog(RC_LOG_INFO, __FILE__, __LINE__, "invalid seccode!");
 				showStatus(RC_E_INVALID_CAPTCHA);
 				return false;
 			}
@@ -181,6 +187,12 @@ class CLoginComponent extends CUIComponent
 	{
 		$params = array();
 		$this->getParams($params);
+		
+		//兼容性处理
+		if (!$params)
+			$params = $_REQUEST;
+		if (!isset($params['name']) && isset($params['username']))
+			$params['name'] = $params['username'];
 		
 		$m = Factory::GetModel('user');
 		$res = $m->register($params, $ioparams);

@@ -115,4 +115,12 @@ class CMyInfoComponent extends CMyFileDTComponent
 		
 		showStatus($res?0:-1);
 	}
+
+
+	protected function getUserInfo(&$ioparams=array())
+	{	
+		$m = Factory::GetModel('my');
+		$res = $m->myInfo();
+		showStatus($res?0:-1, $res);
+	}
 }

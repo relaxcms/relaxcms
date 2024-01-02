@@ -33,7 +33,7 @@ class CParamsModel extends CDataModel
 		$this->_params = $params;	
 	}
 	
-	public function get($id)
+	public function get($id=0)
 	{
 		if (!$this->_params) 
 			$this->initParams();
@@ -50,10 +50,19 @@ class CParamsModel extends CDataModel
 	{
 		return $this->get(0);
 	}
+	public function getConfig($params=array())
+	{
+		return $this->get(0);
+	}
 	
 	public function setParams(&$params=array())
 	{
 		return $this->set($params);
 	}
-	
+
+	public function reset(&$params=array())
+	{
+		@unlink($this->_paramsfile);
+		return true;
+	}	
 }

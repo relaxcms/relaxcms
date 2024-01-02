@@ -219,7 +219,7 @@ class InstallComponent extends CUIComponent
 
 	protected function checkenv(&$ioparams=array())
 	{
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "in...");
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "in...");
 
 		$data = array();
 		$pass = $this->__check($res);

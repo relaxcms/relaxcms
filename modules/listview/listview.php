@@ -9,7 +9,7 @@
  */
 defined( 'RMAGIC' ) or die( 'Request Forbbiden' );
 
-class ListviewModule extends CModule
+class ListviewModule extends CListModule
 {
 	function __construct($name, $attribs)
 	{
@@ -21,9 +21,9 @@ class ListviewModule extends CModule
 		$this->__construct($name, $attribs);
 	}
 	
-	protected function show(&$ioparams=array())
+	public function show(&$ioparams=array())
 	{
-		$modname = isset($this->_attribs['modname'])?$this->_attribs['modname']:'';
+		$modname = isset($this->_attribs['modname'])?$this->_attribs['modname']:'content';
 		$cid = isset($this->_attribs['cid'])?$this->_attribs['cid']:0;
 		$vmask = isset($this->_attribs['vmask'])?$this->_attribs['vmask']:0;
 		$keyword = isset($this->_attribs['keyword'])?$this->_attribs['keyword']:'';
@@ -36,7 +36,7 @@ class ListviewModule extends CModule
 
 		$params['__keyword'] = $keyword;
 
-		$m = Factory::GetModel('content');
+		$m = Factory::GetModel($modname);
 		$sfdb = $m->getFieldsForSearch($params, $ioparams);
 
 		//format vmask

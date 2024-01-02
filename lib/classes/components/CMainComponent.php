@@ -19,13 +19,13 @@ class CMainComponent extends CDTComponent
 	{
 		parent::show($ioparams);
 		//当前用户
-		$_userinfo = get_userinfo();
-		if ($_userinfo) {			
-			$avator =$_userinfo['avatar'];
-			$_userinfo['avatar'] = $avator?( is_url($avator)?$avator:$ioparams['_dataroot']."/avatar/$avator"):$ioparams['_dstroot']."/img/avatar.png";			
+		$myinfo = get_userinfo();
+		if ($myinfo) {			
+			$avator =$myinfo['avatar'];
+			$myinfo['avatar'] = $avator?( is_url($avator)?$avator:$ioparams['_dataroot']."/avatar/$avator"):$ioparams['_dstroot']."/img/avatar.png";			
 		}
 		
-		$this->assign('_userinfo', $_userinfo);
+		$this->assign('myinfo', $myinfo);
 
 		return true;
 	}

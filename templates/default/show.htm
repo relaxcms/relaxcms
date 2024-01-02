@@ -1,7 +1,4 @@
 
-<link href="$_dstroot/plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet" type="text/css" id='css_jquery_fileupload_blueimp' />
-<script src="$_dstroot/plugins/blueimp/js/blueimp-gallery.min.js" type="text/javascript" id='Script1'></script>
-
 <form name="form" method="post" onkeypress="return event.keyCode != 13;">
 <div class="portlet box default" id='table_wrapper_$table_id'>
 <!--# if (!$dlg) { #-->
@@ -30,7 +27,7 @@
         <!--#  } } } #-->
 
         
-        <a href="$_base/$task" class="btn btn-primary btn-sm tmilink">
+        <a href="$_base/$task" class="btn btn-primary btn-sm refresh">
             <i class="fa fa-refresh"></i> @T[Refresh] </a> 
         
         <div class="btn-group">
@@ -56,8 +53,9 @@
 <div class="portlet-body" >
 
 <div class="listview" id="listview$table_id" 
-    data-url="$_base/listview"
+    data-url="$_base"
     data-col="6"
+    data-dlg="$dlg"
     data-modname="$_modname"
     data-keyword="$_keyword"
     data-treeview="$treeview"

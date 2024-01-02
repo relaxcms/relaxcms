@@ -6,3 +6,4 @@ drop table cms_file;
 drop table cms_server;
 drop table cms_storage;
 drop table cms_var;
+drop table cms_app;

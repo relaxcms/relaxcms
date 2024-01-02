@@ -162,6 +162,24 @@ class MysqlpdoDatabase extends CDatabase
 		return $this->_link->errorCode();
 	}
 	
+	protected function halt($msg='') 
+	{
+		$errno = $this->__errno();
+		$error = $this->__error();
+		
+		if (is_array($error))
+			$error = implode(',', $error);
+			
+		
+		
+		$last_error = "$error($errno)";
+		
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "MYSQL Halt: $last_error!");
+		
+		$this->_last_error = $last_error;
+		
+	}	
+	
 	
 	public function query($sql, $method = '') 
 	{
@@ -192,6 +210,9 @@ class MysqlpdoDatabase extends CDatabase
 		$this->query_num++;
 		
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "OUT");
+		if (!$query)
+			$this->halt('Query Error: ' . $sql);
+		
 				
 		return $query;
 	}
@@ -217,12 +238,14 @@ class MysqlpdoDatabase extends CDatabase
 		$sql = $this->_prefix_replace($sql);	
 		
 		try {
-			$res = $this->_link->exec($sql);//返回受影响的行数
-						
+			$res = $this->_link->exec($sql);//返回受影响的行数						
 		} catch (PDOException $e) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call exec failed!sql=$sql", $e->getMessage());
 			$res = false;			
 		}
+		
+		if (!$res)
+			$this->halt('Query Error: ' . $sql);
 		
 		$this->query_num++;
 				
@@ -489,4 +512,5 @@ class MysqlpdoDatabase extends CDatabase
 		
 		return $res;
 	}
+	
 }

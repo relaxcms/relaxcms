@@ -1129,7 +1129,7 @@ class CImage
 		
 		$dst_r = ImageCreateTrueColor( $target_w, $target_h );
 		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "target_h=$target_h");
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "target_h=$target_h");
 		/*
 		 imagecopyresampled(
 		  resource $dst_image,
@@ -1144,7 +1144,7 @@ class CImage
 		  int $src_h
 		): bool*/
 		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $x, $y, $w, $h, $target_w, $target_h);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $x, $y, $w, $h, $target_w, $target_h);
 		
 		$res = imagecopyresampled($dst_r, $im, 0, 0, $x, $y,
 				$target_w, $target_h, $w, $h);

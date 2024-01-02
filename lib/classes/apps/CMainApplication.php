@@ -17,6 +17,8 @@ class CMainApplication extends CApplication
 		$this->__construct($name, $options);
 	}
 	
+
+	
 	public function isPublicItem($component, $tname)
 	{
 		$menus = $this->getMenus();
@@ -42,6 +44,13 @@ class CMainApplication extends CApplication
 			return true;
 		}
 			
+		return false;
+	}
+	
+	
+	//起始页
+	protected function checkStartComponent(&$ioparams=array())
+	{
 		return false;
 	}
 	
@@ -79,13 +88,26 @@ class CMainApplication extends CApplication
 		$ioparams['component'] = $component;	
 		$ioparams['isLogin'] = $isLogin;	
 		
+		if ($isLogin) {
+			//$this->checkStartComponent($ioparams);
+		}
+		
+		$this->_islogin = $isLogin;
+		
 		return false;
 	}
 	
 	protected function initSession()
 	{
 		$this->_session = Factory::GetAdmin();
+		
 	}
+	
+	protected function initApiRequest($ioparams)
+	{
+		$this->_session = Factory::GetAdmin();
+	}
+	
 	
 	public function hasMenu()
 	{
@@ -229,28 +251,7 @@ class CMainApplication extends CApplication
 		}	
 	}
 	
-	public function login($params=array())
-	{
-		$ss = $this->getSession();		
-		if (!$ss->isLogin()) {
-			if (($res = $ss->login($params)) !== true) {		
-				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "user login failed! res=$res");		
-				return $res;
-			}
-		}
-		return true;
-	}
 	
-	
-	public function logout()
-	{
-		$ss = $this->getSession();
-		$ss->logout();
-		
-		setMsg("str_user_logout_ok");
-	}
-		
-		
 	/* ============================================================================
 	 * menu
 	 * 菜单
@@ -273,7 +274,10 @@ class CMainApplication extends CApplication
 				
 				if (!$app)
 					$app =$this->_app;
-				$lang = $app->getI18n();		
+				$lang = $app->getI18n();	
+				
+				$m = Factory::GetModel('system_menu');
+				$systemmenuparams = $m->get();
 				
 				foreach ($appmenu as $key=>$m) {
 					
@@ -293,6 +297,15 @@ class CMainApplication extends CApplication
 					//level
 					if (!isset($m['level']))
 						$m['level'] = 1;
+						
+					if (isset($systemmenuparams[$key])) {
+						if (!empty($systemmenuparams[$key]['title'])) {
+							$m['title'] = $systemmenuparams[$key]['title'];
+						}
+						if (!empty($systemmenuparams[$key]['open'])) {
+							$m['open'] = $systemmenuparams[$key]['open'];
+						}
+					}
 					
 					$mdb[$key] = $m;
 				}
@@ -333,6 +346,9 @@ class CMainApplication extends CApplication
 	protected function formatMenuItem($appname, $name, $m, &$mdb)
 	{
 		$i18n = $this->getI18n();	
+		$m1 = Factory::GetModel('system_menu');
+		$systemmenuparams = $m1->get();
+		
 		
 		if (isset($i18n['menu_'.$name]))				
 			$title = $i18n['menu_'.$name];
@@ -353,6 +369,19 @@ class CMainApplication extends CApplication
 			$m['level'] = isset($mdb[$pname])?$mdb[$pname]['level']:1;
 		}
 		
+		
+		if (isset($systemmenuparams[$name])) {
+			if (!empty($systemmenuparams[$name]['title'])) {
+				$m['title'] = $systemmenuparams[$name]['title'];
+			}
+			if (!empty($systemmenuparams[$name]['open'])) {
+				$m['open'] = $systemmenuparams[$name]['open'];
+			} else if (isset($m['open']) && $m['open']) {
+					$m['open'] = false;
+			}
+		}
+		
+		
 		if (isset($mdb[$name])) {
 			$oldmenu = $mdb[$name];
 			$m['app'] = $oldmenu['app'];
@@ -366,8 +395,10 @@ class CMainApplication extends CApplication
 	}
 	
 	
-	protected function cacheMenus($lang)
+	public function cacheMenus($lang='')
 	{
+		!$lang = $this->_lang;
+		
 		$appname = $this->_name;
 		
 		//common

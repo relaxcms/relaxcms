@@ -198,6 +198,9 @@ class CVarModel extends CTableModel
 	
 	public function getMaskByTitle($name, $title)
 	{
+		if (!$title)
+			return false;
+		
 		$res = $this->getOne(array('name'=>$name));
 		if (!$res)
 			return false;
@@ -225,6 +228,7 @@ class CVarModel extends CTableModel
 			if (!$found)
 				break;
 		}
+			
 		
 		$_params = array();
 		$_params['pid'] = $id;

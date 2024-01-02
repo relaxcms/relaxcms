@@ -15,7 +15,7 @@ class CFileDTComponent extends CDTComponent
 	protected function show(&$ioparams=array())
 	{
 		parent::show($ioparams);
-		$this->enableJSCSS(array('bgallery'));
+		//$this->enableJSCSS(array('bgallery'));
 		$this->setTpl('file');
 	}
 	
@@ -187,7 +187,8 @@ class CFileDTComponent extends CDTComponent
 	protected function init(&$ioparams=array())
 	{
 		parent::init($ioparams);	
-		$this->enableJSCSS(array('jquery_fileupload', 'tileupload', 'videojs'), true);	
+		//$this->enableJSCSS(array('jquery_fileupload', 'tileupload', 'videojs'), true);
+		$this->enableJSCSS(array( 'video'), true);	
 	}
 	
 	protected function selectForFileView($modname, $params, &$ioparams=array())

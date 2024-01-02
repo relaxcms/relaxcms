@@ -30,6 +30,9 @@ class CModel
 	 *
 	 */
 	protected $_name;
+
+	/** 模型标题，如：用户 */
+	protected $_title; 
 	
 	
 	/**
@@ -53,25 +56,7 @@ class CModel
 			
 	/**
 	 * 模型字段，类似SQL数据Field格式，如：
-	+-------------+-------------+-------------------+------+-----+---------+-------+---------------------------------+---------+
-	| Field       | Type        | Collation         | Null | Key | Default | Extra | Privileges                      | Comment |
-	+-------------+-------------+-------------------+------+-----+---------+-------+---------------------------------+---------+
-	| custom_id   | int(11)     | NULL              | NO   | PRI | NULL    |       | select,insert,update,references |         |
-	| name        | varchar(32) | latin1_swedish_ci | NO   |     | NULL    |       | select,insert,update,references |         |
-	| description | text        | latin1_swedish_ci | YES  |     | NULL    |       | select,insert,update,references |         |
-	| idtype      | tinyint(4)  | NULL              | NO   |     | NULL    |       | select,insert,update,references |         |
-	| idno        | varchar(32) | latin1_swedish_ci | NO   |     | NULL    |       | select,insert,update,references |         |
-	| mobile      | varchar(64) | latin1_swedish_ci | NO   |     | NULL    |       | select,insert,update,references |         |
-	| telephone   | varchar(64) | latin1_swedish_ci | NO   |     | NULL    |       | select,insert,update,references |         |
-	| email       | varchar(64) | latin1_swedish_ci | NO   |     | NULL    |       | select,insert,update,references |         |
-	| pid         | int(11)     | NULL              | NO   |     | NULL    |       | select,insert,update,references |         |
-	| level       | tinyint(4)  | NULL              | NO   |     | NULL    |       | select,insert,update,references |         |
-	| type        | tinyint(4)  | NULL              | NO   |     | NULL    |       | select,insert,update,references |         |
-	| status      | tinyint(4)  | NULL              | NO   |     | NULL    |       | select,insert,update,references |         |
-	+-------------+-------------+-------------------+------+-----+---------+-------+---------------------------------+---------+
-	12 rows in set (0.02 sec)
-	
-	注：FIELDS字段类型须标准SQL格式，转换成SQL语句能正常执行。
+	 * 注：FIELDS字段类型须标准SQL格式，转换成SQL语句能正常执行。
 	 * 
 	 * @var mixed 
 	 *
@@ -312,6 +297,9 @@ class CModel
 				
 				$this->_initFieldEx($v);
 				
+				if (!isset($v['format']))
+					$v['format'] = $v['input_type'];
+				
 				$sort += 5;	 //排序字段预留一些给动态字段，如: group模型中的privilege。		
 			}	
 		} else {
@@ -405,21 +393,22 @@ class CModel
 		$sig = serialize($name);
 		if (empty($instances[$sig])) {
 			
-			$modpathinfo = Factory::GetModelPathInfo($name);
-			if ($modpathinfo)  {
-				$filename = $modpathinfo['modpath'];
-				$appname  = $modpathinfo['appname'];
-				if (file_exists($filename)) {
-					require_once($filename);					
-				} else {
-					$filename = RPATH_APPMODELS.DS.$name.'.php';
-					if (file_exists($filename))
-						require_once($filename);
-				}
+			$filename = RPATH_APPMODELS.DS.$name.'.php';
+			if (file_exists($filename)) {//本地应用目录下的models优先
+				require_once($filename);
 			} else {				
-				$filename = RPATH_MODELS.DS.$name.'.php';
-				if (file_exists($filename))
-					require_once($filename);			
+				$modpathinfo = Factory::GetModelPathInfo($name);
+				if ($modpathinfo)  {
+					$filename = $modpathinfo['modpath'];
+					$appname  = $modpathinfo['appname'];
+					if (file_exists($filename)) {
+						require_once($filename);					
+					}
+				} else {				
+					$filename = RPATH_MODELS.DS.$name.'.php';
+					if (file_exists($filename))
+						require_once($filename);			
+				}
 			}
 			
 			$class = ucfirst($name)."Model";
@@ -497,7 +486,7 @@ class CModel
 			$this->_default_actions[$name]['enable']=$enable;
 	}
 	
-	protected function getActions($row=array())
+	protected function getActions($row=array(), &$ioparams=array())
 	{
 		return $this->_default_actions;
 	}
@@ -574,7 +563,8 @@ class CModel
 		//<script src="../assets/pages/scripts/components-bootstrap-switch.min.js" type="text/javascript"></script>
 		
 		//$res = '<input type="checkbox" checked class="make-switch" id="test" data-size="mini">';
-		$udb = $this->getVarValList($field, 'onoff');
+		$label = isset($field['label'])?$field['label']:'onoff';
+		$udb = $this->getVarValList($field, $label);
 		
 		$onText = '';
 		$offText = '';
@@ -602,7 +592,7 @@ class CModel
 			$res = $title;
 		} else {
 			$onoffurl = $ioparams['_base']."/onoff?id=$id&modname={$this->_name}&field=$name";		
-			$res =  "<input type='checkbox' $checked class='param_$name onoff' id='param_$name{$id}' data-size='small' data-model='{$this->_name}' data-field='$name' data-id='$id' data-on-text='$onText' data-off-text='$offText' data-onoffurl='$onoffurl'>";
+			$res =  "<input type='checkbox' $checked class='make-switch param_$name onoff' id='param_$name{$id}' data-size='small' data-model='{$this->_name}' data-field='$name' data-id='$id' data-on-text='$onText' data-off-text='$offText' data-onoffurl='$onoffurl' />";
 		}
 		
 		return $res;
@@ -702,6 +692,21 @@ class CModel
 		return $value;
 	}
 	
+	protected function getSelectorTitle($value, $name)
+	{
+		$ddb = $this->getVarValList($this->_fields[$name]);	
+		if (!$ddb)
+			return $value;
+				
+		foreach ($ddb as $k=>$v) {
+			if ($value == $v['value']) 
+				return $v['title'];
+		}
+		return $value;
+	}
+	
+	
+	
 	protected function formatVarSelectorForView($params, $field, &$ioparams=array())
 	{
 		$name = $field['name'];
@@ -760,8 +765,54 @@ class CModel
 		$label = $this->getLabelColorName($value);
 		return "<span class='label label-sm label-$label'>$title</span>";		
 	}
+
+	protected function formatFontColorForView($value, $title)
+	{
+		switch ($value) {
+			case 1:
+				$color = 'red';
+				break;			
+			case 2:
+				$color = 'green';
+				break;					
+			default:
+				$color = '';
+				break;
+		}
+
+		return "<span style='color:$color;'>$title</span>";
+
+	}
 	
+	protected function formatMoneyFontForView($value)
+	{
+		if ($value > 0) {
+			$color = "black";			
+		} else {
+			$color = "red";
+		}
 		
+		return "<span class='fb16' style='color:$color;'>$value</span>";
+		
+	}
+	
+	
+	protected function formatAddMoneyFontForView($value)
+	{
+		if ($value > 0) {
+			$color = "black";
+			$value = "+".$value;
+		} else {
+			$color = "red";
+		}
+		
+		return "<span class='fb16' style='color:$color;'>$value</span>";
+		
+	}
+	
+	
+	
+	
 	/**
 	 * 外键缓存表
 	 *
@@ -936,6 +987,46 @@ class CModel
 		return nformat_human_file_size($val);		
 	}
 	
+	/**
+	 * formatGalleryForShowView 显示或列表视图调用
+	 *
+	 * @param mixed $params This is a description
+	 * @param mixed $field This is a description
+	 * @param mixed $ioparams This is a description
+	 * @return mixed This is the return value description
+	 *
+	 */
+	protected function formatGalleryForViewFowListView($params, &$field, $ioparams=array())
+	{
+		$name = $field['name'];
+		if (isset($params[$name]))
+			$val = $params[$name];
+		else 
+			$val = '';
+		
+		if (!$val)
+			return $val;
+		
+		$w = '';
+		$h = '';	
+		if (isset($field['width']))
+			$w = 'data-width="'.$field['width'].'"';
+		if (isset($field['height']))
+			$h = 'data-height="'.$field['height'].'"';		
+		
+		$res = '';
+		$fiddb = explode(',', $val);
+		$m = Factory::GetModel('file');
+		foreach ($fiddb as $key=>$fid) {
+			$fileinfo = $m->getForView($fid, $ioparams);
+			if ($fileinfo) {
+				$res .= "<img src='$fileinfo[previewUrl]'/>";
+			}
+		}
+		
+		return $res;
+	}
+	
 	
 	/**
 	 * formatGalleryForView 格式图集字段
@@ -948,12 +1039,18 @@ class CModel
 	 */
 	protected function formatGalleryForView($params, &$field, $ioparams=array())
 	{
-		try {
+		//gallery
+		//snapshots
+		if ($ioparams['listview']) 
+			return $this->formatGalleryForViewFowListView($params, $field, $ioparams);
+			
+			
+		/*try {
 			$ac = Factory::GetApp()->getActiveComponent();
 			if($ac)
 				$ac->enableJSCSS(array('bgallery', 'gallery'));
 		} catch(CException $e) {
-		}
+		}*/
 		
 		$name = $field['name'];
 		if (isset($params[$name]))
@@ -974,12 +1071,19 @@ class CModel
 			$w = 'data-width="'.$field['width'].'"';
 		if (isset($field['height']))
 			$h = 'data-height="'.$field['height'].'"';
+			
+		$notitle = '';
+		if (isset($field['notitle']) && $field['notitle'])
+			$notitle = 'data-notitle=1';
 		
-		$res = "<div id='param_$name' class='gallery' data-url='$_base/gallery' data-name='$name' data-model='$mname' data-noabar=1 data-mid='$mid' $w $h   class='form-control' > </div> ";
+		
+		$res = "<div id='param_$name' class='gallery-img' data-url='$_base/gallery' data-name='$name' data-model='$mname' data-noabar=1 $notitle data-mid='$mid' $w $h   class='form-control' > </div> ";
 		
 		return $res;
 	}
-
+	
+	
+	
 	protected function formatMoneyForView($params, $field, &$ioparams=array())
 	{
 		$name = $field['name'];
@@ -991,6 +1095,19 @@ class CModel
 		$res = nformat_money($val,2);
 
 		$res = '￥'.$res;
+
+		return $res;
+	}
+	
+	protected function formatMoneyWForView($params, $field, &$ioparams=array())
+	{
+		$name = $field['name'];
+		if (isset($params[$name]))
+			$val = $params[$name];
+		else 
+			$val = '';
+
+		$res = nformat_money($val,4);
 
 		return $res;
 	}
@@ -1031,16 +1148,15 @@ class CModel
 	{
 		if (!$params)
 			return false;
-		
-		foreach ($params as $key=>$v) {
-			$name = $key;
-			$taxisdb = $v;
-		}
+		if (!isset($params['taxis']))
+			return false;
+			
+		$taxisdb = $params['taxis'];
 		
 		foreach($taxisdb as $id=>$v) {
 			$_params = array();
 			$_params['id'] = $id;
-			$_params[$name] = $v;
+			$_params['taxis'] = intval($v);
 			
 			$this->update($_params);			
 		}
@@ -1048,7 +1164,11 @@ class CModel
 		return true;
 	}
 	
-
+	protected function formatTimeForView($value, $format = 'Y-m-d H:i:s')
+	{
+		return is_numeric($value) && $value > 0 ?tformat($value, $format): ($value == 0?'':$value);
+	}
+	
 	/**
 	 * formatForView 格式化记录显示
 	 *
@@ -1072,9 +1192,9 @@ class CModel
 					}
 			}
 			
-			$input_type = strtolower(trim($this->_fields[$key]['input_type']));	
+			$format = strtolower(trim($this->_fields[$key]['format']));	
 			
-			switch ($input_type) {
+			switch ($format) {
 				case 'onoff': // NO or OFF
 				case 'radiobox': // YES or NO
 					$row['_'.$key] = $this->formatOnoffForView($row, $fields[$key], $ioparams);
@@ -1091,19 +1211,19 @@ class CModel
 					break;	
 				case 'yearmonth':
 				case 'yyyymm':
-					$row['_'.$key] = tformat($value, 'Y-m');
+					$row['_'.$key] = $this->formatTimeForView($value, 'Y-m');
 					//$row['_'.$key] = $value;
 					break;	
 				case 'date':
-					$row['_'.$key] = tformat($value, 'Y-m-d');
+					$row['_'.$key] = $this->formatTimeForView($value, 'Y-m-d');
 					//$row['_'.$key] = $value;
 					break;					
 				case 'datetime':
-					$row['_'.$key] = tformat($value);
+					$row['_'.$key] = $this->formatTimeForView($value);
 					//$row['_'.$key] = $value;
 					break;
 				case 'timestamp':
-					$row['_'.$key] = is_numeric($value)?tformat($value):$value;
+					$row['_'.$key] = $this->formatTimeForView($value);
 					//$row['_'.$key] = $value;
 					break;
 				case 'treemodel':
@@ -1140,6 +1260,12 @@ class CModel
 				case 'money':
 					$row['_'.$key] = $this->formatMoneyForView($row, $fields[$key], $ioparams);
 					break;
+				case 'moneyw':
+					$row['_'.$key] = $this->formatMoneyWForView($row, $fields[$key], $ioparams);
+					break;
+				case 'percent':
+					$row['_'.$key] = nformat_percent($value);
+					break;
 				case 'sort':
 					$row['_'.$key] = $this->formatSortForView($row, $fields[$key], $ioparams);
 					break;
@@ -1163,6 +1289,12 @@ class CModel
 		return $rows;	
 	}
 	
+	//特权检查
+	protected function hasExecPrivilegeOf()
+	{
+		return hasPrivilegeOf($this->_name, 'exec');
+	}
+	
 	/**
 	 * formatOperate 格式化操作列
 	 *
@@ -1177,7 +1309,7 @@ class CModel
 		
 		$optdb = array();
 		
-		$actions = $this->getActions($row);//array('detail', 'edit', 'del');
+		$actions = $this->getActions($row, $ioparams);//array('detail', 'edit', 'del');
 		foreach ($actions as $key=>$v){
 			if (!$v['enable']) 
 				continue;
@@ -1274,6 +1406,10 @@ class CModel
 	protected function parseInputDatetime($value)
 	{
 		$res =  s_mktime($value);
+		//时间无效
+		if ($res === false) {
+			return is_numeric($value)?$value:'';
+		}
 		//rlog('res='.$res.', $value='.$value);
 		
 		return $res;
@@ -1414,7 +1550,7 @@ class CModel
 	 * @return mixed 返回格式化后的字串
 	 *
 	 */
-	protected function parseInput(&$params, &$ioparams=array())
+	protected function parseInput(&$params, &$ioparams=array(), $forSearch=false)
 	{
 		$res = true;
 		foreach($params as $key=>$v) {
@@ -1423,6 +1559,10 @@ class CModel
 			}
 			
 			$field = $this->_fields[$key];
+			
+			//过滤字段格式化，须可搜索
+			if ($forSearch && !$field['searchable'])
+				continue;
 			
 			//trim
 			$params[$key] = $this->trimValue($field, $params[$key]);
@@ -1479,29 +1619,31 @@ class CModel
 		}
 		
 		//默认非输入字段值
-		foreach($this->_fields as $key=>$v) {
-			switch($v['input_type']) {
-				case 'CUID':
-					if (empty($params[$this->_pkey])) {
-						$userinfo = get_userinfo();
-						if ($userinfo)
-							$params[$key] = $userinfo['id'];
-					}	
-					break;
-				case 'UID':// uid
-					if (!$v['readonly'] || empty($params[$this->_pkey])) {
-						$userinfo = get_userinfo();
-						if ($userinfo)
-							$params[$key] = $userinfo['id'];
-					}					
-					break;				
-				case 'TIMESTAMP':
-					if (!$v['readonly'] ||  empty($params[$this->_pkey])) {
-						$params[$key] = time();						
-					}					
-					break;
-				default:
-					break;	
+		if (!$forSearch) {
+			foreach($this->_fields as $key=>$v) {
+				switch($v['input_type']) {
+					case 'CUID':
+						if (empty($params[$this->_pkey])) {
+							$userinfo = get_userinfo();
+							if ($userinfo)
+								$params[$key] = $userinfo['id'];
+						}	
+						break;
+					case 'UID':// uid
+						if (!$v['readonly'] || empty($params[$this->_pkey])) {
+							$userinfo = get_userinfo();
+							if ($userinfo)
+								$params[$key] = $userinfo['id'];
+						}					
+						break;				
+					case 'TIMESTAMP':
+						if (!$v['readonly'] ||  empty($params[$this->_pkey])) {
+							$params[$key] = time();						
+						}					
+						break;
+					default:
+						break;	
+				}
 			}
 		}
 				
@@ -1549,7 +1691,11 @@ class CModel
 		
 		$key = $errno >= 0?"str_model_{$action}_ok" : "str_model_{$action}_faild";
 		$desc = i18n($key);
-		
+
+		//system error
+		$syserror = $this->_db->get_last_error();
+		if ($syserror)
+			$desc .= ' '.$syserror;
 		
 		$params = array(
 				'uid'=>$uid,
@@ -1569,7 +1715,17 @@ class CModel
 		
 		return $res;
 	}
-		
+
+
+	protected function syncCluster($fn, $params)
+	{
+		return false;
+	}
+	
+	protected function recvPostCluster($fn, $params)
+	{
+		return false;
+	}	
 	
 	/**
 	 * checkParams 检查输入字段是否合法并格式化输入字段值
@@ -1587,6 +1743,15 @@ class CModel
 				
 		return $res;
 	}
+	
+	protected function checkParamsForSearch(&$params, &$ioparams=array())
+	{
+		$res = $this->parseInput($params, $ioparams, true);
+				
+		return $res;
+	}
+	
+	
 	
 	/* ==========================================================================
 	 * TABLE HELPER FUNCTIONS 
@@ -1682,7 +1847,7 @@ class CModel
 		if (!$res) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call db insert failed!res=$res");
 		}
-		$this->writeLog(RC_LOG_NOTICE, __FUNCTION__, $res, null, $_params, $_params['id']);
+		$this->writeLog($res?RC_LOG_NOTICE:RC_LOG_ERROR, __FUNCTION__, $res, null, $_params, $_params['id']);
 		return $res;
 	}		
 	
@@ -1693,7 +1858,7 @@ class CModel
 	 */
 	public function update(&$params=array(), &$ioparams=array())
 	{
-		$id = $params['id'];
+		$id = isset($params[$this->_pkey])?$params[$this->_pkey]:false;
 		
 		$_params = array();
 		foreach ($params as $key=>$v) {
@@ -1753,6 +1918,10 @@ class CModel
 		return $res;
 	}
 	
+	public function import(&$params, &$ioparams=array())
+	{
+		return $this->add($params, $ioparams);
+	}
 	
 	/**
 	 * edit 编辑记录
@@ -1849,13 +2018,25 @@ class CModel
 	 */
 	protected function delete($params=array())
 	{
+		
 		$this->parseFilterParams($params);	
-		$res = $this->_db->delete($this->_tablename, $params);
-		if (!$res) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "delete from table '{$this->_tablename}' failed", $filter);
+		
+		$old = $this->_db->select($this->_tablename, $params);
+		if (!$old) {
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "WARNING:no data!", $params);
 			return false;
 		}
-		return $res;
+		
+		$res = $this->_db->delete($this->_tablename, $params);
+
+		$this->writeLog($res?RC_LOG_NOTICE:RC_LOG_ERROR, __FUNCTION__, $res, $old, null, 0);
+
+		if (!$res) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "delete table '{$this->_tablename}' failed!", $params);
+			return false;
+		}
+		
+		return $old;
 	}
 	
 	
@@ -2383,7 +2564,7 @@ class CModel
 	public function set(&$params, &$ioparams=array())
 	{
 		if (!$this->checkParams($params, $ioparams)) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__,"Invalid input params!");
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, " Invalid input params!");
 			return false;
 		}
 		
@@ -2403,6 +2584,9 @@ class CModel
 		
 		if ($res) {
 			$this->postParams($params, $ioparams);
+			
+			//集群处理
+			$this->syncCluster(__FUNCTION__, $params);
 		} 
 			
 		return $res;
@@ -2462,6 +2646,10 @@ class CModel
 			$params[$name] = $new;
 			
 			$res = $this->update($params);	
+			
+			$mname = 'onoff'.ucfirst($name);
+			if (method_exists($this, $mname)) 
+				$this->$mname($id, $name, $new);
 		}	
 		
 		return $res;
@@ -2484,9 +2672,17 @@ class CModel
 		}
 		
 		$res = $this->delete(array($this->_pkey=>$id));
+		if (!$res) {
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "call delete failed!");
+			return $res;
+		}
 		
-		$this->writeLog(RC_LOG_NOTICE, __FUNCTION__, $res, $old, null, $id);
+		//集群同步处理
+		$this->syncCluster(__FUNCTION__, $id);
 		
+		//$old
+		$old = $res[0];
+				
 		return $old;
 	}
 	
@@ -2517,7 +2713,7 @@ class CModel
 	public function delChildren($id=0, $all=true)
 	{
 		$res = true;
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "delChildren id=".$id);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "delChildren id=".$id);
 		
 		$udb = $this->selectChildren($id);
 		foreach ($udb as $key=>$v) {
@@ -2695,14 +2891,16 @@ class CModel
 		
 		//运算符：<, <=, >, >=, =, %%, 
 		$_operator = array('lt'=>1,'<'=>1, 'lte'=>2,'<='=>2, 'gt'=>3,'>'=>3,'gte'=>4, '>='=>4, 
-				'eq'=>5,'='=>5, 'like'=>6, 'llike'=>7, 'rlike'=>8, 'in'=>9);
-		
+				'eq'=>5,'='=>5, 'like'=>6, 'llike'=>7, 'rlike'=>8, 'in'=>9,'ne'=>10,'!='=>10,'!=='=>10 );
+		if ($valArr === '')
+			return;
 		switch($cd) {
 			case 'min':
+				
 				$valArr = array('gte'=>$valArr);//'min'=>2
 				break;
 			case 'max':
-				$valArr = array('lte'=>$valArr); //'max'=>1
+				$valArr != '' && $valArr = array('lte'=>$valArr); //'max'=>1
 				break;
 			default:
 				if (isset($_operator[$cd])) {
@@ -3016,6 +3214,8 @@ class CModel
 		$ioparams['nr_page'] = $params['nr_page'];
 		$ioparams['page'] = $params['page'];
 		$ioparams['start'] = $params['start'];
+		$ioparams['order'] = $params['order'];
+		$ioparams['dir'] = $params['dir'];
 		
 		$ioparams['nr_row'] = count($rows);
 		$ioparams['rows'] = $rows;
@@ -3122,10 +3322,7 @@ class CModel
 			$nodeinfo[] = $ninfo;
 			
 			//parent
-			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "id=$id, pid=".$v['pid']);
 			foreach($nodeinfo[$depth-1]['rows'] as $k2=>&$v2) {
-				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "id=".$v2['id']);
-				
 				if ($v2['id'] == $v['id']) {
 					$v2['selected'] = true;
 				}
@@ -3153,10 +3350,23 @@ class CModel
 		
 		$fields = $this->getFields();
 		$params['fdb'] = $fields;
+		$pkey = $this->getPKey();
+		$params['pkey'] = $pkey;
 		
 		if ($rows) {
+			$page = $params['page'];
+			$page_size = $params['page_size'];
+			
+			$_id = ($page - 1) * $page_size + 1;
+			$showrank =  isset($fields[$pkey]['showrank'])?true:false;
+			
+			
 			foreach ($rows as $key=>&$v) {
 				$this->formatForView($v, $ioparams);				
+				//fixed for _id
+				if ($showrank)
+					$v['_id'] = $_id++;
+				
 				$optdb = $this->formatOperate($v, $ioparams);				
 				array_sort_by_field($optdb, 'sort');				
 				$v['optdb'] = $optdb; 
@@ -3171,19 +3381,17 @@ class CModel
 	public function selectForListview(&$params, &$ioparams=array())
 	{
 		//filterfieldcfg
-		$fields = array();
-		$ffcfg = isset($params['filterfieldcfg'])?$params['filterfieldcfg']:'';
+		$__hidefields = isset($params['__hidefields'])?$params['__hidefields']:'';
 		
-		$_fdb = $this->getFields();		
-		if ($ffcfg) {
-			foreach ($_fdb as $key=>$v) {
-				if (array_key_exists($key, $ffcfg)) {
-					$v['sortable'] = $v['sortable']?true:false;
-					$fields[$key] = $v;
+		$fields = $this->getFields();		
+		if ($__hidefields) {
+			if (!is_array($__hidefields)) 
+				$__hidefields = explode(',', $__hidefields);
+			foreach ($__hidefields as $key=>$fname) {
+				if (isset($fields[$fname])) {
+					$fields[$fname]['show'] = false; //列表中不显示此字段
 				}
 			}
-		} else {
-			$fields = $_fdb;
 		}
 		
 		//search
@@ -3192,8 +3400,12 @@ class CModel
 		$treeview = isset($params['treeview'])?$params['treeview']:0;
 		if ($treeview) 
 			$params['page_size'] = PHP_INT_MAX;
+			
+		//format filter eg:date,
+		$this->checkParamsForSearch($params, $ioparams);
 		
 		//filter rows 
+		$ioparams['listview'] = true;
 		$org_rows = $this->selectForView($params, $ioparams);
 		$rows = $params['rows'];
 		
@@ -3212,12 +3424,15 @@ class CModel
 			//$treeview
 			if ($treeview) {//检查是否有子节点
 				$v['hasChild'] = $this->hasChildren($v['id']);
-			}			
+			}
+			
+			
 		}
 		
 		
 		$data = array(
 				'name'=>$this->_name,
+				'title'=>$this->_title,
 				'fields'=>$fields,
 				'pkey'=>$this->_pkey,
 				'hasOptmenu'=>true,
@@ -3363,8 +3578,12 @@ class CModel
 				$mi18n = array();
 			}
 		}
+		$this->_title = (isset($mi18n['modelname']))?$mi18n['modelname']:$this->_name;
+
 		foreach ($fdb as $key => &$v) { //fixed the 字段标题/描述
-			if (isset($mi18n[$key]['title']))  
+			if (isset($v['showrank']) && isset($mi18n[$key]['_title']))
+				$v['title'] = $mi18n[$key]['_title'];
+			else if (isset($mi18n[$key]['title']))  
 				$v['title'] = $mi18n[$key]['title'];
 			if (isset($mi18n[$key]['description'])) 
 				$v['description'] = $mi18n[$key]['description'];		
@@ -3420,7 +3639,41 @@ class CModel
 		$newfield['input_type'] = isset($params['input_type'])?$params['input_type']:'custom';	
 		$newfield['input_max_length'] = isset($params['input_max_length'])?$params['input_max_length']:255;	
 		
-		$newfield['sort'] = isset($params['sort'])?$params['sort']:0;	
+		$newfield['sort'] = isset($params['sort'])?$params['sort']:0;
+		
+		
+		
+		//title
+		$mi18n = get_i18n('mod_'.$this->_name);
+		if (!$mi18n) {
+			$mi18n = get_i18n('mod_'.$this->_modname);
+			if (!$mi18n) {
+				$mi18n = array();
+			}
+		}
+		
+		if (isset($mi18n[$name]['title']))  
+			$newfield['title'] = $mi18n[$name]['title'];
+		if (isset($mi18n[$name]['description'])) 
+			$newfield['description'] = $mi18n[$name]['description'];		
+		
+		if (isset($mi18n[$name]['comment'])) 
+			$newfield['comment'] = $mi18n[$name]['comment'];
+		else
+			$newfield['comment'] = '';
+		
+		if (isset($mi18n[$name]['comment2'])) 
+			$newfield['comment2'] = $mi18n[$name]['comment2'];
+		else
+			$newfield['comment2'] = '';
+				
+		//validate
+		if (isset($mi18n[$name]['validate'])) {
+			$newfield['validate'] = $mi18n[$name]['validate'];
+		} else {
+			$newfield['validate'] = array('rules'=>array(), 'messages'=>array());
+		}
+			
 		
 		$this->_fields[$name] = $newfield;
 		
@@ -3564,7 +3817,61 @@ class CModel
 		}
 		$selector .= "</select>";
 		if ($disabled )
-			$selector .= "<input type='hidden' name='params[$name]' value='$default_value' />";	
+			$selector .= "<input type='hidden' name='params[$name]' value='$default_value' />";
+			
+		//queryForInput
+		if (isset($field['onchange']) && $field['onchange']) {
+			$url = $ioparams['_base'].'/queryForInput?modname='.$this->_name.'&name='.$name.'&val='.$val;
+			
+			$updateparamsval='';
+			//values
+			$fields = $this->getFields();
+			foreach($fields as $key=>$v) {
+				if (!$v['edit'])
+					continue;
+				//check data'
+				$fname = $key;
+				$updateparamsval .= "
+					if (!_.isUndefined(res.data.$fname)) {
+						$('#param_$fname').val(res.data.$fname);
+					}
+				";
+				
+			}	
+			
+			$res = "<script> $('#param_$name').on('change', function(e) { ";
+			
+			$res .= "  var _self = $(this); ";
+			$res .= "
+					var url = '$url';
+					var form = $(this).closest('form');
+					var  formData = form.serializeArray();
+					for (i=0; i<formData.length; i++) {
+						if (formData[i].name == 'task') {
+							formData[i].value = 'queryForInput';
+						} else if (formData[i].name == 'modname') {
+							formData[i].value = '{$this->_name}';
+						}
+					}
+					
+					$.post(url, formData, function(res) {
+						if (res.status == 0) {
+							console.log(res);
+							$updateparamsval									
+						} else {
+							rui.showTError('操作失败:'+res.status);
+						}
+					})
+					.error(function() { 
+						rui.showTError('系统错误');
+					});
+					";
+			
+			$res .= "});</script>";
+			
+			$selector .= $res;
+			
+		}	
 		
 		return $selector;								
 	}
@@ -4081,7 +4388,7 @@ class CModel
 	 */
 	protected function  buildInputForDate(&$field, $params, $ioparams=array(), $format='yyyy-mm-dd')
 	{
-		Factory::GetApp()->getActiveComponent()->enableJSCSS('datepicker,datetimepicker');
+		//Factory::GetApp()->getActiveComponent()->enableJSCSS('datepicker,datetimepicker');
 		
 		$name = $field['name'];
 		if (isset($params[$name]))
@@ -4103,8 +4410,10 @@ class CModel
 		$paramName = isset($field['paramName'])?$field['paramName']: "params[$name]";	
 		$placeholder = $field['title'];
 		
+		$filterclass = $field['searchable']?'form-filter filter-field':'';
+		
 		$res = "<div class='input-group input-medium date date-picker' data-date-format='$format' >
-				<input type='text' class='form-control' name='params[$name]' value='$val' id='$paramId'>
+				<input type='text' class='form-control $filterclass' name='params[$name]' value='$val' id='$paramId'>
 				<span class='input-group-btn'>
 				<button class='btn default_value' type='button'><i class='fa fa-calendar'></i></button>
 				</span>
@@ -4125,7 +4434,7 @@ class CModel
 	 */
 	protected function  buildInputForDatetime(&$field, $params, $ioparams=array(), $format='yyyy-mm-dd hh:ii:ss')
 	{
-		Factory::GetApp()->getActiveComponent()->enableJSCSS('datepicker,datetimepicker');
+		//Factory::GetApp()->getActiveComponent()->enableJSCSS('datepicker,datetimepicker');
 		
 		$name = $field['name'];
 		if (isset($params[$name]))
@@ -4788,7 +5097,71 @@ class CModel
 		
 		return $res;
 	}
-	
+
+	/**
+	 * buildInputForQuery 构建查询框
+	 *
+	 * @param mixed $field 字段信息
+	 * @param mixed $params 记录
+	 * @param mixed $ioparams 请求上下文
+	 * @return mixed 链接选择框表单控件
+	 *
+	 */
+	protected function buildInputForQuery(&$field, $params, &$ioparams=array())
+	{
+		$name = $field['name'];
+		if (isset($params[$name]))
+			$val = $params[$name];
+		else 
+			$val = '';
+		
+		$id = "selectlink_for_$name";		
+		$res =  "<div class='input-group'><input type='text' value='$val'  name='params[$name]' id='param_$name' data-required='1' class='form-control'/>";
+		$res .= " <span class='input-group-btn'> <button class='btn gray' type='button' id='$id'> <i class='fa fa-search'></i> </button></span></div>";
+		
+		$url = $ioparams['_base'].'/queryForInput?modname='.$this->_name.'&name='.$name.'&val='.$val;		
+		$res .= "<script> $('#$id').on('click', function(e) { ";
+		
+		$res .= "  var _self = $(this); ";
+		$res .= "
+				var url = '$url';
+				var form = $(this).closest('form');
+				var  formData = form.serializeArray();
+				for (i=0; i<formData.length; i++) {
+	  				if (formData[i].name == 'task') {
+						formData[i].value = 'queryForInput';
+					} else if (formData[i].name == 'modname') {
+						formData[i].value = '{$this->_name}';
+					}
+			   }
+			
+				$.post(url, formData, function(res) {
+                    if (res.status == 0) {
+                        $('#param_$name').val(res.data.value);
+                    } else {
+                        rui.showTError('操作失败:'+res.status);
+                    }
+                })
+                .error(function() { 
+                     rui.showTError('系统错误');
+                });
+                ";
+		
+		$res .= "});</script>";
+		
+		return $res;
+	}
+
+	public function queryForInput($name, $val, $params=array(), &$ioparams=array())
+	{
+		$mname = 'queryForInput'.ucfirst($name);
+		if (method_exists($this, $mname)) {
+			return $this->$mname($name, $val, $params, $ioparams);
+		} 
+		
+		return false;
+	}
+
 	
 	/**
 	 * buildInputForLink 构建链接选择框
@@ -4999,6 +5372,8 @@ class CModel
 	 */
 	protected function buildInputForFileselector(&$field, $params,$ioparams=array())
 	{
+		Factory::GetApp()->getActiveComponent()->enableJSCSS(array('fileview'));
+		
 		$name = $field['name'];
 		if (isset($params[$name]))
 			$val = $params[$name];
@@ -5086,6 +5461,7 @@ class CModel
 	 */
 	protected function buildInputForFileselectButton(&$field, $params, $ioparams=array())
 	{
+		Factory::GetApp()->getActiveComponent()->enableJSCSS(array('fileview'));
 		$name = $field['name'];
 		if (isset($params[$name]))
 			$val = $params[$name];
@@ -5212,7 +5588,7 @@ class CModel
 	 */
 	protected function buildInputForGallery(&$field, $params, $ioparams=array())
 	{
-		Factory::GetApp()->getActiveComponent()->enableJSCSS(array('bgallery', 'jquery_ui', 'gallery'));
+		//Factory::GetApp()->getActiveComponent()->enableJSCSS(array('bgallery', 'jquery_ui', 'gallery'));
 		
 		$name = $field['name'];
 		if (isset($params[$name]))
@@ -5233,9 +5609,9 @@ class CModel
 			$w = 'data-width="'.$field['width'].'"';
 		if (isset($field['height']))
 			$h = 'data-height="'.$field['height'].'"';
+		$ctype= (isset($field['ctype']))?'data-ctype="'.$field['ctype'].'"':'';
 		
-		
-		$res = "<input type='hidden' name='params[$name]' value='$val' id='param_$name' />  <div id='fs_param_$name' class='gallery' data-url='$_base/gallery' data-name='$name' data-model='$mname' data-mid='$mid' $w $h   class='form-control' > </div>";
+		$res = "<input type='hidden' name='params[$name]' value='$val' id='param_$name' />  <div id='fs_param_$name' class='gallery' data-url='$_base' $ctype data-name='$name' data-model='$mname' data-mid='$mid' $w $h   class='form-control' > </div>";
 		
 		return $res;
 	}
@@ -5345,6 +5721,9 @@ class CModel
 				break;
 			case 'map': //地图定位地址选择
 				$input = $this->buildInputForMap($field, $params, $ioparams);
+				break;
+			case 'query': //自定义查询
+				$input = $this->buildInputForQuery($field, $params, $ioparams);
 				break;
 			case 'link': //link url或本地选择
 				$input = $this->buildInputForLink($field, $params, $ioparams);
@@ -5479,20 +5858,47 @@ class CModel
 		else 
 			$val = '';
 		
+		$nr = 0;
 		foreach ($searchfdb as $key => $v) {
-			if (($v['searchable']&1) != 1) 
+			if (($v['searchable']&1) != 1) //非模糊
 				continue;
 				
 			$placeholder .= $v['title'].' ';
 			if (!$firstkey)
 				$firstkey = $key;
+			$nr ++;
 		}
 		
-		$searchinput = "<input type='text' class='form-control form-filter filter-field keyword' name='params[$name]' value='$val' placeholder='$placeholder'/>";
-		$searchfdb[$firstkey]['searchinput'] = $searchinput;
+		if ($nr > 0) {
+			$searchinput = "<input type='text' class='form-control form-filter filter-field keyword' name='params[$name]' value='$val' placeholder='$placeholder'/>";
+			$searchfdb[$firstkey]['searchinput'] = $searchinput;
+		}
 		
 		return true;
 	}
+	
+	public function buildInputRangeForSearch(&$field, $params, &$ioparams=array(), $default=false)
+	{
+		$name = $field['name'];
+		$name1 = $name.'1';
+		$name2 = $name.'2';
+		
+		if (isset($params[$name1]))
+			$val1 = $params[$name1];
+		else 
+			$val1 = '';
+		
+		if (isset($params[$name2]))
+			$val2 = $params[$name2];
+		else 
+			$val2 = '';
+		
+		$res = "<input type='text' class='form-control form-filter filter-field input-small' name='params[$name][min]' placeholder='$field[title]大于等于'/>";
+		$res .= "<span>~</span>";
+		$res .= "<input type='text' class='form-control form-filter filter-field input-small' name='params[$name][max]' placeholder='$field[title]小于等于'/>";
+		return $res;
+	}
+	 
 	
 	/**
 	 * getFieldsForSearch 构建搜索控件
@@ -5510,7 +5916,15 @@ class CModel
 		foreach ($fdb as $key => $v) {
 			if (!$v['searchable'])
 				continue;
-			$v['input'] = $this->buildInput($v, $params, $ioparams, true);
+			switch ($v['searchtype']) {
+				case 'range':							
+					$v['input'] = $this->buildInputRangeForSearch($v, $params, $ioparams, true);
+					break;
+				default:						
+					$v['input'] = $this->buildInput($v, $params, $ioparams, true);
+					break;
+			}
+			
 			$searchfdb[$key] = $v;
 						
 		}

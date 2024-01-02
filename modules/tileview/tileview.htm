@@ -21,86 +21,103 @@
 
         </div>
     </div>
-<div class="portlet-body tileview-large $active_large">
-<!--# for ($i=0; $i<$rows; $i++) { #-->
-<div class="row tv$col_width">
-	<!--# for ($j=0; $j<$cols; $j++) { $idx = $i*$cols+$j; if ($idx >= $nr)break; $v=$_udb[$idx]; #-->
-	<div class="col-md-$col_width col-sm-$col_width col-xs-12">
-						<!-- BEGIN WIDGET THUMB -->
-	                      <div class="widget-thumb widget-bg-color-gray text-uppercase margin-bottom-20 ">
-	                          <div class="widget-thumb-wrap">
-	                          	<a href="$v[url]" class="videoplay" data-playurl='$v[playurl]'>
-                                <!--# if ($v['photo']) { #-->
-	                                <img src="$v[photo]"/>
-                                <!--# } else { #-->
-                                  <i class="widget-thumb-icon bg-red fa fa-film ">
-                                    </i>
-                                <!--# }#-->
-	                            </a>
-	                            <div class="clearfix"></div>
-	                            <a href="$v[url]" title="$v[title]" target="_blank" >
-	                                <span class="widget-thumb-title">$v[title]</span>
-	                            </a>
-                              $v[extinfo]
-	                          </div>
-						</div>
-						<!-- END WIDGET THUMB -->
-					</div>
-	<!--# } #-->				
-</div> 
-<!--# } #-->
-</div>
+    <div class="scroller" id="tileview_scroller$mid">
+    <div class="portlet-body tileview-large $active_large" >
+            <!--# for ($i=0; $i<$rows; $i++) { #-->
+            <div class="row tv$col_width">
+            	<!--# for ($j=0; $j<$cols; $j++) { $idx = $i*$cols+$j; if ($idx >= $nr)break; $v=$_udb[$idx]; #-->
+            	<div class="col-md-$col_width col-sm-$col_width col-xs-12">
+            						<!-- BEGIN WIDGET THUMB -->
+            	                      <div class="widget-thumb widget-bg-color-gray text-uppercase margin-bottom-20 ">
+            	                          <div class="widget-thumb-wrap">
+                                            <!--# if ($v['playurl']) { #-->
+            	                          	<a href="$v[playurl]" class="videoplay" data-playurl='$v[playurl]' type='video/mp4'>
+                                            <!--# } else { #-->
+                                            <a href="$v[photo]" title="$v[title]" data-gallery="#blueimp-gallery$mid" >
+                                            <!--#} if ($v['photo']) { #-->
+            	                                <img src="$v[photo]" />
+                                            <!--# } else { #-->
+                                              <i class="widget-thumb-icon bg-red fa fa-film ">
+                                                </i>
+                                            <!--# }#-->
+            	                            </a>
+            	                            <div class="clearfix"></div>
+            	                            <a href="$v[url]" title="$v[title]" target="_blank" >
+            	                                <span class="widget-thumb-title">$v[title]</span>
+            	                            </a>
+                                          $v[extinfo]
+            	                          </div>
+            						</div>
+            						<!-- END WIDGET THUMB -->
+            					</div>
+            	<!--# } #-->				
+            </div> 
+            <!--# } #-->
 
-<!-- listimg -->
-<div class="portlet-body tileview-listimg $active_listimg">
-    <div class="mt-element-list">
-        <div class="mt-list-container list-news ext-1">
-            <ul>
-            <!--# foreach ($udb as $key=>$v){ #-->
-                <li class="mt-list-item">
-			        <div class="list-icon-container">
-			            <a href="javascript:;">
-			                <i class="fa fa-angle-right"></i>
-			            </a>
-			        </div>
-			        <div class="list-thumb">
-			            <a href="javascript:;">
-			                <img alt="" src="$v[photo]"/>
-			           </a>
-			        </div>
-			        <div class="list-datetime uppercase font-gray pull-right">$v[timelong]</div>							
-			        <div class="list-item-content">
-			            <h3 class="uppercase title">
-			                <a href="$v[url]">$v[name]</a>
-			            </h3>
-			            <p></p>
-			        </div>
-			        <div class="clearfix"></div>
-			    </li>
-			    <div class="clearfix"></div>
-			    <!--#}#-->			
-            </ul>
+    </div>
+
+    <!-- listimg -->
+    <div class="portlet-body tileview-listimg $active_listimg">
+        <div class="mt-element-list">
+            <div class="mt-list-container list-news ext-1">
+                <ul>
+                <!--# foreach ($udb as $key=>$v){ #-->
+                    <li class="mt-list-item">
+    			        <div class="list-icon-container">
+    			            <a href="javascript:;">
+    			                <i class="fa fa-angle-right"></i>
+    			            </a>
+    			        </div>
+    			        <div class="list-thumb">
+    			            <a href="javascript:;">
+    			                <img alt="" src="$v[photo]"/>
+    			           </a>
+    			        </div>
+    			        <div class="list-datetime uppercase font-gray pull-right">$v[timelong]</div>							
+    			        <div class="list-item-content">
+    			            <h3 class="uppercase title">
+    			                <a href="$v[url]">$v[name]</a>
+    			            </h3>
+    			            <p></p>
+    			        </div>
+    			        <div class="clearfix"></div>
+    			    </li>
+    			    <div class="clearfix"></div>
+    			    <!--#}#-->			
+                </ul>
+            </div>
         </div>
     </div>
+
+    <!-- detail -->
+    <div class="portlet-body tileview-detail $active_detail">
+        <div class="table-scrollable table-scrollable-borderless">
+            <table class="table table-hover table-light">
+                <tbody>
+                <!--# $i=0; foreach ($udb as $key=>$v) { $i++; #-->
+                    <tr>
+                        <td><a href='$_basename/content/$v[id]'>$v[name]</a></td>
+                        <td>$v[time]</td>
+                    </tr>
+                <!--# } #-->            
+                </tbody>
+            </table>
+        </div>                                            
+    </div>
+    </div>
+
 </div>
 
-<!-- detail -->
-<div class="portlet-body tileview-detail $active_detail">
-    <div class="table-scrollable table-scrollable-borderless">
-        <table class="table table-hover table-light">
-            <tbody>
-            <!--# $i = 0; foreach ($udb as $key=>$v) { $i++; #-->
-                <tr>
-                    <td><a href='$_basename/content/$v[id]'>$v[name]</a></td>
-                    <td>$v[time]</td>
-                </tr>
-            <!--# } #-->            
-            </tbody>
-        </table>
-    </div>                                            
+<div id="blueimp-gallery$mid" class="blueimp-gallery blueimp-gallery-controls">
+    <div class="slides"></div>
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
 </div>
 
-</div>
 <script type="text/javascript">
 jQuery(document).ready(function() {
     var views = $enable_view_list;
@@ -130,6 +147,56 @@ jQuery(document).ready(function() {
                 }
             }
         }        
+    });
+
+    //iplayer
+    var row = $('#$mid').closest('.row');
+    if (row.length > 0) {
+        var iplayer = row.find('.iplayer');
+        var iheight = iplayer.height();
+        if (iheight > 0) {
+            iheight -= 90;
+            $('#tileview_scroller$mid').height(iheight);
+            $('#tileview_scroller$mid').closest('.slimScrollDiv').height(iheight);
+        }
+    }
+
+
+    function showGallery (id) 
+    {
+
+        var galleryobjs = [];
+  
+        var nr = 0;
+        var index = 0;
+
+        <!--# foreach ($udb as $key=>$v) { #-->
+            galleryobjs.push({
+                title: "$v[title]",
+                href: ($v[__ctype]&1)?"$v[_video]":"$v[photo]",
+                type: ($v[__ctype]&1)?'video/mp4':'image/x',
+                poster: "$v[photo]"
+            });
+
+            if (id == $v[id]) {
+                index = nr;
+            }
+            nr ++;
+        <!--# } #-->
+
+        blueimpGallery(galleryobjs, 
+        {
+            container: '#blueimp-gallery$mid',
+            carousel: true,
+            index: index,
+        });
+    }
+
+    //gallery
+    $('.gallery-img', $('#$mid')).on('click', function(e) {
+        e.preventDefault();
+        var id = $(this).attr('data-id');
+        showGallery(id);
     });
 });
 </script>

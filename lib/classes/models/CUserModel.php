@@ -521,8 +521,6 @@ class CUserModel extends CTableModel
 	 */
 	protected function checkSSID($ssid)
 	{
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN checkSSID");
-		
 		$m = Factory::GetModel('session');
 		$ssinfo = $m->getOne(array('ssid'=>$ssid));
 		if (!$ssinfo) {
@@ -548,7 +546,6 @@ class CUserModel extends CTableModel
 		
 		//更新COOKIE, 用户有活动，延长过期时间，
 		$this->setSSID($ssid, $cktime);
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "OUT checkSSID");
 		
 		return true;
 	}
@@ -598,13 +595,11 @@ class CUserModel extends CTableModel
 	
 	protected function checkSession()
 	{
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN");
 		$ssid = $this->getSSID();
 		if (!$ssid)
 			return false;
 		
 		$res = $this->checkSSID($ssid);
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "OTU");
 		return $res;
 	}
 	
@@ -613,9 +608,6 @@ class CUserModel extends CTableModel
 		if ($this->_auth)
 			return true;		
 		$res = $this->checkSession();
-		
-		
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "isLogin=$res");
 		
 		return $res;
 	}
@@ -653,7 +645,6 @@ class CUserModel extends CTableModel
 	protected function isUser($userinfo)
 	{
 		$val = ($userinfo['flags'] & UF_USER);
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, '$val='.$val);
 		return $val != 0;
 	}
 	
@@ -697,8 +688,6 @@ class CUserModel extends CTableModel
 			}
 		}
 		
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $userinfo);
-		
 		$epassword = $this->encryptPassword($password);		
 		if ($userinfo['password'] != $epassword) {
 			$this->addFails($uid);
@@ -716,10 +705,8 @@ class CUserModel extends CTableModel
 	
 	protected function decryptPassword($password)
 	{
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "password=$password");
 		if (isset($_SESSION['__aeskey'])) {
 			$__aeskey = $_SESSION['__aeskey'];
-			//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "decrypt AES password, __aeskey=".$__aeskey);
 			
 			$e = Factory::GetEncrypt();
 			$password = $e->aesDecryptJS($__aeskey, $password);
@@ -750,11 +737,9 @@ class CUserModel extends CTableModel
 		
 		$m = Factory::GetModel('session');
 		$res = $m->getOne(array('ssid'=>$ssid));
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $res);
 		if ($res) 
 			$params['id'] = $res['id'];
 		
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $params);
 		$res = $m->set($params);
 		if (!$res) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "set session failed!");
@@ -834,8 +819,6 @@ class CUserModel extends CTableModel
 		
 		slog_info("str_user_login_ok");	
 		
-		//rlog($userinfo);
-		
 		return true;
 	}
 	
@@ -856,12 +839,14 @@ class CUserModel extends CTableModel
 		$userinfo = $this->getByName($username);
 		if (!$userinfo) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "WARNING: no user '$username' ") ;
+			setErr(RC_E_INVALID_USER);
 			return RC_E_INVALID_USER;
 		}
 		
 		//口令
 		if (($res = $this->checkPassword($username, $password)) !== true) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, 'check password failed!res='.$res);
+			setErr(RC_E_INVALID_PASSWORD);
 			return $res;			
 		}
 		
@@ -899,8 +884,6 @@ class CUserModel extends CTableModel
 		
 		$userinfo = $this->get($uid);
 		
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $userinfo);
-
 		$res = $this->setSession($userinfo);
 		if (!$res) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, 'set login session failed!');
@@ -927,9 +910,6 @@ class CUserModel extends CTableModel
 	 */
 	protected function loginBySeccode(&$params)
 	{
-		//rlog(RC_LOG_DEBUG, __FUNCTION__, $params);
-		
-		//检查验证码
 		if (!$params) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "invalid params!", $params);
 			return false;
@@ -993,7 +973,7 @@ class CUserModel extends CTableModel
 		return 3;
 	}	
 	
-	protected function createUser($name, $password)
+	protected function createUser($name, $password, $params=array())
 	{
 		$params['name'] = $name;
 		$params['password'] = $password;
@@ -1015,9 +995,20 @@ class CUserModel extends CTableModel
 	
 	public function register($params, $ioparams=array())
 	{
+		if (!is_model('home_config')) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "no model 'home_config'!");
+			return false;
+		}
+		
+		$m = Factory::GetModel('home_config');
+		$hcf = $m->get(0);
+		
+		$reg_email_seccode = $hcf['reg_email_seccode'];
+		$reg_mobile_seccode = $hcf['reg_mobile_seccode'];
+		
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $params);
 		if (!$params) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"invalid $params");
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"invalid params!", $params);
 			return false;
 		}
 		
@@ -1042,24 +1033,32 @@ class CUserModel extends CTableModel
 			return false;
 		}
 		//检查帐户$account
-		if (!is_email($account) && !is_mobile($account)) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"invalid account '$account'!");
+		if ($reg_email_seccode && !is_email($account) ) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"invalid email account '$account'!", $params);
+			setErr(RC_E_ACCOUNT_INVALID);
+			return false;
+		}
+		
+		if ($reg_mobile_seccode && !is_mobile($account)) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"invalid mobile account '$account'!", $params);
 			setErr(RC_E_ACCOUNT_INVALID);
 			return false;
 		}
 		
 		//检查验证码
-		$m = Factory::GetModel('user_seccode');
-		$oldcode = $m->getSecCode($account);
-		if (!$oldcode) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"get seccode failed!", $params);
-			setErr(RC_E_SECCODE_INVALID);
-			return false;
-		}
-		if ($oldcode != $seccode) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"invalid seccode '$seccode' failed!");
-			setErr(RC_E_SECCODE_INVALID);
-			return false;
+		if ($reg_mobile_seccode || $reg_email_seccode) {
+			$m = Factory::GetModel('user_seccode');
+			$oldcode = $m->getSecCode($account);
+			if (!$oldcode) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"get seccode failed!", $params);
+				setErr(RC_E_SECCODE_INVALID);
+				return false;
+			}
+			if ($oldcode != $seccode) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"invalid seccode '$seccode' failed!");
+				setErr(RC_E_SECCODE_INVALID);
+				return false;
+			}
 		}
 		
 		//检查口令
@@ -1078,7 +1077,7 @@ class CUserModel extends CTableModel
 		}	
 		
 		//创建帐户
-		$res = $this->createUser($name, $password);
+		$res = $this->createUser($name, $password, $params);
 		if (!$res) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__,"create user failed!");
 			return false;
@@ -1310,7 +1309,7 @@ class CUserModel extends CTableModel
 	protected function getUserStorageDispathInfo($uid)
 	{
 		$m = Factory::GetModel('user2org');
-		$res = $m->getOne(array('uid'=>$uid));
+		$res = $m->getOne(array('id'=>$uid));
 		if (!$res) {
 			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "no org of uid '$uid'");
 			return false;
@@ -1324,7 +1323,7 @@ class CUserModel extends CTableModel
 			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "no storage dispath of oid '$oid'");
 			return false;
 		}
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $udb);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $udb);
 		
 		//可用空间最大的存储为默认存储
 		//查询用户所在单位分配置的空间
@@ -1361,7 +1360,7 @@ class CUserModel extends CTableModel
 	{
 		$userinfo = $this->get($uid);
 		if (!$userinfo) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "no uid '$uid'!");
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "no id '$uid'!");
 			return false;
 		}
 		

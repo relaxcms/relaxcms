@@ -12,9 +12,41 @@ class SystemApplication extends CMainApplication
 		$this->__construct($name, $options);
 	}
 	
-	public function getDefaultComponent()
+		
+	/**
+	 * 默认页
+	 *
+	 * @return mixed This is the return value description
+	 *
+	 */
+	protected function checkStartComponent(&$ioparams=array())
 	{
-		return 'main';
+		$default_component = $this->getDefaultComponent();
+		
+		if ($ioparams['component'] != $default_component)
+			return false;
+			
+		//查一下权限
+		$cf = get_config();
+		if (!empty($cf['default_component']) && $this->hasPrivilegeOf($cf['default_component'])) {
+			$cname = $cf['default_component'];
+			$ioparams['component'] = $cname;			 
+			if (!$this->isComponent($cname)) {
+				$menus = $this->getMenus();
+				if (isset($menus[$cname])) {
+					$appname = $menus[$cname]['app'];
+					if ($appname != $this->_name) {
+						$ioparams['aname'] = $appname;
+						$ioparams['_aname'] = $appname;
+						$ioparams['cname'] = $cname;	
+						$ioparams['componentinfo'] = $menus[$cname];	
+						$this->setRunApp($appname);
+					}
+				}
+			}	
+		}
+		
+		return true;
 	}
 	
 		

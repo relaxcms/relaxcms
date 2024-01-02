@@ -16,6 +16,7 @@ class CContentModule extends CModule
 	
 	protected function formatTitle(&$row, $maxlen)
 	{
+
 		if ($maxlen > 0)
 			$row['title'] = utf8_substr($row['name'], 0, $maxlen);	
 	}
@@ -33,16 +34,25 @@ class CContentModule extends CModule
 			$row['time'] = tformat($row['ts'], $tf);
 		}
 	}
+
+	protected function getList($params, $num, $ioparams)
+	{
+		$m =  Factory::GetModel('content');
+		$udb = $m->getList($params, $num, $ioparams); 
+		
+		return $udb;
+	}
 	
 	public function show(&$ioparams=array())
 	{
-		parent::show($ioparams);
+		$res = parent::show($ioparams);
 		
 		$flags = isset($this->_attribs['flags'])?intval($this->_attribs['flags']):0;
 		$num = isset($this->_attribs['num'])?intval($this->_attribs['num']):12;
 		$cid = isset($this->_attribs['cid'])?intval($this->_attribs['cid']):0;
 		$mid = isset($this->_attribs['mid'])?$this->_attribs['mid']:'';
 		
+		!$num && $num = 6;
 		
 		$this->_attribs["num"] = $num; 
 		$this->_attribs["flags"] = $flags;
@@ -52,7 +62,6 @@ class CContentModule extends CModule
 		$notitle = isset($this->_attribs['notitle'])?true:false;
 		$time_format = isset($this->_attribs['time_format'])?$ioparams['time_format']:'';
 		
-		$m = Factory::GetModel('content');
 		
 		$params = array();
 		if ($flags > 0)
@@ -62,9 +71,9 @@ class CContentModule extends CModule
 			
 		$params['module_id'] = $mid;
 		
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $params);
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $params);
 		
-		$udb = $m->getList($params, $num, $ioparams); 
+		$udb = $this->getList($params, $num, $ioparams);
 		
 		$moreurl='';
 		$_udb = array();

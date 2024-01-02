@@ -50,6 +50,7 @@ define( 'RPATH_DIST',				RPATH_PUBLIC);
 define( 'RPATH_STATIC',				RPATH_PUBLIC.DS.'static');
 define( 'RPATH_THEME',				RPATH_PUBLIC.DS.'themes');
 define( 'RPATH_DATA',				RPATH_PUBLIC.DS.'data');
+define( 'RPATH_STATIC_THEMES',		RPATH_STATIC.DS.'themes');
 
 
 define( 'RPATH_CACHE',				RPATH_ROOT.DS.'cache');

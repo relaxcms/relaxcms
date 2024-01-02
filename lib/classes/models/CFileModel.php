@@ -398,10 +398,15 @@ class CFileModel extends CTableModel
 		$row['status'] = $this->formatLabelColorForView($status, $row['status']);
 				
 		//icon
-		if ($row['isdir']) {
+		/*if ($row['isdir']) {
 			$row['icon'] = $ioparams['_theroot']."/global/img/filetypes/dir.gif";	
 		} else {
 			$row['icon'] = $ioparams['_theroot']."/global/img/filetypes/".$row['extname'].".gif";
+		}*/
+		if ($row['isdir']) {
+			$row['icon'] = "ft-dir";	
+		} else {
+			$row['icon'] = "ft-$row[extname]";
 		}
 		
 		//url
@@ -629,6 +634,130 @@ class CFileModel extends CTableModel
 	}
 	
 	
+	protected function genOtherFilePreview($fileinfo, $dst, $width=128, $height=128)
+	{
+		$text = $fileinfo['extname'];
+		
+		!$width && $width=128;
+		!$height && $height=128;
+		
+		
+		$im = imagecreatetruecolor($width, $height);
+		if (!$im){
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call imagecreatetruecolor failed!w=".$width.',h='.$height);
+			return false;
+		}
+		
+		$bgcolor = imagecolorallocatealpha($im, 240, 240, 240, 100); // (PHP 4 >= 4.3.2, PHP 5)
+		if (!$bgcolor){
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call imagecolorallocatealpha failed!");
+			return false;
+		}
+		
+		//填充
+		imagefill($im, 0, 0, $bgcolor);
+		
+		
+		//src
+		$src = RPATH_THEME.DS."assets".DS."img".DS."filetypes".DS.$fileinfo['extname'].".gif";
+		if (file_exists($src) && ($szs = @getimagesize($src))) { //源文件是否存在
+			
+			list($orig_width, $orig_height, $bigType) = $szs;
+			$mimetype = $szs['mime'];
+			
+			switch ($bigType) {
+				case 1: 
+					$sim = @imagecreatefromgif($src);
+					break;	 
+				case 2: 
+					$sim = @imagecreatefromjpeg($src); 
+					break;	 
+				case 3: 
+					$sim = @imagecreatefrompng($src); 
+					break;
+				default:
+					rlog(RC_LOG_ERROR, __FILE__, __LINE__, "Unkown cropping image type '$bigType'!");
+					break;
+			}
+			
+			if ($sim) {
+				
+				//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $x, $y, $w, $h, $target_w, $target_h);
+				$dst_x = 0;
+				$dst_y = 0;
+				$src_x = 0;
+				$src_y = 0;
+				$dst_w = $width;
+				$dst_h = $height;
+				
+				$src_w = $orig_width;
+				$src_h = $orig_height;
+				
+				$res = imagecopyresampled($im, $sim, $dst_x, $dst_y, $src_x, $src_y,
+						$dst_w, $dst_h, $src_w, $src_h);				
+				if (!$res) {
+					rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call imagecopyresampled failed!");
+				}
+			}
+		}	
+		
+		$nr = strlen($text);
+		$size = 14;
+		$angle = 0;
+		$x = 0;
+		$y = 0;
+		
+		
+		
+		$textcolor = imagecolorallocate($im, 102, 102, 102);
+		
+		// imagestring ( resource $image , int $font , int $x , int $y , string $s , int $col ) : bool
+		
+		$font = RPATH_SUPPORTS.DS."fonts".DS."song.ttf";
+		
+		$szdb = array(14, 12, 10, 8, 7);
+		foreach ($szdb as $key=>$v) {
+			$size = $v;
+			
+			$box   = imagettfbbox($size, $angle, $font, $text);
+			if( !$box )
+				return false;
+			$min_x = min( array($box[0], $box[2], $box[4], $box[6]) );
+			$max_x = max( array($box[0], $box[2], $box[4], $box[6]) );
+			$min_y = min( array($box[1], $box[3], $box[5], $box[7]) );
+			$max_y = max( array($box[1], $box[3], $box[5], $box[7]) );
+			
+			$t_width  = ( $max_x - $min_x );
+			$t_height = ( $max_y - $min_y );
+			
+			//rlog('size='.$size.',$t_width='.$t_width);
+			
+			if ($t_width > $width)
+				continue;
+			
+			$x = ceil(($width - $t_width)/2);
+			$y = ceil(($height)/2);
+			
+			break;
+		}
+		
+		
+		$res = imagettftext($im, $size, $angle, $x, $y, $textcolor, $font, $text);
+		if (!$res){
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call imagettftext failed!");
+			return false;
+		}		
+		
+		$res = imagepng($im, $dst);
+		if (!$res){
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call ImageColorAllocateAlpha failed!");
+			return false;
+		}
+		imagedestroy($im);
+		
+		return $dst;
+	}
+	
 	protected function getOtherFilePreview($fileinfo, $src, $dst, $width, $height, &$mimetype)
 	{
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "in getOtherFilePreview");
@@ -642,10 +771,11 @@ class CFileModel extends CTableModel
 		
 		if ($fileinfo['isdir']) {
 			$mimetype = "image/png";
-			$dst = RPATH_THEME.DS."global/img/filetypes".DS."dir.png";
-		}  else {
-			$mimetype = "image/gif";
-			$dst = RPATH_THEME.DS."global/img/filetypes".DS.$extname.".gif";
+			$dst = RPATH_STATIC.DS."img".DS."dir.png";
+		}  else { // 生成一下扩展名预览
+			$mimetype = "image/png";
+			//$dst = RPATH_STATIC.DS."img".DS."nopic.png";
+			$dst = $this->genOtherFilePreview($fileinfo, $dst, $width, $height);
 		}
 		
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "OUT getOtherFilePreview");
@@ -1495,7 +1625,7 @@ class CFileModel extends CTableModel
 	public function read($id, &$ioparams=array())
 	{		
 		if (!$id) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "invalid id '$id'!");
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "invalid id '$id'!");
 			return false;
 		}
 		$fileinfo = $this->get($id);
@@ -2416,5 +2546,67 @@ class CFileModel extends CTableModel
 	public function setNumDelta($id, $delta)
 	{
 		return $this->addN($id, 'uses', $delta);
+	}
+		
+	public function importFile($opath, $move=false, $_name='')
+	{
+		if (!file_exists($opath))	{
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "no '$opath' failed!");
+			return false;
+		}
+		
+		$name = s_filename($opath);	
+		
+		$params = array();
+		$params['pid'] = 0;
+		$params['opath'] = $opath;
+		$params['name'] = $name;
+		
+		$res = $this->initUploadParams($params);
+		if (!$res)  {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "init upload params failed!", $params);
+			return false;
+		}
+		!empty($_name) && $params['name'] = $_name;
+		
+		
+		$dst = $params['dst'];		
+		$tmpfile = $opath;		
+		if (function_exists("move_uploaded_file") && $move) {
+			$res = copy($tmpfile, $dst);
+			if (!file_exists($dst)) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "move file '$tmpfile' to '$dst' failed!");
+				return false;
+			}
+			@unlink($tmpfile);
+		} else {
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "copy file to '$dst' ...");
+			$res = copy($tmpfile, $dst);
+			if (!file_exists($dst)) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "copy file to '$dst' failed!");
+				return false;
+			}			
+		}
+		
+		$size = filesize($dst);
+		
+		$params['size'] = $size;
+		$params['tmp_name'] = 0;
+		
+		//video
+		//需要转成mp4，无损，H5能直接播
+		if ($this->is_need_convert($params)) {
+			$params['status'] = 2; //待转码
+		}
+		
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $params);
+		
+		$res = $this->set($params);
+		if (!$res) {
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "set file failed!");
+			return false;
+		}
+		
+		return $params;
 	}
 }

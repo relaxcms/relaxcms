@@ -39,23 +39,27 @@ class CTreeViewDTComponent extends CDTComponent
 		//²éÑ¯
 		$parentdb = array();
 		$m->getParents($id, $parentdb);
+		//keyword
+		$this->getParams($params);
+		if (!$params)
+			$params['pid']=$id;
+		if ($sortName)
+			$params['__orderby'] = array($sortName=>$sortOrder);
 		
-		$params = array('pid'=>$id, 'order'=>$sortName, 'dir'=>$sortOrder);
 		$this->initParamsForShow($params, $ioparams);
 		
 		$rows = $m->selectForView($params, $ioparams);
-		$tabledata = $params['rows'];
 		
 		$modinfo = $m->getModelInfo();
 		$fdb = $modinfo['fdb'];
 		$pkey = $modinfo['pkey'];
 		
 		$_base = $ioparams['_base'];
-		foreach($tabledata as $key=>&$v)  {
+		foreach($rows as $key=>&$v)  {
 			$name = $v['name'];
 			$id = $v['id'];
 			if ($m->hasChildren($id))
-				$v['name'] = "<a href='$_base?id=$id'>$name</a>";
+				$v['_name'] = "<a href='$_base?id=$id'>$name</a>";
 		}
 		
 		
@@ -75,9 +79,10 @@ class CTreeViewDTComponent extends CDTComponent
 		$this->assign('mi18n', $mi18n);		
 		$this->assign('fdb', $fdb);
 		$this->assign('pkey', $fdb[$pkey]);
-		$this->assign('tabledata', $tabledata);		
+		$this->assign('tabledata', $rows);		
 		
 		$this->setTpl('treeview');
-		return $res;	
+		
+		return $rows;	
 	}
 }

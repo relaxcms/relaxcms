@@ -35,8 +35,8 @@
                     <div class="input-icon sec-icon">
                     <label class="control-label visible-ie8 visible-ie9">@t[captcha]</label>
                     <i class="fa fa-lock"></i>
-                    <input class="form-control placeholder-no-fix rccode " type="text" name="params[captcha]" autocomplete="off" required placeholder="@t[captcha]" value="" id="seccode"  />
-                    <img src="$_libroot/common/img/hidden.gif" class="captcha" id="capimg" alt="@t[captcha]" title="@t[Cannot see the captcha, please click me for reloading]"/>
+                    <input class="form-control placeholder-no-fix rccode " type="text" name="params[seccode]" autocomplete="off" required placeholder="@t[captcha]" value="" id="seccode"  />
+                    <img src="$seccodeimg" class="captcha" id="capimg" alt="@t[captcha]" title="@t[Cannot see the captcha, please click me for reloading]"/>
                     </div>
                 </div>
                 
@@ -238,7 +238,7 @@ jQuery(document).ready(function() {
 	            }
 	        });
 	        $("#capimg").on('click', genSecCode);
-	        genSecCode();
+	        //genSecCode();
 	        
 	}
 	

@@ -22,8 +22,8 @@ class CFrontComponent extends CDTComponent
 		parent::init($ioparams);
 		
 		//videojs
-		$this->enableJSCSS('videojs');
-		$this->enableJSCSS('admin', false);
+		$this->enableJSCSS('video');
+		//$this->enableJSCSS('admin', false);
 		
 		//id
 		if (!$this->_id) {
@@ -43,7 +43,6 @@ class CFrontComponent extends CDTComponent
 		
 	protected function preTask(&$ioparams=array())
 	{
-		//查询访问者信息
 		$_client = $ioparams['_client'];
 		$_useragent = $ioparams['_useragent'];
 		
@@ -52,24 +51,6 @@ class CFrontComponent extends CDTComponent
 		$m = Factory::GetModel('webclient');
 		$this->_tinfo = $m->getInfoByID($webid, $ioparams);		
 	}	
-	
-	/* sh template show */
-	protected function loadPortlet($tplinfo, &$ioparams=array())
-	{
-		$tplname = $tplinfo['name'];
-		$m = Factory::GetModel('portlet');
-		$udb = $m->gets("where tplname='$tplname'");
-		
-		$portlet = array();
-		foreach ($udb as $key=>$v) {
-			$name = 'portlet'.$v['pid'];
-			$this->assign($name, $v);
-			$portlet[] = $v;
-		}
-		
-		$this->assign('portlet', $portlet);
-	}	
-	
 	
 	protected function postTask(&$ioparams=array())
 	{
@@ -84,27 +65,7 @@ class CFrontComponent extends CDTComponent
 		}
 	}	
 	
-	public function loadTemplate2($ioparams=array(), $tdir = '')
-	{
-		$scf = Factory::GetSiteConfiguration();
 		
-		$tplname = $scf['template'];
-		
-		$tdb = get_tpls($tplname);
-		if (isset($tdb['portlet'])) {			
-			$this->set_var('portlet', $tdb['portlet']);
-		}
-		
-		//LOGO
-		!isset($scf['logo']) && $scf['logo'] = $ioparams['_dstroot'].'/'.$tplname.'/img/logo.png';
-
-		$this->set_var('scf', $scf);		
-		$this->set_var('cid', $this->_cid);
-		$this->set_var('tid', $this->_tid);
-		
-		return parent::loadTemplate($ioparams);
-	}
-	
 	protected function loadTemplate(&$ioparams = array())
 	{
 		$scf = Factory::GetSiteConfiguration();

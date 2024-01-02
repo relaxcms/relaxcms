@@ -18,7 +18,9 @@ class CDatabase
 	protected $_datatypes = array('char', 'varchar', 'tinytext', 'text', 'mediumtext','longtext',
 				'tinyint', 'int', 'smallint','bigint','float', 'double', 'decimal');
 				
-	protected $_strdatatypes = array('char' => true ,'varchar'=>true, 'text'=>true, 'tinytext'=>true, 'timestamp'=>true );	
+	protected $_strdatatypes = array('char' => true ,'varchar'=>true, 'text'=>true, 'tinytext'=>true, 'timestamp'=>true );
+	
+	protected $_last_error = '';	
 	
 	function __construct($name, $options=array() )
 	{
@@ -631,11 +633,13 @@ class CDatabase
 		}
 		
 		$keyvals = implode(',', $k2v);
-		$sql = "update $tablename set $keyvals where $pkey=$id";
-		
+		$sql = "update $tablename set $keyvals";
+		if ($id !== false)
+			$sql .= " where $pkey=$id";
+					
 		$res = $this->exec($sql);
 		if (!$res) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "update failed!sql=$sql", $params);
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "update failed!sql=$sql", $params);
 		}
 		
 		return $res;
@@ -705,9 +709,9 @@ class CDatabase
 		return false;
 	}
 	
-	function get_last_error()
+	public function get_last_error()
 	{
-		return false;
+		return $this->_last_error;
 	}
 	
 	function table_exists($table)
@@ -778,6 +782,11 @@ class CDatabase
 					case 'eq':
 						$and_wheres[] = $is_string?"$key='$value'":"$key=$value";
 						break;
+					case '!==':
+					case '!=':
+					case 'ne':
+						$and_wheres[] = $is_string?"$key!='$value'":"$key!=$value";
+						break;
 					case 'like':
 						$and_wheres[] = "$key like '%$value%'";
 						break;
@@ -824,6 +833,11 @@ class CDatabase
 					case 'eq':
 						$or_wheres[] = $is_string?"$key='$value'":"$key=$value";
 						break;
+					case '!==':
+					case '!=':
+					case 'ne':
+						$and_wheres[] = $is_string?"$key!='$value'":"$key!=$value";
+						break;					
 					case 'like':
 						$or_wheres[] = "$key like '%$value%'";
 						break;

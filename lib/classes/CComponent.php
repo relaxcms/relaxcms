@@ -145,9 +145,15 @@ class CComponent  extends CObject
 	/* ==============================
 	 * Utility Helper functions
 	 * =============================*/
-	protected function getModel()
+	protected function getModelName()
 	{
 		$modname = $this->request('modname', $this->_modname);
+		return $modname;
+	}
+	
+	protected function getModel()
+	{
+		$modname = $this->getModelName();
 		return Factory::GetModel($modname);
 	}
 	
@@ -166,9 +172,45 @@ class CComponent  extends CObject
 		return $this->_tpl;
 	}
 	
+	protected function initActiveTab($nr, $force_active_id=-1)
+	{
+		if ($force_active_id < 0) {
+			$name = 'atid'.$this->_name.$this->_task;
+			$active_table_id = isset($_COOKIE[$name])? intval($_COOKIE[$name]):0;
+			if (isset($_REQUEST['atid'])) {
+				$active_table_id = intval($_REQUEST['atid']);
+			}
+		}		
+		else 
+			$active_table_id = $force_active_id;
+		
+		if ($active_table_id >= $nr || $active_table_id <0)
+			$active_table_id = 0;
+		
+		
+		
+		$navtabs = array();
+		for($id=0; $id<$nr; $id++) {
+			$v = array();
+			
+			$v['id'] = $id;
+			$v['title'] = 'tab'.$id;
+			if ($active_table_id == $id) {
+				$v['active'] = 'active';
+				$v['in'] = 'active in';				
+			} else {
+				$v['active'] = '';
+				$v['in'] = '';		
+			}
+			
+			$navtabs[$id] = $v;
+		}	
+		return $navtabs;
+	}
+
 	protected function setActiveTab($nr, $force_active_id=-1, $selector='')
 	{
-		$tabs = initActiveTab($nr, $force_active_id);
+		$tabs = $this->initActiveTab($nr, $force_active_id);
 		foreach ($tabs as $key => $v) {
 			$this->assign('navtab'.$v['id'], $v);
 		}		

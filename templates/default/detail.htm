@@ -1,21 +1,6 @@
 
-<div class="portlet box default">
-<!--# if (!$dlg) { #-->
-<div class="portlet-title">
-    <div class="caption">
-        <i class="fa fa-globe"></i>$mi18n[modelname] <small> @t[Detail]  </small>
-    </div>
-    <div class="actions">
-        
-        
-        
-       <button type="button" class="btn btn-primary btn-sm refresh">
-            <i class="fa fa-refresh"></i> @T[Refresh] </button>
-    </div>
-</div>
-<!--# } #-->
-
 <div class="portlet-body form">
+    
 
 	<div class="form-body">
 	    
@@ -54,12 +39,11 @@
 	    <!--# } #-->
 	</div>
 	<div class="form-actions">
-		<div class="row">
-		    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-		    </div>
-			<div class="col-md-offset-4 col-lg-8 col-md-8 col-sm-8 col-xs-8">
-            <!--# foreach ($params[optdb] as $key=>$v) { #-->
-            <button type="button" href="$_base/$v[name]?dlg=$dlg&modname=$modname&id=$id" class="btn $v[class]  tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]"  msg="$v[msg]"> 
+		<div class="row ">
+		    
+			<div class="col-md-12 ac">
+            <!--# foreach ($params[optdb] as $key=>$v) { $url = isset($v['url'])?$v['url']:"$_base/$v[name]?dlg=$dlg&modname=$modname&id=$id"; #-->
+            <button type="button" href="$url" class="btn $v[class]  tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]" data-name="$v[name]"  msg="$v[msg]"> 
             <i class="$v[icon]"></i> $v[title] </button>
             <!--#  } if ($dlg == 1 ) { #-->
             <button type="button" class="btn default" id="btnClose">@t[Close]</button>
@@ -70,7 +54,7 @@
 		</div>
 	</div>
 </div>
-</div>
+
 
 <script language="javascript">
      
@@ -79,10 +63,14 @@
 jQuery(document).ready(function() {
 
     $('#btnClose').on("click", function(e){
-        //假设这是iframe页
         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
         parent.layer.close(index); //再执行关闭  
     });  
+
+    //dlg
+    if ($dlg) {
+        parent.$(".layui-layer-title")[0].innerText = '$sys_position';//'$mi18n[modelname]$str_task';    
+    }
     
     
     var doSubmit=function(form) {
@@ -167,6 +155,8 @@ jQuery(document).ready(function() {
 
                 //确认
                 var msg = el.attr('msg');
+                var name = el.attr('data-name');
+
                 if (_.isString(msg) && msg != '') {
                     bootbox.confirm(msg, function(result) {
                         if (result) {
@@ -187,7 +177,7 @@ jQuery(document).ready(function() {
                                     //parent refresh
                                    if (_.isFunction(parent.reload))
                                         parent.reload();
-                                    else
+                                    else if (name != 'del')
                                         rui.refresh(1);
                                 } else {
                                     //msg
@@ -227,10 +217,18 @@ jQuery(document).ready(function() {
             
             var showTmbox = function(el, url)
             {
-                var url = url+'?dlg=1';
                 var title = el.attr("title");
                 if (_.isUndefined(title))
                     title = "详细";
+
+                if (url.indexOf('?') < 0) // eg : '/files/file/download'
+                     url += '?';
+                else if (url.charAt(url.length-1) !== '&') // eg : '/files/file/download?file=a.jpg'
+                    url += '&';
+
+                url +='dlg=1&';
+
+
                 
                 
                 top.layer.open({

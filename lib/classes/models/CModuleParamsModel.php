@@ -46,7 +46,9 @@ class CModuleParamsModel extends CModel
 		$mid = $params['mid'];
 		$res = $this->getOne(array('mid'=>$mid));
 		if ($res) {
-			$params['id'] = $res['id'];			
+			$params['id'] = $res['id'];		
+			if (!isset($params['flags']) && isset($params['cid']))	
+				$params['flags'] = 0;
 		}
 		
 		$res = parent::set($params, $ioparams);

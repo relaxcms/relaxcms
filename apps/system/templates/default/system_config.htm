@@ -192,10 +192,12 @@
 								        <div class="fileselector fs" id="fileselector1" 
 		                                    data-url="$_base/fileselector" 
 		                                    data-mid="1"
+		                                    data-type="4"
 		                                    data-width='180' 
 		                                    data-height='120'
 		                                    data-name="bg"
 		                                    data-nosetting="1"
+		                                    data-nodownload="1"
 		                                    >
 	                                    </div>
                                     	
@@ -219,11 +221,13 @@
 								        <div class="fileselector fs" id="Div1" 
 		                                    data-url="$_base/fileselector" 
 		                                    data-mid="2"
+		                                    data-type="4"
 		                                    data-width='160' 
 		                                    data-height='68'
 		                                    data-maxnum="1"
 		                                    data-name="logo"
 		                                    data-nosetting="1"
+		                                    data-nodownload="1"
 		                                    >
 	                                    </div>
 							        </div>
@@ -238,6 +242,29 @@
 								        <input type="text" class="form-control" name="params[page_size]" value="$params[page_size]" />
 							        </div>
 						        </div>
+						        
+						        
+						        <div class="form-group hidden" >
+							        <label class="control-label col-md-3">默认起始页 <span class="required">
+							        * </span>
+							        
+							        <span>                            
+                                        <i class="fa  fa-question-circle  tooltips" 
+                                            data-style="default" data-placement="bottom" 
+                                            data-container="body" data-original-title="默认起始页登录帐号需要有相应权限，没有权限则忽略，登录进入还是进入默认页面"></i>
+                                    
+                                    </span>
+                                    
+							        </label>
+							        <div class="col-md-4">								        
+								        <select class="form-control" name="params[default_component]">
+								            <option value='main'>默认</option>
+								            $default_component_select
+								        </select>
+							        </div>
+						        </div>
+						        
+						        
                             </div>
                             
 						</div>						
@@ -290,6 +317,17 @@
 								        <span class="form-control-static">秒</span>
 							        </div>
 						        </div>
+						        <div class="form-group">
+							        <label class="control-label col-md-3">仅数字验证码<span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+							            <select class="form-control" name="params[seccodeonleynum]">
+								            $seccodeonleynum_select
+								        </select>
+							        </div>
+						        </div>
+						        
 
 						        
 						        <div class="form-group">
@@ -348,6 +386,16 @@
 						        </div>
 						        
 						        <div class="form-group">
+							        <label class="control-label col-md-3">API <span class="required">
+							        * </span>
+							        </label>
+							        <div class="col-md-4">
+								        <input type="text" class="form-control" name="params[apiurl]" value="$params[apiurl]" />	
+								        
+							        </div>
+						        </div>
+						        
+						        <div class="form-group">
 							        <label class="control-label col-md-3">API Token <span class="required">
 							        * </span>
 							        </label>
@@ -365,16 +413,18 @@
 							        </div>
 						        </div>
 						        
+						        
+
 						        <div class="form-group">
-							        <label class="control-label col-md-3">API <span class="required">
+							        <label class="control-label col-md-3">API跨站请求 <span class="required">
 							        * </span>
 							        </label>
 							        <div class="col-md-4">
-								        <span class=" form-control-static">$apiurl</span>
+								        <select class="form-control" name="params[xss_access]">
+								            $xss_access_select
+								        </select>
 							        </div>
-						        </div>
-
-						       
+						        </div>						       
 						        
 						        <div class="form-group">
 							        <label class="control-label col-md-3">根目录
@@ -423,6 +473,15 @@
 								        </select>
 							        </div>
 						        </div>
+						        
+						        <div class="form-group">
+							        <label class="control-label col-md-3">定时器服务地址
+							        </label>
+							        <div class="col-md-4">
+							            <input type="text" class="form-control" name="params[webtimer_request_api]" value="$params[webtimer_request_api]" />							
+							        </div>
+						        </div>
+						        
         						
 
 
@@ -435,7 +494,7 @@
 								        </select>
 							        </div>
 						        </div>
-						         <div class="form-group">
+						         <div class="form-group hidden">
 							        <label class="control-label col-md-3">接口代理服务 
 							        </label>
 							        <div class="col-md-4">
@@ -444,7 +503,7 @@
 								        </select>
 							        </div>
 						        </div>
-						        <div class="form-group">
+						        <div class="form-group hidden">
 							        <label class="control-label col-md-3">接口代理服务地址
 							        </label>
 							        <div class="col-md-4">
@@ -568,6 +627,7 @@
 										        <option value=""> 请选择 </option>
 										        <option value="smtp.163.com"> 163邮箱 </option>
 										        <option value="smtp.qq.com"> QQ邮箱 </option>
+										        <option value="smtp.exmail.qq.com"> QQ企业邮箱 </option>
 
 									        </select>
 
@@ -687,6 +747,15 @@
 									            <span class=" form-control-static">$params[dbname]</span>
 								            </div>
 							            </div>
+
+							            <div class="form-group">
+								            <label class="control-label col-md-5">数据库字符集 <span class="required">
+								            * </span>
+								            </label>
+								            <div class="col-md-7">
+									            <span class=" form-control-static">$params[dbcharset]</span>
+								            </div>
+							            </div>
 							    	</div> 
 					    		</div>
 					    		<div class="col-md-3">
@@ -754,6 +823,17 @@
 									            <input type="text" class="form-control db1" name="db1[dbname]" value="$db1[dbname]" id="db1_dbname">
 								            </div>
 							            </div>
+
+							            <div class="form-group">
+                                            <label class="control-label col-md-5">数据库字符集
+                                            </label>
+                                            <div class="col-md-7">
+                                                <select name="db1[dbcharset]" class="form-control db1">
+                                                	$db1_dbcharset_select
+                                                </select>
+                                            </div>
+                                        </div>
+
 
 							            <div class="form-group">
 								            <label class="control-label col-md-5">表前缀 <span class="required">
@@ -836,6 +916,17 @@
 									            <input type="text" class="form-control db2" name="db2[dbname]" value="$db2[dbname]" id="db2_dbname">
 								            </div>
 							            </div>
+
+							            <div class="form-group">
+                                            <label class="control-label col-md-5">数据库字符集
+                                            </label>
+                                            <div class="col-md-7">
+                                                <select name="db2[dbcharset]" class="form-control db2">
+                                                	$db2_dbcharset_select
+                                                </select>
+                                            </div>
+                                        </div>
+
 
 							            <div class="form-group">
 								            <label class="control-label col-md-5">表前缀 <span class="required">
@@ -921,6 +1012,17 @@
 									            <input type="text" class="form-control db3" name="db3[dbname]" value="$db3[dbname]" id="db3_dbname">
 								            </div>
 							            </div>
+
+							            <div class="form-group">
+                                            <label class="control-label col-md-5">数据库字符集
+                                            </label>
+                                            <div class="col-md-7">
+                                                <select name="db3[dbcharset]" class="form-control db3">
+                                                	$db3_dbcharset_select
+                                                </select>
+                                            </div>
+                                        </div>
+
 
 							            <div class="form-group">
 								            <label class="control-label col-md-5">
@@ -1138,22 +1240,88 @@ $(document).ready(function() {
         });
     });
     
-    //
-    $('#testOAuthGithub').click(function(){
-       var url = G._base + '/testOAuthGithub?dlg=1&r='+Math.random();
-        layer.open({
-            type: 2,
-            title: '测试GitHub登录',
-            shadeClose: false,
-            maxmin:true,
-            shade: 0.2,
-            shift: 10,
-            area: ['50%', '60%'],
-            content: url
-        });
+    //默认主题
+   	var sysForm = $('#system_config_base_form');
+    var currentcolor = $('#param_theme').val();
+    if (!currentcolor)
+        currentcolor = 'default';
+
+    var elItem = $('ul > li', sysForm);
+
+    elItem.removeClass("current");
+    $('.theme-colors .'+currentcolor, sysForm).addClass("current");
+   
+    //主题切换            
+    $('.theme-colors > li', sysForm).click(function () {
+        var color = $(this).attr("data-style");
+        
+        $('#css_admin_theme').attr("href", '$_dstroot/css/system_theme_' + color + ".css");
+        $('#param_theme').val(color);
+
+        elItem.removeClass("current");
+        $(this).addClass("current");
     });
-    
-    //
+
+
+    sysForm.validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                rules: {
+                    name: {
+                        required: true,
+                        email:true
+                    },
+                    password: {
+                        required: true
+                    },
+                    remember: {
+                        required: false
+                    }
+                },
+
+                messages: {
+                    name: {
+                        required: "Username is required."
+                    },
+                    password: {
+                        required: "Password is required."
+                    }
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit   
+                    $('.alert-danger', panelBase).show();
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label.closest('.form-group').removeClass('has-error');
+                    label.remove();
+                },
+
+                errorPlacement: function (error, element) {
+                    error.insertAfter(element);
+                },
+
+                submitHandler: function (form) {
+                    //form.submit();
+                    var  formData = $(form).serializeArray();
+				    // console.log(formData);
+				        
+				    rui.post(form.action, formData).then(function(res) {
+			            if (res.status == 0) {
+			                rui.showTSuccess('操作成功');
+			                rui.refresh(1);                
+			            } else {
+			               rui.showTError('操作失败:'+res.status);
+			            }
+			        }); 
+                }
+            });
     
 });
 </script>

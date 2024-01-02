@@ -24,7 +24,7 @@ class CAppModel extends CTableModel
 		parent::__construct($name, $options);
 	}
 	
-	public function CContentModel($name, $options=null)
+	public function CAppModel($name, $options=null)
 	{
 		$this->__construct($name, $options);
 	}

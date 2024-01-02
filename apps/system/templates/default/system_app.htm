@@ -30,7 +30,6 @@ jQuery(document).ready(function() {
     lv.on('click', '.uninstall', function (e) {
         e.preventDefault();                
         var url = $(this).attr('href');
-        bootbox.setLocale(G.lang);
         bootbox.confirm("确定卸载应用", function(result) {
               if (result) {                        
                 $.getJSON(url, {o:'json'}, function(res) {
@@ -53,7 +52,6 @@ jQuery(document).ready(function() {
      lv.on('click', '.remove', function (e) {
         e.preventDefault();                
         var url = $(this).attr('href');
-        bootbox.setLocale(G.lang);
         bootbox.confirm(t("确定删除应用？"), function(result) {
               if (result) {                        
                 $.getJSON(url, {o:'json'}, function(res) {
@@ -76,7 +74,6 @@ jQuery(document).ready(function() {
      lv.on('click', '.installFromRemote', function (e) {
         e.preventDefault();                
         var url = "$_base/installFromRemote?id="+$(this).attr('data-app');
-        bootbox.setLocale(G.lang);
         bootbox.confirm(t("确定安装此应用？"), function(result) {
               if (result) {                        
                 $.post(url, function(res) {
@@ -104,7 +101,6 @@ jQuery(document).ready(function() {
      lv.on('click', '.upgradeFromRemote', function (e) {
         e.preventDefault();                
         var url = "$_base/upgradeFromRemote?id="+$(this).attr('data-app');
-        bootbox.setLocale(G.lang);
         bootbox.confirm(t("确定升级此应用？"), function(result) {
               if (result) {                        
                 $.post(url, function(res) {

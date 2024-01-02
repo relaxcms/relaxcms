@@ -37,27 +37,20 @@ class ContentModule extends CModule
 		$ha = isset($this->_attribs['ha'])?$this->_attribs['ha']:false;
 		
 		$m = Factory::GetModel('content');
-		$view = $m->getForFrontend($tid, $_fields, $ioparams);
-		$view['_ts'] = tformat($view['ts'], 'Y-m-d H:i');
+		$view = $m->getForView($tid, $ioparams);
 		$view['share'] = is_var_mask(6, $view['status'])?true:false;
 		
 		$m2 = Factory::GetModel('catalog');		
 		$scf = Factory::GetSiteConfiguration();
 		
-		$this->set_var('view', $view);
+		$this->assign('view', $view);
 		
-		$this->set_var('scf', $scf);
-		$this->set_var('ha', $ha);
-		$this->set_var('sc', $sc);
-		$this->set_var('sh', $sh);
-		$this->set_var('sr', $sr);
+		$this->assign('scf', $scf);
+		$this->assign('ha', $ha);
+		$this->assign('sc', $sc);
+		$this->assign('sh', $sh);
+		$this->assign('sr', $sr);
 		
-		$position = $m2->nav($cid, $ioparams);
-		$this->set_var('position', $position);
-		
-		
-		
-		$this->_template = $tpl;
 		return true;
 	}	
 }

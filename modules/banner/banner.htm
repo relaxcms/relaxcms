@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="$_dstroot/plugins/swiper/css/swiper.min.css">
 <script src="$_dstroot/plugins/swiper/js/swiper.min.js"></script>
-
+                
 <div class="banner" id="banner">    
     <div class="swiper-container">
         <div class="swiper-wrapper" >
@@ -12,7 +12,9 @@
                         <p>$v[description]</p>
                         <p>$v[content]</p>
                         <p>
+                            <!--# if ($v['url']) { #-->
                             <a href="$v[url]" target="_blank" role="button">了解更多</a>
+                             <!--# } #-->
                         </p>                        
                     </div>
                 </div>
@@ -32,6 +34,16 @@
     //actions
     jQuery(document).ready(function() {
         //actions hits
-
+            new Swiper('.swiper-container', {
+                loop: true,
+                autoplay: 4500,
+                cssWidthAndHeight:true,
+                pagination: '.swiper-pagination',
+                paginationClickable: true,
+                autoplayDisableOnInteraction: false,
+                prevButton:'.swiper-button-prev',
+                nextButton:'.swiper-button-next',
+                        //effect : 'fade',
+            });  
     });
 </script>

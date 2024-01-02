@@ -538,7 +538,7 @@ class Factory
 	}	
 	
 	
-	static function &GetPDF($pdfilename, $options=array())
+	static function &GetPHPPDF($pdfilename, $options=array())
 	{
 		static $instance;		
 		if (!is_object($instance))
@@ -578,6 +578,11 @@ class Factory
 			$instance = new CParseMarkDown();
 		}		
 		return $instance;
+	}
+	
+	static function &GetPDF($name='_', $options=array())
+	{
+		return CPDF::GetInstance($name, $options);
 	}
 	
 }

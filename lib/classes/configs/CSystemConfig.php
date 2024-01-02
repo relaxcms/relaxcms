@@ -33,7 +33,7 @@ class CSystemConfig extends CConfig
 		!isset($cfg['timeformat']) && $cfg['timeformat'] = "Y-m-d h:i:s";
 		!isset($cfg['timezone']) && $cfg['timezone'] = "Asia/Shanghai";
 		!isset($cfg['count']) && $cfg['count'] =12;
-		!isset($cfg['page_size']) && $cfg['page_size'] =12;
+		!isset($cfg['page_size']) && $cfg['page_size'] =10;
 		!isset($cfg['cookie']) && $cfg['cookie'] = "r!@#$";
 		!isset($cfg['ckdomain']) && $cfg['ckdomain'] = "";
 		!isset($cfg['ckpath']) && $cfg['ckpath'] = "/";
@@ -58,7 +58,9 @@ class CSystemConfig extends CConfig
 		!isset($cfg['ajaxsystime']) && $cfg['ajaxsystime'] = 0;
 		//验证码超时		
 		!isset($cfg['seccodetimeout']) && $cfg['seccodetimeout'] = 300;
-				
+		//验证码仅数字
+		!isset($cfg['seccodeonleynum']) && $cfg['seccodeonleynum'] = 1;
+		
 		//! 默认模板名称
 		!isset($cfg['tplname']) && $cfg['tplname'] =  'default';
 		!isset($cfg['layout']) && $cfg['layout'] =  'default';
@@ -89,6 +91,13 @@ class CSystemConfig extends CConfig
 		empty($cfg['apiaccess']) && $cfg['apiaccess'] = 0;
 		empty($cfg['updateapi']) && $cfg['updateapi'] = 'http://localhost/api';
 		
+		//cross-site
+		empty($cfg['xss_access']) && $cfg['xss_access'] = 0;
+		
+		//加密配置
+		!isset($cfg['fencode']) && $cfg['fencode'] = 1;
+		
+	
 		return $cfg;
 	}
 	

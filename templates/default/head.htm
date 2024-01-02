@@ -25,7 +25,7 @@
 <link href="$_dstroot/css/$component.css" rel="stylesheet" type="text/css" />
 <!--# } #-->
 
-<link href="$_dstroot/themes/system/css/$_thename.min.css" rel="stylesheet" type="text/css" id='css_admin_theme' />
+<link href="$_dstroot/css/system_theme_$_thename.css" rel="stylesheet" type="text/css" id='css_admin_theme' />
 
  
 <!-- BEGIN GLOBAL VARIABLE G -->
@@ -122,9 +122,7 @@ $sys_JS_G
                 <!-- BEGIN SIDEBAR -->
                 <div class="page-sidebar navbar-collapse collapse">
                     <!-- BEGIN SIDEBAR MENU -->
-                    <ul class="page-sidebar-menu  page-header-fixed page-sidebar-menu-compact" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
-                        <rdoc:include type="module" name="sidebar" pkey='$component' />
-                    </ul>
+                    <rdoc:include type="module" name="sidebar" pkey='$component' />
                     <!-- END SIDEBAR MENU -->
                 </div>
                 <!-- END SIDEBAR -->

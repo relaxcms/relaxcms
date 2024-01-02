@@ -26,6 +26,7 @@ $i18n = array(
 	'menu_system_time'		=>	'日期与时间配置',
 	'menu_system_var'		=>	'变量配置',
 	'menu_system_app'	=>	'应用管理',
+	'menu_system_menu'	=>	'菜单管理',
 		
 	'menu_storage'				=>	'存储管理',
 		'menu_file'				=>	'文件管理',
@@ -39,6 +40,7 @@ $i18n = array(
 		'menu_help_download' 	=> '工具下载',
 		'menu_help_upgrade'	=>	'系统升级',
 		'menu_help_about'	=>	'关于我们',
+		'menu_help_restfulapi'	=>	'API接口',
 		
 	
 	/*系统配置*/

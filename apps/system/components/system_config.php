@@ -21,7 +21,6 @@ class SystemConfigComponent extends CConfigComponent
 		$this->__construct($name, $options);
 	}
 	
-	
 	protected function show(&$ioparams = array())
 	{
 		$this->initActiveTab(10);
@@ -46,19 +45,38 @@ class SystemConfigComponent extends CConfigComponent
 		$this->assign("db1_dbtype_select", get_common_select('dbtype', $db1['dbtype']));
 		$this->assign('db1', $db1);
 		$this->assign('db1_enable', $db1['enable'] == 1?'checked':'');
+		$this->assign('db1_dbcharset_select', get_common_select('dbcharset', $db1['dbcharset']));
 
 		//db2
 		$db2 = get_dbconfig('db2');
+		
 		$this->assign("db2_dbtype_select", get_common_select('dbtype', $db2['dbtype']));
 		$this->assign('db2', $db2);
 		$this->assign('db2_enable', $db2['enable'] == 1?'checked':'');
+		$this->assign('db2_dbcharset_select', get_common_select('dbcharset', $db2['dbcharset']));
 
 		//db3
 		$db3 = get_dbconfig('db3');
 		$this->assign("db3_dbtype_select", get_common_select('dbtype', $db3['dbtype']));
 		$this->assign('db3', $db3);
 		$this->assign('db3_enable', $db3['enable'] == 1?'checked':'');
+		$this->assign('db3_dbcharset_select', get_common_select('dbcharset', $db3['dbcharset']));
 		
+		//默认起始组件, 注意权限
+		//default_component_select
+		$app = Factory::GetApp();
+		$default_component = isset($params['default_component'])?$params['default_component']:'main';
+		$default_component_select = '';
+		$menus = $app->getCurrentMenuTree($default_component);
+		foreach($menus as $key=>$v) {			
+			if ($v['childen']) {
+				foreach($v['childen'] as $k2=>$v2) {
+					$selected = $default_component == $k2?'selected':'';
+					$default_component_select .= "<option value='$k2' $selected>$v[title] -> $v2[title]</option>";
+				}
+			}
+		}
+		$this->assign('default_component_select', $default_component_select);
 		
 		return $res;
 	}
@@ -132,7 +150,6 @@ class SystemConfigComponent extends CConfigComponent
 		}
 		
 		if (isset($ioparams['delete_fid'])) {	
-			//$fileinfo = $ioparams['fileinfo'];
 			$targetfile = $this->_bgdir.DS.$ioparams['delete_fid'].'.'.$fileinfo['extname'];
 			unlink($targetfile);
 			showStatus(0);
@@ -192,12 +209,10 @@ class SystemConfigComponent extends CConfigComponent
 	
 	protected function testemail(&$ioparams=array())
 	{
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN....");
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN....");
 		
 		$_params = array();
 		$this->getParams($_params);
-		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $params);
 		
 		$params = array();
 		
@@ -228,12 +243,12 @@ class SystemConfigComponent extends CConfigComponent
 	//测试短信发送
 	protected function testsms(&$ioparams=array())
 	{
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN....");
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN....");
 		
 		$params = array();
 		$this->getParams($params);
 		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $params);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $params);
 		 	
 		$smsparams = array();
 		$smsparams['url'] = $params['api_sm_apiurl'];
@@ -252,42 +267,5 @@ class SystemConfigComponent extends CConfigComponent
 		$res = $sms->send($smsparams);
 		
 		showStatus($res?0:-1);
-	}
-	
-	
-	protected function testOAuthWechat(&$ioparams=array())
-	{
-		$cf = get_config();
-		
-		$params = array();
-		$url = trim($cf['api_oauth_wechat_url']);
-		$redirect_uri = trim($cf['api_oauth_wechat_callback']);
-		$client_id = trim($cf['api_oauth_wechat_app_id']);
-		
-		$state = md5('rc'.time());
-		
-		$_url = "$url?appid=$client_id&redirect_uri=$redirect_uri&response_type=code&scope=snsapi_login&state=$state#wechat_redirect";	
-		
-		redirect($_url);//请求授权码
-		
-	}
-		
-	
-	//测试GitHub登录
-	protected function testOAuthGithub(&$ioparams=array())
-	{
-		$cf = get_config();
-		
-		$params = array();
-		$url = trim($cf['api_oauth_github_url']);
-		$redirect_uri = trim($cf['api_oauth_github_callback']);
-		$client_id = trim($cf['api_oauth_github_app_id']);
-		
-		//$calbackurl = "http://home.relaxcms.com/oauth/callback/github";//回调地址
-		//$client_id = "05a0bdd377c1d9deffc2";//填写github登记表是返回的Client ID
-		$_url = "$url?client_id=" . $client_id . "&state=1&redirect_uri=" . $redirect_uri;	
-		
-		redirect($_url);//请求授权码
-		
-	}
+	}	
 }

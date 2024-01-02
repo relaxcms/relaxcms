@@ -1,10 +1,12 @@
 <!--主菜单 -->
-
+<ul class="page-sidebar-menu  page-header-fixed page-sidebar-menu-compact" data-keep-expanded="true" data-auto-scroll="false" data-slide-speed="200">
+                        
 <!--# foreach($menus as $key=>$v) {
-	$active = isset($v['active'])? "active open":''; 	    
+	$active = isset($v['active']) && $v['active']? "active open":''; 	    
+	//$open = isset($v['open'])? "active open":''; 	    
 #-->
 
-<li class="nav-item $active">
+<li class="nav-item $active $open">
 	<a href="javascript:;" class="nav-link nav-toggle">
 	    <i class="$v[class]"></i>
 	    <span class="title">$v[title]</span>
@@ -14,9 +16,9 @@
 	<!-- 子菜单 -->
 	<ul class="sub-menu">		
 		<!--# if (isset($v['childen'])) { foreach($v['childen'] as $k2=>$v2) { $active = isset($v2['active'])? "active open":''; 
-			$url = "$_basename/$k2"; if (isset($v2['linkurl'])) $url = $_webroot.'/'.$v2['linkurl']; #-->
+			$url = "$_basename/$k2"; $target='';if (isset($v2['linkurl'])){ $url = $_webroot.'/'.$v2['linkurl'];  $target="target='_blank'"; } #-->
 		<li id="$k2" class="nav-item $active ">
-	        <a href="$url" class="nav-link ">
+	        <a href="$url" class="nav-link " $target>
 	        	<i class="icon-item"></i> 
 	            <span class="title">$v2[title]</span>
 	        </a>
@@ -26,3 +28,4 @@
 </li>
 <!--# } #-->
 
+</ul>

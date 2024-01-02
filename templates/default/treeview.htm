@@ -24,97 +24,122 @@
 }
 
 </style>
+
 <div class="portlet box default" id='table_wrapper_$table_id'>
 <div class="portlet-title">
-    
-
     <div class="caption">
         <i class="fa fa-globe"></i><a href="$_base?id=0">$sys_component_name</a> $nav 
     </div>
+    <div class="actions">
+    <!--# foreach ($toolmenuitems as $key=>$v) { if ($v['action'] != 'file') { #-->
+     <button type="button" href="$_base/$v[name]" class="btn $v[class]  btn-sm tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]"  msg="$v[msg]"> 
+        <i class="$v[icon]"></i> $v[title] </button>
+    <!--#  } else { #-->
+        <button type="button" class="btn btn-sm green tileupload mt-ladda-btn ladda-button mt-progress-demo" 
+    	data-loading-text="Loading..." 
+    	data-style="zoom-in"
+    	data-tpl="simplebutton" 
+    	data-maxsize="$uploadmaxsize" 
+        data-url="$_base/$v[name]"
+        <!--# if ($v[uptype]) { #-->
+        data-uptype="$v[uptype]"
+        <!--# } #-->
+    	data-sbt="$sbt">	
+    	<span class="ladda-label fileinput-button"> 
+    	    <i class="$v[icon]"></i>$v[title]<input type="file" name="files[]" multiple="" class="inputfile"></span>
+    </button>
+            <!--#  } } #-->
+        <a href="$_base/$task" class="btn blue btn-sm tmilink">
+            <i class="fa fa-refresh"></i> @T[Refresh] </a>
 
-
-        <div class="actions">
-        <!--# foreach ($toolmenuitems as $key=>$v) { if ($v['action'] != 'file') { #-->
-         <button type="button" href="$_base/$v[name]" class="btn $v[class]  btn-sm tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]"  msg="$v[msg]"> 
-            <i class="$v[icon]"></i> $v[title] </button>
-        <!--#  } else { #-->
-    <button type="button" class="btn btn-sm green tileupload mt-ladda-btn ladda-button mt-progress-demo" 
-	data-loading-text="Loading..." 
-	data-style="zoom-in"
-	data-tpl="simplebutton" 
-	data-maxsize="$uploadmaxsize" 
-    data-url="$_base/$v[name]"
-    <!--# if ($v[uptype]) { #-->
-    data-uptype="$v[uptype]"
-    <!--# } #-->
-	data-sbt="$sbt">	
-	<span class="ladda-label fileinput-button"> 
-	    <i class="$v[icon]"></i>$v[title]<input type="file" name="files[]" multiple="" class="inputfile"></span>
-</button>
-        <!--#  } } #-->
-        
-        
-        
-        
-            <a href="$_base/$task" class="btn blue btn-sm tmilink">
-                <i class="fa fa-refresh"></i> @T[Refresh] </a>
-
-        </div>
-        
-        
     </div>
     
 </div>
 
 <div class="portlet-body" >
-<form action="$_base" name="ruiform" id="form_$table_id">
-
-<table class="table table-striped table-bordered table-hover " id="$table_id">
-    <thead>
-    <tr class="heading">
-        <th >
-            <input type="checkbox" value="1" class="group-checkable checkbox checkall" />
-        </th>
-        <!--# $nr_col = 1; foreach($fdb as $key=>$v) { if (!$v['show']) continue; $nr_col ++;   $_sortable = $v['sortable']?'sortable both':'';
-            $_sortOrder = ($sortName == $key)?$sortOrder:''; #-->
-        <th data-id="$key">
-            <div class="th-inner $_sortable $_sortOrder ">{$v['title']}</div>
-        </th>
-        <!--# } #-->
-
-        <th>
-             @T[Operate]
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <!--# foreach($tabledata as $key=>$v) { $id = $v[$pkey['name']]; 
-        $treepid = $v['pid']?'treegrid-parent-'.$v['pid']:''; #-->        
-    <tr class="treegrid-$id $treepid" data-id="$id">
-        <td> <input type="checkbox" name="params[{$v[$pkey['name']]}]" value="{$v[$pkey['name']]}" class="checkbox" /> </td>
-
-        <!--# foreach($fdb as $k2=>$v2) { if (!$v2['show']) continue;  #-->
-        <td>
-             $v[$k2]
-        </td>
-        <!--# } #-->
-        
-        <td>
-            $v[operate]
-        </td>
-    </tr>
+        <form action="$_base" name="ruiform" id="form_$table_id">
+<div class="table-toolbar">
+    <div id="toolbar$table_id" class="form-inline searchbar">
+    <!--# foreach($sfdb as $key=>$v) { if (!$v['searchinput']) continue; #-->
+        <div class="form-group">
+                $v[searchinput]
+        </div>
     <!--# } #-->
 
-    
-    </tbody>
-    </table>
-    </form>
+    <!--# foreach($sfdb as $key=>$v) { if (($v['searchable'] & 2) == 2) { #-->
+        <div class="form-group">
+                $v[input]
+        </div>
+    <!--# }} #-->
+        <input type="submit" class="btn btn-primary filter-field btnSearch" id="query$table_id" value="搜索"/>
+        
+        <!--# foreach($requestparams as $key=>$v) { #-->
+        <input type="hidden" name="$key" value="$v" class="form-filter" id="param_$key" />
+        <!--# } #-->
+    </div> 
+</div>
+
+
+            <table class="table table-striped table-bordered table-hover " id="$table_id">
+                <thead>
+                <tr class="heading">
+                    <th >
+                        <input type="checkbox" value="1" class="group-checkable checkbox checkall" />
+                    </th>
+                    <!--# $nr_col = 1; foreach($fdb as $key=>$v) { if (!$v['show']) continue; $nr_col ++;   $_sortable = $v['sortable']?'sortable both':'';
+                        $_sortOrder = ($sortName == $key)?$sortOrder:''; #-->
+                    <th data-id="$key">
+                        <div class="th-inner $_sortable $_sortOrder ">{$v['title']}</div>
+                    </th>
+                    <!--# } #-->
+
+                    <th class="ac">
+                         @T[Operate]
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--# foreach($tabledata as $key=>$v) { $id = $v[$pkey['name']]; 
+                    $treepid = $v['pid']?'treegrid-parent-'.$v['pid']:''; #-->        
+                <tr class="treegrid-$id $treepid" data-id="$id">
+                    <td> <input type="checkbox" name="params[{$v[$pkey['name']]}]" value="{$v[$pkey['name']]}" class="checkbox" /> </td>
+
+                    <!--# foreach($fdb as $k2=>$v2) { if (!$v2['show']) continue; $val = isset($v['_'.$k2])?$v['_'.$k2]:$v[$k2];  #-->
+                    <td title="$v[$k2]">
+                         $val
+                    </td>
+                    <!--# } #-->
+                    
+                    <td class="ac">
+                        <div class="btn-group ">
+                            <!--# $nr = 0; foreach($v['optdb'] as $k3=>$v3) { if (!$v3['showbutton']) continue;  $action = isset($v3['action'])?$v3['action']:$v3['name']; $url = isset($v3['url'])?$v3[url]:$_base.'/'.$v3[name]; $nr ++; if ($nr > 2)break; #-->
+                            <button type="button" href="$url" class="btn btn-sm  $v3[class] optmenuItem $action" data-action="$action" data-id="$id" msg="$v3[msg]" title='$v3[title]'>
+                                <i class="fa fa-$v3[icon]"></i></button>
+                            <!--# } #-->
+
+
+                            <button type="button"  class="btn default btn-sm  dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-angle-down"></i></button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <!--# foreach($v['optdb'] as $k3=>$v3) {$action = isset($v3['action'])?$v3['action']:$v3['name']; $url = isset($v3['url'])?$v3[url]:$_base.'/'.$v3[name]; #-->
+                                <li><a href="$url" class="optmenuItem $action" data-action="$action" data-id="$id" msg="$v3[msg]" title='$v3[title]'> <i class="fa $v3[icon] "></i> $v3[title] </a></li>
+                                <!--# } #-->
+                            </ul>
+
+                        </div>       
+                    </td>
+                </tr>
+                <!--# } #-->
+
+                
+                </tbody>
+                </table>
+        </form>
 </div>
 </div>
 
 <script type="text/javascript">
   function onClickMultiCheckbox(id, modname, fieldname, key)
-    {
+  {
        // console.log('id='+id+',modname='+modname+',fieldname='+fieldname+',key='+key);
         var url = '$_base/mck?id='+id+'&modname='+modname+'&fieldname='+fieldname+'&key='+key;
 
@@ -129,11 +154,12 @@
              rui.showTError("系统错误");
         });
     }
-    
+   
     
 jQuery(document).ready(function() { 
     var table = $('#$table_id');
-    
+    var tableContainer = $("#table_wrapper_$table_id");
+
     //sort
     var allsortable = $('.sortable', table);
     allsortable.on('click', function (e) {        
@@ -151,16 +177,13 @@ jQuery(document).ready(function() {
             allsortable.removeClass('desc');
             $(this).addClass('asc')
         }
-        console.log('sortName='+sortName+', sortOrder='+sortOrder);
+
         rui.cookie('sortName',sortName);
         rui.cookie('sortOrder',sortOrder);
         
         rui.reload();
     });
     
-    
-       
-
     //双击一行
     $('tr', table).on('dblclick', function(e){
         e.preventDefault();
@@ -182,10 +205,7 @@ jQuery(document).ready(function() {
                 });
                 
     });
-    
-    var table = $("#$table_id");
-    var tableContainer = $("#table_wrapper_$table_id");
-    
+       
     
     var btnAdd = $("#{$table_id}add", tableContainer);
     var btnEdit = $("#{$table_id}edit", tableContainer);
@@ -380,6 +400,10 @@ jQuery(document).ready(function() {
                 if (action == 'alink') {
                     return true;
                 }  
+
+
+
+
                 
                 e.preventDefault(); 
                 if (action == 'button') {                      
@@ -393,6 +417,16 @@ jQuery(document).ready(function() {
                     res = showTmbox(el, url);
                     return true;
                 } else {
+                    var id = parseInt($('#param_id').val());
+                    if (id > 0) {
+                        if (url.indexOf('?') < 0) // eg : '/files/file/download'
+                             url += '?';
+                        else if (url.charAt(url.length-1) !== '&') // eg : '/files/file/download?file=a.jpg'
+                            url += '&';
+                        url += 'id='+id;
+                    }
+                    
+
                     rui.redirect(url);
                     return true;
                 }
@@ -444,24 +478,7 @@ jQuery(document).ready(function() {
                 }
             });  
             
-             table.on('click', '.tmbox', function (e) {
-                e.preventDefault();
-                var task = $(this).attr('data-task');
-                var url = '$_base/'+task+'?dlg=1&id='+$(this).attr("data-id");
-                var title = $(this).attr("data-original-title");
-                if (_.isUndefined(title))
-                    title = "详细";
-                
-                
-                layer.open({
-                    type: 2, title: title, shadeClose: false,
-                        shade: 0.2,
-                        shift:10,
-                        area: ['70%', '65%'],
-                        content: url
-                });
-                
-            });  
+             
             
             
             table.on('click', '.delete', function (e) {
@@ -484,6 +501,159 @@ jQuery(document).ready(function() {
                       }
                 });
              });
+
+
+            var doDefaultAction = function(el, url, id)
+            {
+                var self = this;
+
+                var pos = url.indexOf('?');
+                if (pos < 0) // eg : '/files/file/download'
+                     url += '?';
+                else if (url.charAt(url.length-1) !== '&') // eg : '/files/file/download?file=a.jpg'
+                    url += '&';
+
+                    
+                if (_.isUndefined(id)) {
+
+                    var data = self.getSelectRows();
+                    var nr = data.length;
+                    var id = 0;
+                    var ids = [];     
+
+                    //console.log('nr='+nr+',id='+id);
+                    if (nr == 0)
+                        return false;
+                        
+                    if (nr > 1) {
+                        for(i=0; i<nr; i++) {
+                            ids.push(data[i]['id']);
+                        }
+                        id = ids.join(',');
+                    } else {
+                        id = data[0]['id'];
+                    }
+                }
+
+                url += 'id='+id;
+
+                var doDefaultActionRequest = function (url)
+                {
+                    $.getJSON(url, {o:'json'}, function(res) {
+                        var msg = (_.isString(res.msg) && res.msg != '')?res.msg:(res.status == 0?'操作成功':'操作失败');
+                        if (!_.isUndefined(res.data.msg))
+                            msg += '<br>' + res.data.msg;                    
+                        if (res.status == 0) {                   
+                            rui.showTSuccess(msg);
+                            rui.refresh();                       
+                        } else {
+                            rui.showTError(msg);                    
+                        }
+                    })
+                    .error(function() { 
+                         rui.showTError("系统错误");
+                    });
+                }            
+                
+                //确认
+                var msg = el.attr('msg').trim();
+                if (msg && msg !='') {
+                     bootbox.confirm(msg, function(result) {
+                        if (result) {
+                            doDefaultActionRequest(url);                           
+                        }
+                    });
+                } else {
+                    doDefaultActionRequest(url);
+                }
+                return true;
+            }
+
+            var doDetail = function(id) {
+                var url = '$_base/detail?id='+id;
+                rui.redirect(url);
+            }
+
+            var doEdit = function(id) {
+                var url = '$_base/edit?id='+id;
+                rui.redirect(url);
+            }
+
+            
+           var doTmbox = function(elOpt, url, id)
+           {
+
+                if (url.indexOf('?') < 0) // eg : '/files/file/download'
+                     url += '?';
+                else if (url.charAt(url.length-1) !== '&') // eg : '/files/file/download?file=a.jpg'
+                    url += '&';
+
+                url +='id='+id+'&dlg=1&';
+
+
+                var title = elOpt.attr("title");
+                if (_.isUndefined(title))
+                    title = "详细";
+
+                layer.open({
+                    type: 2, 
+                    title: title, 
+                    shadeClose: false,
+                    shade: 0.2,
+                    shift:10,
+                    area: ['70%', '65%'],
+                    content: url
+                });                
+            };  
+
+
+
+            //点击操作菜单
+            table.on('click', '.optmenuItem', function (e) {
+                var elOpt = $(this);
+
+                var id = elOpt.attr('data-id');
+                var action = elOpt.attr('data-action');
+                var url = elOpt.attr('href');
+
+                e.preventDefault();
+
+                switch(action) {
+                    case 'detail':
+                        doDetail(id);
+                        break;
+                    case 'edit':
+                        doEdit(id);
+                        break;
+                    case 'del':
+                        self.del(id);
+                        break;
+                        //button
+                     case 'button':
+                        self.doTmiButton(elOpt, url, id);
+                        break;
+                     case 'alink':
+                        rui.redirect(url);
+                        break;
+                     //submit
+                     //case 'submit':
+                     //   self.doTmiLinkSubmit(elOpt, url, id);
+                     //   break;
+                     //linkbutton
+                     case 'linkbutton':
+                        self.doTmiLinkButton(elOpt, url, id);
+                        break;
+                     //tmbox
+                     case 'tmbox':
+                        doTmbox(elOpt, url, id);
+                        break;
+                    default:
+                        doDefaultAction(elOpt, url, id);                   
+                        break;
+                }
+
+                return true;
+            });
 
 
 });

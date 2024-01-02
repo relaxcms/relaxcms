@@ -11,9 +11,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-<meta content="" name="description"/>
-<meta content="" name="author"/>
 <link href="$_dstroot/css/login.css" rel="stylesheet" type="text/css">
+<script src="$_dstroot/js/login.js" type="text/javascript"></script>  
 
 <!-- BEGIN GLOBAL VARIABLE G -->
 $sys_JS_G
@@ -34,7 +33,7 @@ $sys_JS_G
 <!-- BEGIN LOGO -->
 <div class="logo ">
 	<a href="index.html" class="hidden">
-		<img src="$_dstroot/pages/img/logo.png" alt=""/>
+		<img src="$_dstroot/img/logo.png" alt=""/>
 	</a>
 </div>
 <!-- END LOGO -->
@@ -56,6 +55,7 @@ $sys_JS_G
 	<form class="login-form" action="$_basename" method="post">
         <input type="hidden" name="component" value="$component" >			
         <input type="hidden" name="task" value="login" >
+		<input type="hidden" name="pkey" value="$__aeskey" id="param_pkey" />
         <input type="hidden" name="sbt" value="$sbt">	
         <input type="hidden" name="backurl" value="$backurl">	
         
@@ -86,8 +86,8 @@ $sys_JS_G
 		    <div class="input-icon sec-icon">
 		        <label class="control-label visible-ie8 visible-ie9">@t[Captcha]</label>
 			    <i class="fa fa-lock"></i>
-			    <input class="form-control placeholder-no-fix rccode " type="text" name="params[captcha]" autocomplete="off" required placeholder="@t[Captcha]" value="" id="seccode" style="width:50%;" />
-                <img src="$_libroot/common/img/hidden.gif" class="captcha" id="capimg" alt="@t[Captcha]" title="@t[Cannot see the captcha, please click me for reloading]" style="width:45%;"/>
+			    <input class="form-control placeholder-no-fix rccode " type="text" name="params[seccode]" autocomplete="off" required placeholder="@t[Captcha]" value="" id="seccode" style="width:50%;" />
+                <img src="$seccodeimg" class="captcha" id="capimg" alt="@t[Captcha]" title="@t[Cannot see the captcha, please click me for reloading]" style="width:45%;"/>
 		    </div>
 		</div>
 		<!--# } #-->
@@ -126,9 +126,143 @@ $sys_JS_G
 </div>
 <!-- END FOOTER -->
 
-<script src="$_dstroot/js/login.js" type="text/javascript"></script>
+<script language="javascript">
+
+jQuery(document).ready(function() {	
+
+	var doLogin = function(form)
+	{
+
+		//取 key
+		var pkey = $('#param_pkey').val();
+		
+		var formData = $(form).serializeArray();
+		
+	    for (i=0; i<formData.length; i++) {
+	  		if (formData[i].name == "params[password]") {
+	  			var val = formData[i].value;
+	  			var _val = encrypt(val, pkey);
+	  			formData[i].value = _val;
+	  		}
+	   }
+	           
+       rui.post(G.base+'/login', formData).then(function(res) {
+           if (res.status == 0) {
+                var url = _.isUndefined(res.data.backurl)?G.basename:res.data.backurl;
+                rui.redirect(url);                
+            } else {
+                var msg = '操作失败:'+res.status;
+                if (res.msg)
+                    msg = res.msg;
+                rui.showTError(msg);
+            }
+        });  
+	}
+	
+	var genSecCode = function() {
+	        $("#capimg").attr("src", G.basename+"/seccode/?r="+Math.random());
+    }
+
+	var handleLogin = function() {
+			$('.login-form').validate({
+	            errorElement: 'span', //default input error message container
+	            errorClass: 'help-block', // default input error message class
+	            focusInvalid: false, // do not focus the last invalid input
+	            rules: {
+	                'params[username]': {
+	                    required: true
+	                },
+	                'params[password]': {
+	                    required: true
+	                },
+
+	                'params[captcha]': {
+	                    required: true
+	                },
+	                	                
+	                remember: {
+	                    required: false
+	                }
+	            },
+
+	            messages: {
+	                'params[username]': {
+	                    required: t("Username is required.")
+	                },
+	                'params[password]': {
+	                    required: t("Password is required.")
+	                },
+	                'params[captcha]': {
+	                    required: t("Captcha is required.")
+	                }
+	            },
+
+	            invalidHandler: function (event, validator) { //display error alert on form submit   
+	                $('.alert-danger', $('.login-form')).show();
+	            },
+
+	            highlight: function (element) { // hightlight error inputs
+	                $(element)
+	                    .closest('.form-group').addClass('has-error'); // set error class to the control group
+	            },
+
+	            success: function (label) {
+	                label.closest('.form-group').removeClass('has-error');
+	                label.remove();
+	            },
+
+	            errorPlacement: function (error, element) {
+	                error.insertAfter(element.closest('.input-icon'));
+	            },
+
+	            submitHandler: function (form) {
+	            	if (!doLogin(form)){
+	            		//$('.alert-danger', $('.login-form')).show();	            		
+	            	}
+	            }
+	        });
+
+	        $('.login-form input').keypress(function (e) {
+	            if (e.which == 13) {
+	                if ($('.login-form').validate().form()) {
+	                    $('.login-form').submit();
+	                }
+	                return false;
+	            }
+	        });
+	        $("#capimg").on('click', genSecCode);
+	        
+	}
+
+            if (!_.isUndefined(G._i18ndb)) {
+        	    I18N.register(G._i18ndb); 
+        	} 
+        	
+        	if (typeof G_i18ndb != "undefined") {
+        		I18N.register(G_i18ndb); 
+        	}
+        	
+        	handleLogin(); 
+           
+           var bgdb = G._bgdb;
+
+           var bgdir = G._dstroot+'/img/bg/';
+           var defaultbg = [
+						bgdir + '1.jpg',  
+						bgdir + '2.jpg', 
+						bgdir + '3.jpg'];
+				
+           if (!_.isArray(bgdb) || bgdb.length == 0)
+                bgdb = defaultbg;
+            // init background slide images
+            $.backstretch(bgdb, {
+			      fade: 1000,
+			      duration: 8000
+					});
+});
 
 
+</script>    
 <!-- END JAVASCRIPTS -->
 </body>
 <!-- END BODY -->

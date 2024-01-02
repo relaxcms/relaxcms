@@ -4,12 +4,12 @@
  * @file
  *
  * @brief 
- * ��ʼҳ
+ * ÆðÊ¼Ò³
  *
  */
 defined( 'RMAGIC' ) or die( 'Request Forbbiden' );
 
-class ApiComponent extends CComponent
+class ApiComponent extends CUIComponent
 {
 	function __construct($name, $options=null)
 	{
@@ -41,7 +41,7 @@ class ApiComponent extends CComponent
 	{
 		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "TODO...");
 		
-		//�����ض���
+		//´¦ÀíÖØ¶¨Ïò
 		$cf = get_config();
 		if ($cf['proxyapi_enable']) {
 			$this->redirectForAPI($ioparams);
@@ -99,5 +99,19 @@ class ApiComponent extends CComponent
 		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "getToken", $params, 'res', $res);
 		
 		showStatus($res?0:-1, $res);
+	}
+
+
+	/**
+ 	 * @api {get} /getRequestToken getRequestToken 获取请求临时Token
+ 	 * @apiName getRequestToken
+ 	 * @apiVersion 2.0.0
+ 	 * @apiGroup SYSTEM
+  
+ 	 * @apiSuccess {String} json Request Token
+ 	 */
+	protected function getRequestToken(&$ioparams=array())
+	{
+		return parent::getRequestToken($ioparams);
 	}
 }

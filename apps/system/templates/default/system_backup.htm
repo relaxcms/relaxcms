@@ -512,7 +512,6 @@ var initBackup = function () {
 	    {
 	        return false;
 	    }
-        bootbox.setLocale(G.lang);
         bootbox.confirm("@T[Are you sure to restore?]", function(result) {
             if (result) {
                 startRestore();
@@ -522,7 +521,6 @@ var initBackup = function () {
     
     $('.restoreModel').click(function(e){
         var id = $(this).attr('data-id');
-        bootbox.setLocale(G.lang);
         bootbox.confirm("@T[Are you sure to restore?]", function(result) {
             if (result) {
                 
@@ -535,7 +533,6 @@ var initBackup = function () {
         e.preventDefault();
         var url = $(this).attr('href');
 
-        bootbox.setLocale(G.lang);
         bootbox.confirm("@T[Are you sure to delete?]", function(result) {
             if (result) {
                 $.getJSON(url, function(res) {
@@ -558,7 +555,6 @@ var initBackup = function () {
         e.preventDefault();
         var url = $(this).attr('href');
 
-        bootbox.setLocale(G.lang);
         bootbox.confirm("@T[Are you sure to delete?]", function(result) {
             if (result) {
                 $.getJSON(url, function(res) {

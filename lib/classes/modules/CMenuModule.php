@@ -26,17 +26,17 @@ class CMenuModule extends CModule
 		}
 		
 		
-		$leftmenus = array();
+		$_menus = array();
 		foreach ($menus as $key=>$v) {			
 			if ($v['childen']) {
-				$leftmenus[$key] = $v;
+				$_menus[$key] = $v;
 			}
 		}
 
-		$this->assign("menus", $leftmenus);
+		$this->assign("menus", $_menus);
 		$this->assign('naviId', $naviId);
 		
 				
-		return true;
+		return $_menus;
 	}	
 }

@@ -25,9 +25,6 @@ class MainmenuModule extends CModule
 		
 		$m = Factory::GetModel('catalog');
 		$menu = $m->getMainmenu(4);
-
-
-		
 		
 		$homepage = array(
 			'active'=>'open active',
@@ -44,14 +41,14 @@ class MainmenuModule extends CModule
 			} else {
 				$v['active'] = '';
 			}
+
+			//$v['pageScroll'] = ($v['flags'] & )'';
 		}
 		
-		$this->set_var('homepage', $homepage);	
-		$this->set_var('udb', $menu);	
+		$this->assign('homepage', $homepage);	
+		$this->assign('udb', $menu);	
+		$this->assign('class', $class);	
 
-		if ($tpl)
-			$this->_template = $tpl;
-				
 		return true;
 	}	
 }

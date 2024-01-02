@@ -85,7 +85,7 @@ class CCatalogModel extends CTableModel
 			case 'tpl_list':
 			case 'tpl_content_root':
 			case 'tpl_content':
-				$f['input_type'] = 'custom';
+				$f['input_type'] = 'query';
 				$f['show'] = false;
 				break;
 			case 'depth':
@@ -209,6 +209,7 @@ class CCatalogModel extends CTableModel
 	
 	protected function formatOperate($row, &$ioparams=array())
 	{
+		$dlg = $ioparams['dlg'];
 		$id = $row[$this->_pkey];
 		
 		$defOpt = parent::formatOperate($row, $ioparams);
@@ -216,15 +217,15 @@ class CCatalogModel extends CTableModel
 		$item = array(
 				'name'=>'add',
 				'title'=>'添加子目录',
-				'icon'=>'fa-plus-square',
-				'url'=>$ioparams['_base'].'/add?id='.$id,
+				'icon'=>'fa fa-plus-square',
+				'url'=>$ioparams['_base'].'/add?dlg='.$dlg.'&id='.$id,
 				);
 		$defOpt[] = $item;
 		
 		$item = array(
 				'name'=>'preview',
 				'title'=>'预览',
-				'icon'=>'fa-search',
+				'icon'=>'fa fa-search',
 				'url'=>$ioparams['_webroot'].'/list/'.$id,
 				);
 		$defOpt[] = $item;
@@ -233,8 +234,8 @@ class CCatalogModel extends CTableModel
 		$item = array(
 				'name'=>'add',
 				'title'=>'添加内容文稿',
-				'icon'=>'fa-plus-circle',
-				'url'=>$ioparams['_basename'].'/cm_content/add?id='.$id,
+				'icon'=>'fa fa-plus-circle',
+				'url'=>$ioparams['_basename'].'/site_content/add?dlg='.$dlg.'&id='.$id,
 				);
 		$defOpt[] = $item;
 		

@@ -21,7 +21,7 @@
 jQuery(document).ready(function() {    
 	$('.languagenavbar > li > a').click(function() {
 		var langname = $(this).attr("data-lang");
-		$.cookie('langname', langname);
+		rui.setCookie('langname', langname);
 		rui.reload();
 	}); 
 });

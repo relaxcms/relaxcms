@@ -26,7 +26,7 @@ class MainComponent extends CUIComponent
 	{
 		parent::show($ioparams);
 		
-		$this->enableJSCSS('amcharts5');
+		//$this->enableJSCSS('amcharts5');
 		
 		//所有已经安装的主页
 		$dashbordinfo = array();

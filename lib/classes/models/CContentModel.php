@@ -154,64 +154,7 @@ class CContentModel extends CTableModel
 	}
 		
 
-	protected function filterForListForFrontend(&$row, &$fields,&$ioparams=array())
-	{
-		$m = Factory::GetModel('catalog');
-		$catalog = $m->getCatalogById($row['cid']);
-		
-		$mid = $row['mid'];
-		$mmod = Factory::GetModel('model_'.$mid);
-		$res = $mmod->get($row['id']);
-		if ($res) {
-			$row = array_merge($row, $res);
-		}
-		
-		if (strlen($row['link']) > 0) {//内嵌链接受
-			$row['url'] = $row['link'];
-			$row['target'] = "target=\"_blank\"";
-		} else {
-			$row['url'] = $ioparams['_webroot']."/content/$row[id]";
-		}
-		if ($catalog)
-			$row['listurl'] = $ioparams['_webroot']."/list/$catalog[id]";
-		
-		
-		//附件
-		$content = $row['content'];
-		$pattern = "/\[attach\](\d+)\[\/attach\]/";		
-		$res = preg_match_all($pattern, $content, $attachs);
-		if ($res && count($attachs[1]) > 0)
-		{
-			$aid = implode(",", $attachs[1]);
-			$m = Factory::GetModel('file');
-			$udb = $m->gets("where id in ($aid)");
-			
-			$pa = array();
-			$ra = array();
-			foreach($udb as $key=>$v)
-			{
-				$pa[] = "[attach]".$v['id']."[/attach]";
-				$iconurl = $ioparams['_theroot']."/global/img/filetypes/$v[extname].gif";
-				$ra[] = "<span style='background:url($iconurl) no-repeat left center;background-size:16px 16px; padding-left:20px;'> <a href='".$ioparams['_webroot']."/file/download/$v[fid]'>$v[name]</a> </span>";
-				
-			}			
-			$content = str_replace($pa, $ra, $content);	
-			$row['content'] = $content;		
-			
-		}
-
-		$time_format = isset($ioparams['time_format'])?$ioparams['time_format']:'Y-m-d';
-		$maxlen = isset($ioparams['maxlen'])?$ioparams['maxlen']:128;
-		
-		$row['show_time'] = tformat($row['_ts'], $time_format);
-		$row['subtitle'] = $row['title'];
-		if ($maxlen > 0) {
-			$row['subtitle'] = utf8_substr($row['subtitle'], 0, $maxlen);			
-		}
-
-	}
-
-
+	
 	
 	public function formatForView(&$row, &$ioparams = array())
 	{
@@ -235,24 +178,20 @@ class CContentModel extends CTableModel
 		//photo
 		$photo = trim($row['photo']);
 		if (!$photo) {
-			$row['photo'] = $ioparams['_dstroot'].'/img/nopic.png';
+			$photo = $ioparams['_dstroot'].'/img/nopic.png';
 		} else {
 			$__ctype |= FT_IMAGE;
-			$extinfo .= " <a href='$row[photo]' target=_blank class='gallery' data-mygallery='$row[photo]' data-id='$id'> <i class='fa fa-image'></i></a>";	
+			$extinfo .= " <a href='$row[photo]' target=_blank class='gallery-img' data-gallery1='$row[photo]' data-id='$id' data-noabar=1 data-norequest=1> <i class='fa fa-image'></i></a>";	
 		}
 		
-		
-
-		$photoUrl = $row['photo'];
-		
-		if (is_url($photoUrl)) {
-			$row['photoUrl'] = $photoUrl;
+		if (is_url($photo)) {
+			$row['photoUrl'] = $photo;
 		} else {
-			$row['photoUrl'] = $ioparams['_rooturl'].s_hslash($photoUrl);
+			$row['photoUrl'] = $ioparams['_rooturl'].s_hslash($photo);
 		}		
 		//for listview
 		$row['previewUrl'] = $row['photoUrl'];
-		$row['_photo'] = "<img src='$photoUrl' style='width:100%;'/>";
+		$row['_photo'] = "<img src='$row[photoUrl]' style='width:100%;'/>";
 		
 		//video
 		$videoUrl = trim($row['video']);
@@ -826,12 +765,6 @@ class CContentModel extends CTableModel
 		return $res;
 	}
 
-	public function getForFrontend($id, &$fields=array(), &$ioparams = array())
-	{
-		$ioparams['frontend'] = true;
-		return $this->getForView($id, $fields, $ioparams);
-	}
-
 
 	protected function is_mycontent($cinfo)
 	{
@@ -984,7 +917,10 @@ class CContentModel extends CTableModel
 		$mid = $res['id'];
 		$m2 = Factory::GetModel('content2module');
 		
-		$_params = array('mid'=>$mid);		
+		$_params = array('mid'=>$mid);
+		if ($nr > 0)		
+			$_params['limit'] = $nr;
+		
 		$udb = $m2->select($_params);
 		
 		$cdb = array();
@@ -998,6 +934,8 @@ class CContentModel extends CTableModel
 			
 			$cdb[$v['cid']] = $info;
 		}
+		
+		array_sort_by_field($cdb, 'taxis', true);
 		
 		
 		return $cdb;		
@@ -1013,6 +951,7 @@ class CContentModel extends CTableModel
 			
 		if (!$udb)
 			$udb =  parent::getList($params, $nr, $ioparams);
+		
 		
 		foreach($udb as $key=>&$v) {
 			$this->formatForView($v, $ioparams);
@@ -1249,24 +1188,6 @@ class CContentModel extends CTableModel
 	protected function canMsgQueue($info, $oldflags, $flags, $oldstatus, $status, $forcepub)
 	{
 		return $forcepub;
-	}
-		
-	public function getFieldsForDetail($params=array(), &$ioparams=array())
-	{
-		$fields = parent::getFieldsForDetail($params, $ioparams);
-				
-		return $fields;
-	}
-	
-	protected function getCustomSearchParams(&$or_wheres, $field, $val)
-	{
-		if ($field['name'] == 'id' && is_numeric($val)) {
-			$or_wheres[] = 'id='.intval($val);
-		}
-		return false;
-	}
-	
-	
-	
+	}	
 	
 }

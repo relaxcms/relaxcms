@@ -161,6 +161,7 @@ class CUIComponent extends CComponent
 							'core'=>'bootstrap/js/bootstrap.min.js',
 							),
 						),
+						
 					
 					
 					'jquery_slimscroll'=> array(
@@ -243,7 +244,7 @@ class CUIComponent extends CComponent
 					
 					
 					'bootstrap_switch'=> array(
-						'enable'=>true,
+						'enable'=>false,
 						'css' => array(
 							'core'=>'bootstrap-switch/css/bootstrap-switch.min.css',
 							),
@@ -272,6 +273,16 @@ class CUIComponent extends CComponent
 							'core'=>'bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js'
 							),
 						),
+					'bootstrap_table3'=> array(
+						'enable'=>false,
+						'css' => array(
+							'core'=>'bootstrap-table/bootstrap-table3.css',
+							),
+						'js' => array(
+							'core'=>'bootstrap-table/bootstrap-table3.js',
+							),
+						),
+					
 					
 					'tagsinput'=> array(
 						'enable'=>false,
@@ -356,7 +367,7 @@ class CUIComponent extends CComponent
 						),
 					
 					'bootbox'=> array(
-						'enable'=>true,
+						'enable'=>false,
 						'css' => array(
 							'core'=>'',
 							),
@@ -587,6 +598,20 @@ class CUIComponent extends CComponent
 							'gallery'=>'bootstrap-switch/js/bootstrap-switch.min.js',
 							),
 						),
+					'bootstrapwizard'=> array( //bootstrap-wizard
+						'name'=>'Bootstrap-wizard',
+						'version'=>'1.0',						
+						'description'=>'jQuery twitter bootstrap wizard plugin',
+						'licensename'=>'MIT and GPL',
+						'licenseurl'=>'http://www.gnu.org/licenses/gpl.html',
+						'showlicense'=>true,						
+						'enable'=>false,
+						'css' => array(),
+						'js' => array(
+							'bwizard'=>'bootstrap-wizard/jquery.bootstrap.wizard.min.js',
+							),
+						),
+						
 						
 					'treenav'=> array(
 						'name'=>'treenav',
@@ -661,9 +686,26 @@ class CUIComponent extends CComponent
 					'fileview'=> array(
 						'enable'=>false,
 						'css' => array(
-							'core'=> 'css/fileview.min.css'
+							'core'=> 'css/fileview.css'
 							),
-						'js' => array(),
+						'js' => array(
+							'core'=>'js/fileview.js',),
+						),
+					'listview'=> array(
+						'enable'=>false,
+						'css' => array(
+							'core'=> 'css/listview.css'
+							),
+						'js' => array(
+							'core'=>'js/listview.js',),
+						),
+					'video'=> array(
+						'enable'=>false,
+						'css' => array(
+							'core'=> 'css/video.css'
+							),
+						'js' => array(
+							'core'=>'js/video.js',),
 						),
 					
 					'tileupload'=> array(
@@ -701,7 +743,7 @@ class CUIComponent extends CComponent
 							'core'=>'css/gallery.min.css',
 							),
 						'js' => array(
-							'core'=>'js/gallery.js',
+							'core'=>'js/gallery.min.js',
 							),
 						),
 						
@@ -799,7 +841,7 @@ class CUIComponent extends CComponent
 	
 	protected function initActiveTab($nr, $force_active_id=-1, $selector='')
 	{
-		$tabs = initActiveTab($nr, $force_active_id);
+		$tabs = parent::initActiveTab($nr, $force_active_id);
 		foreach ($tabs as $key => $v) {
 			$this->assign('navtab'.$v['id'], $v);
 		}		
@@ -949,8 +991,21 @@ class CUIComponent extends CComponent
 				
 		return true;
 	}
-	
-	
+
+	protected function queryForInput(&$ioparams=array())
+	{
+		$modname = $this->request('modname');
+		$name = $this->request('name');
+		$val = $this->request('val');
+		$m = Factory::GetModel($modname);
+		
+		$params = array();
+		
+		$this->getParams($params);
+		
+		$res = $m->queryForInput($name, $val, $params, $ioparams);
+		showStatus($res?0:-1, $res);
+	}
 	
 	/* ===============================================================================
 	 * TPL Functions
@@ -959,30 +1014,35 @@ class CUIComponent extends CComponent
 	
 	protected function getTplFile(&$ioparams=array())
 	{
-		//模版所在目录
+		//模版所在目录: RUN APP TEMPLATES/default
 		$tdir = $ioparams['tdir'];
+		$cfg_tdir = $ioparams['cfg_tdir'];
+		
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $tdir, $cfg_tdir);
 				
 		//模版
 		$tpl = $this->_tpl;
-		
 		$tpl_filename = $tpl.'.htm';		
-		$file = $tdir.DS.$tpl_filename;
-		if (!file_exists($file)) {
-			//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "Not found TPL '$file'!");
-			$default_tdir = $ioparams['app_tdir'];
-			$file = $default_tdir.DS.$tpl_filename;
-			if (!file_exists($file)) {
-				//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "Not found TPL '$file'!");		
-				$default_tdir = RPATH_TEMPLATE_DEFAULT;
+		$file = $cfg_tdir.DS.$tpl_filename;
+		if (!isset($ioparams['cfg_tdir']) || !file_exists($file)) {
+			$file = $tdir.DS.$tpl_filename;
+			if (!file_exists($file)) {				
+				//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "Not found TPL '$file'!");
+				$default_tdir = $ioparams['app_tdir'];//app :<APPDIR>/templates/default
 				$file = $default_tdir.DS.$tpl_filename;
 				if (!file_exists($file)) {
-					rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "Not found TPL '$file'!");				
-					$file = $default_tdir.DS.'blank.htm';
+					//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "Not found TPL '$file'!");		
+					$default_tdir = RPATH_TEMPLATE_DEFAULT;// <ROOTDIR>/templates/default
+					$file = $default_tdir.DS.$tpl_filename;
+					if (!file_exists($file)) {
+						rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "Not found TPL '$file'!");				
+						$file = $default_tdir.DS.'blank.htm';
+					} else {
+						rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "WARNING: use TPL '$file'!");	
+					}
 				} else {
-					rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "WARNING: use TPL '$file'!");	
+					rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "use TPL '$file'!");	
 				}
-			} else {
-				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "use TPL '$file'!");	
 			}
 		}
 		
@@ -1083,7 +1143,10 @@ class CUIComponent extends CComponent
 		if (isset($i18n['str_'.$this->_task]))
 			$str_task = $i18n['str_'.$this->_task];
 		else 
-			$str_task = '';
+			$str_task = $this->_task;
+			
+		//postion
+		$sys_position = $sys_component_name .' / '.$str_task;
 		
 		//$t and $T variable
 		//t
@@ -1113,7 +1176,7 @@ class CUIComponent extends CComponent
 		$_g['base'] = $ioparams['_base'];
 		$_g['basename'] = $ioparams['_basename'];
 		$_g['libroot'] = $ioparams['_libroot'];
-		$_g['lang'] = $ioparams['sys_lang'];
+		$_g['lang'] = $ioparams['_lang'];//fixed for old ver
 		$_g['name'] = $ioparams['sys_title'];
 		$_g['title'] = $ioparams['sys_title'];
 		$_g['syserror'] = $sys_error;
@@ -1155,7 +1218,9 @@ class CUIComponent extends CComponent
 	protected function initSbt(&$ioparams=array())
 	{
 		//检查submit
-		$this->_sbt = is_sbt($this->_name);
+		$name = empty($ioparams['_cname'])?$this->_name:$ioparams['_cname'];
+		
+		$this->_sbt = is_sbt($name);
 		//模块使用
 		$ioparams['issbt'] = $this->_sbt;
 	}
@@ -1194,8 +1259,8 @@ class CUIComponent extends CComponent
 	protected function init(&$ioparams=array())
 	{
 		//session_cache_limiter( "private, must-revalidate" ); 
-		if (!session_id())
-			session_start();
+		//if (!session_id())
+		//	session_start();
 		
 		parent::init($ioparams);
 		
@@ -1210,7 +1275,8 @@ class CUIComponent extends CComponent
 	
 	protected function setSbt(&$ioparams=array())
 	{
-		$ioparams['sbt'] = mk_sbt($this->_name);
+		$name = empty($ioparams['_cname'])?$this->_name:$ioparams['_cname'];
+		$ioparams['sbt'] = mk_sbt($name);
 	}
 	
 	protected function fini(&$ioparams=array())
@@ -1254,4 +1320,138 @@ class CUIComponent extends CComponent
 	}
 	
 	
+
+	private function generate_string()
+	{
+		$cf = get_config();
+		$res = $cf['seccodeonleynum'] == 1? "1234567890" : "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+		return $res;
+	}
+
+	/* Show Captcha Image */
+	protected function genSecCodeImage($show=false, $char_number=5, $font_size=12, $width = 88, $height = 23)
+	{
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN");
+		
+		//fonts = array("AntykwaBold", "Duality", "Jura", "StayPuft");
+		$fonts = array("Duality", "Jura");
+		$fontname = $fonts[array_rand($fonts)];
+		$tt_font = RPATH_SUPPORTS.DS."fonts".DS.$fontname.".ttf";
+
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, 'ttfont='.$tt_font);
+		
+		$chars_number = rand(4, $char_number);		
+		$string = $this->generate_string();
+		
+		//$im = imagecreate($width, $height);
+		$im = imagecreatetruecolor($width, $height);
+		if (!$im){
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call imagecreatetruecolor failed!w=".$width.',h='.$height);
+		}
+		
+		/* Set a White & Transparent Background Color */
+		$bgcolor = imagecolorallocatealpha($im, 255, 255, 255, 0); // (PHP 4 >= 4.3.2, PHP 5)
+		if (!$bgcolor){
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call imagecolorallocatealpha failed!w=".$width.',h='.$height);
+		}
+		//填充
+		imagefill($im, 0, 0, $bgcolor);
+		
+		$capt = "";
+		for ($i=0; $i<$chars_number; $i++)
+		{
+			$char = $string[rand(0, strlen($string)-1)];
+			$capt .= $char;
+			$factor = 14;
+			$x = ($factor * ($i + 1)) - 6;
+			$y = rand(15, 17);
+			$angle = rand(1, 15);
+			$textcolor = imagecolorallocate($im, mt_rand(0,120), mt_rand(0,120), mt_rand(0,120));
+			 
+			//imagettftext — 用 TrueType 字体向图像写入文本
+			$res = imagettftext($im, $font_size, $angle, $x, $y, $textcolor, $tt_font, $char);
+			if (!$res){
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call imagettftext failed!, $tt_font,char=$char,font_size=$font_size, angle=$angle, x=$x, y=$y");
+			}
+		}
+		
+		for ($i=0; $i<150; $i++){
+			$fontcolor = imagecolorallocate($im,mt_rand(180,255),mt_rand(180,255),mt_rand(180,255));
+			$res = imagesetpixel($im, mt_rand(0,$width), mt_rand(0,$height), $fontcolor);
+			if (!$res){
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call imagettftext failed!");
+			}
+		}
+		
+		$seccode = strtolower($capt);
+		$_SESSION['seccode'] = strtolower($seccode); 
+		
+		if ($show) {
+			header('Cache-control: private'); // IE 6 FIX
+			header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT'); 
+			header('Cache-Control: no-store, no-cache, must-revalidate'); 
+			header('Cache-Control: post-check=0, pre-check=0', false); 
+			header('Pragma: no-cache');
+			/* Output the verification image */
+			header("Content-type: image/png");
+			$res = imagepng($im);
+			imagedestroy($im);
+			exit;
+		} else {
+			$secfile = RPATH_CACHE.DS."seccodecachefile_$seccode.png";
+			$res = imagepng($im, $secfile);
+			imagedestroy($im);			
+			if (!$res){
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call ImageColorAllocateAlpha failed!");
+				return false;
+			}
+			$data = s_read($secfile);
+			$data64 = 'data:image/png;base64,'.base64_encode($data);
+			@unlink($secfile);
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "OUT");
+			return $data64;
+		}
+	}	
+
+	protected function genRequestToken(&$ioparams=array())
+	{
+		//公key
+		$pkey = md5(time());
+		$this->assignSession('__aeskey', $pkey);
+		$name = empty($ioparams['_cname'])?$this->_name:$ioparams['_cname'];
+		
+		$token = array();
+		$token['pkey'] = $pkey;
+		$token['seccodeimg'] = $this->genSecCodeImage();
+		$token['sbt'] = mk_sbt($name);
+
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, '__aeskey='.$pkey.',sbt='.$token['sbt'].',name='.$name);
+		
+		
+		return $token;
+
+	}
+
+	protected function getRequestToken(&$ioparams=array())
+	{
+		$token = $this->genRequestToken($ioparams);
+		showStatus(0, $token);
+	}
+
+
+
+	protected function checkSecCode($captcha)
+	{
+		$cf = get_config();
+		if (!isset($cf['enable_captcha']) || !$cf['enable_captcha'])
+			return true;
+
+		$captcha = strtolower($captcha);
+		$sessionCap = $_SESSION['seccode'];
+		if ($captcha != $sessionCap){
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "str_login_invalid_seccode");
+			return false;
+		}
+		return true;
+	}
 }

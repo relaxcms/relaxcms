@@ -189,6 +189,8 @@ class CRequest extends CObject
 	*/
 	protected function init()
 	{
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $_SERVER);
+
 		$method =  $_SERVER['REQUEST_METHOD'];
 		$scriptName = $_SERVER['SCRIPT_NAME'];// [SCRIPT_NAME] => /rc6/test/test_webdav.php
 		$scriptFileName = $_SERVER['SCRIPT_FILENAME'];
@@ -368,9 +370,25 @@ class CRequest extends CObject
 		
 		//method
 		$this->_method = $method;
-			
+
 		
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "$method $uri");
+
+		/*
+		[HTTP_X_REQUESTED_WITH] => XMLHttpRequest
+	    [HTTP_ORIGIN] => http://localhost:8080
+	    [HTTP_CONNECTION] => keep-alive
+	    [HTTP_REFERER] => http://localhost:8080/
+	    [HTTP_COOKIE] => timetamp=1696334730595; PHPSESSID=fasu8296o9vsno3q8fpio0sjs5; login_first=1
+	    [HTTP_SEC_FETCH_DEST] => empty
+	    [HTTP_SEC_FETCH_MODE] => cors
+	    [HTTP_SEC_FETCH_SITE] => same-site
+		*/
+		if ($_SERVER['HTTP_SEC_FETCH_MODE'] == 'cors' 
+			&& $_SERVER['HTTP_ORIGIN'] && $this->_rooturl != $_SERVER['HTTP_ORIGIN'] 
+			&& $method == "OPTIONS") 
+			showStatus(0);
+
 		
 	}
 	
@@ -476,7 +494,7 @@ class CRequest extends CObject
 		
 		$ioparams['_host'] = $this->_host;
 		$ioparams['_dstroot'] = $this->_webroot.'/static';		
-		$ioparams['_theroot'] = $this->_webroot.'/themes';
+		$ioparams['_theroot'] = $ioparams['_dstroot'].'/themes';
 		$ioparams['_dataroot'] = $this->_webroot.'/data';
 		$ioparams['_cfgbase'] = $this->_cfgbase;
 		
@@ -1164,7 +1182,7 @@ class CRequest extends CObject
 			$ck_value = $e->mcrypt_des_encode($cf['ckey'], $res);
 		}				
 		
-		session_start();
+		//session_start();
 		$ckname = $this->getCookiePre().'_'.$ck_var;
 		
 		if (!$ck_value)

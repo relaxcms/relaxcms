@@ -138,6 +138,8 @@
 		</div>
 </div>
 <!-- END PAGE CONTENT -->
+<link href="$_dstroot/css/fileview.css" rel="stylesheet" type="text/css" />
+<script src="$_dstroot/js/fileview.js" type="text/javascript"></script>  
 
 <script type="text/javascript">
 <!--
@@ -164,8 +166,8 @@ jQuery(document).ready(function() {
             }  
             return true;  
 	}  
-
-    $('#fileupload2').fileupload({
+	
+    $('#fileupload2').myfileupload({
         url: url,
         autoUpload: false,
         dataType: 'json',
@@ -202,10 +204,8 @@ jQuery(document).ready(function() {
             );
 
             el.html('' + progress + '%');
-        }        
-
-    }).prop('disabled', !$.support.fileInput)
-        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+        }
+    });
 
 
     $('#btnupload').click(function() {
@@ -225,7 +225,6 @@ jQuery(document).ready(function() {
     $('#btnDel').click(function(e) {
     	e.preventDefault();        
         var url = G.base+'/del';
-        bootbox.setLocale(G.lang);
         bootbox.confirm("@T[Are you sure to delete?]", function(result) {
               if (result) {
                 
@@ -248,7 +247,6 @@ jQuery(document).ready(function() {
     $('#btnUpgrade').click(function(e) {
     	e.preventDefault();  
     	var url = G.base+'/upgrade';
-        bootbox.setLocale(G.lang);
         bootbox.confirm("@T[Are you sure to upgrade row ?]", function(result) {
               if (result) {                
               	showWaiting("请稍后...");
@@ -272,7 +270,6 @@ jQuery(document).ready(function() {
     $('#btnUpdate').click(function(e) {
     	e.preventDefault();  
     	var url = G.base+'/update';
-        bootbox.setLocale(G.lang);
         bootbox.confirm("@T[Are you sure to upgrade row ?]", function(result) {
               if (result) {                
               	showWaiting("请稍后...");

@@ -553,7 +553,7 @@ class CApplication extends CObject
 	protected function initVersion()
 	{
 		//static config
-		$verfile = RPATH_ROOT.DS.'version.php';
+		$verfile = RPATH_LIB.DS.'version.php';
 		if (file_exists($verfile)) {
 			require($verfile);
 			$this->_sys_name = SYS_NAME;
@@ -564,7 +564,7 @@ class CApplication extends CObject
 		}
 		
 		//
-		$productfile = RPATH_ROOT.DS.'product.php';
+		$productfile = RPATH_ROOT.DS.'version.php';
 		if (file_exists($productfile)) {
 			require($productfile);
 			$this->_product_name = PRODUCT_NAME;
@@ -869,12 +869,8 @@ class CApplication extends CObject
 		foreach ($menus as $key=>&$v) {
 			//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, 'key='.$key);
 		
-
 			//子菜单
 			$submenus =  $this->filterMenus($allmenus, $key);
-
-
-		
 			
 			//排序
 			array_sort_by_field($submenus, "sort", false);				
@@ -927,6 +923,10 @@ class CApplication extends CObject
 	 * cache functions
 	 *	
 	 * ============================================================================================*/
+	public function cacheMenus($lang='')
+	{
+		return false;
+	}
 	
 	public function cache()
 	{
@@ -934,6 +934,7 @@ class CApplication extends CObject
 		$this->cacheMenus($this->_lang);	
 		$this->cacheModels();	
 	}
+	
 	
 	/* ==============================================================================================
 	 * session functions
@@ -1034,6 +1035,17 @@ class CApplication extends CObject
 		return true;
 	}
 	
+	public function isLogin()
+	{
+		$ss = $this->getSession();
+		if (!$ss)
+			return false;
+		
+		$res = $ss->isLogin();
+		
+		return $res;
+	}
+	
 	
 	public function login($params=array())
 	{
@@ -1041,12 +1053,12 @@ class CApplication extends CObject
 		if (!$ss)
 			return false;
 					
-		if (!$ss->isLogin()) {
+		//if (!$ss->isLogin()) {
 			if (($res = $ss->login($params)) !== true) {		
 				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "user login failed! res=$res");		
 				return $res;
 			}
-		}
+		//}
 		return true;
 	}
 	
@@ -1096,7 +1108,7 @@ class CApplication extends CObject
 		
 		$vpath = $ioparams['vpath'];
 		
-		//rlog(RC_LOG_DEBUG, __FILE__,__LINE__, $vpath);
+		//rlog(RC_LOG_DEBUG, __FILE__,__LINE__, __FUNCTION__, $ioparams);
 		
 		$newvpath = array();
 		
@@ -1149,7 +1161,10 @@ class CApplication extends CObject
 		!$oname && $oname = $ioparams['oname'];	
 				
 		$defComponentName = $this->getDefaultComponent();
-		!$cname && $cname =  $defComponentName;		
+		if (!$cname) {
+			$cname = $defComponentName;		
+			$ioparams['use_default_component'] = true;
+		}
 		if ($this->isComponent($cname)) 
 			$aname = $this->_name;
 		if (!$aname) {
@@ -1161,16 +1176,19 @@ class CApplication extends CObject
 		}			
 		
 		//API
+		$_cname = $cname;
 		if ($isapi) {
 			$cname = $this->_apidb[$tname]['cname'];
-			$aname = $this->_apidb[$tname]['aname'];
-		} 
-				
+			$aname = $this->_apidb[$tname]['aname'];		
+			$ioparams['use_api_component'] = true;	
+		} 		
 		$ioparams['aname'] = $aname;
 		$ioparams['cname'] = $cname;
 		$ioparams['tname'] = $tname;
 		$ioparams['oname'] = $oname;
 		$ioparams['vpath'] = $newvpath;
+		$ioparams['isapi'] = $isapi;
+		$ioparams['_cname'] = $_cname;
 		
 		$ioparams['component'] = $cname;		
 		$ioparams['task'] = $tname;	
@@ -1189,15 +1207,25 @@ class CApplication extends CObject
 		
 		return true;
 	}
+	
+	
+	protected function setAppTemplateDir($tplname, &$ioparams=array())
+	{
+		empty($tplname) && $tplname = 'default';
+		
+		$ioparams['tdir'] = !is_dir($this->_rundir.DS.'templates'.DS.$tplname)?
+			$this->_rundir.DS.'templates'.DS.'default':$this->_rundir.DS.'templates'.DS.$tplname;	
+		$ioparams['app_tdir'] = $this->_appdir.DS.'templates'.DS.'default';	
+		if ($tplname != 'default')	
+		$ioparams['cfg_tdir'] = RPATH_TEMPLATES.DS.$tplname;	
+			
+		//$ioparams['system_tdir'] = RPATH_TEMPLATES.DS.'default';	
+	}
 		
 	protected function initAppTemplate(&$ioparams=array())
 	{
-		$cf = get_config();		
-		$tplname = !empty($cf['tplname'])?$cf['tplname']:'default';
-		
-		$ioparams['tdir'] = $this->_rundir.DS.'templates'.DS.$tplname;;	
-		$ioparams['app_tdir'] = $this->_appdir.DS.'templates'.DS.'default';		
-		//$ioparams['system_tdir'] = RPATH_TEMPLATES.DS.'default';	
+		$cf = get_config();	
+		$this->setAppTemplateDir($cf['tplname'], $ioparams);			
 	}
 	
 	
@@ -1224,6 +1252,9 @@ class CApplication extends CObject
 		foreach ($udb as $key=>$v) {
 			$modname = $v;
 			$extname = s_extname($modname);
+			if ($extname != 'php')
+				continue;
+				
 			$mdb[$modname] = array('appname'=>$appname, 'modname'=>$modname, 'modpath'=>$dir.DS.$v);
 		}
 	}
@@ -1234,10 +1265,16 @@ class CApplication extends CObject
 		$apps = Factory::GetApps();
 		$mdb = array();
 		foreach ($apps as $key=>$v) {
+			if ($key == 'index')
+				continue;
+				
 			$this->probeModels($key, $mdb);			
 		}
 		
-		$this->probeModels($this->_name, $mdb);
+		//skip current app modules
+		if ($this->_name != 'index')//前端不缓存
+			$this->probeModels($this->_name, $mdb);
+			
 		cache_array('models', $mdb);
 	}
 	
@@ -1245,6 +1282,11 @@ class CApplication extends CObject
 	{
 		if (!file_exists(RPATH_CACHE.DS.'models.php')) 
 			$this->cacheModels();		
+	}
+	
+	protected function initApiRequest($ioparams)
+	{
+		$this->_session = Factory::GetUser();
 	}
 	
 		
@@ -1315,6 +1357,10 @@ class CApplication extends CObject
 		
 		//rlog($ioparams);exit;
 		
+		//api
+		if ($ioparams['isapi'])
+			$this->initApiRequest($ioparams);
+		
 		return true;		
 	}
 
@@ -1357,15 +1403,15 @@ class CApplication extends CObject
 		
 		echo $data;
 	}
-
-
+	
+	
 	//////////////////////////////////////////// app public methods /////////////////////////////////
 	public function run($options=array())
 	{
 		//session_start会使响应头加入： 
 		//Cache-Control	no-store, no-cache, must-reval…te, post-check=0, pre-check=0
 		//session_cache_limiter控制不输出响应头
-		session_cache_limiter( "private, must-revalidate" ); 
+		session_cache_limiter( "private, must-revalidate" );
 		session_start();
 		
 		if (!is_array($options))

@@ -72,7 +72,10 @@ class CConfig
 	
 	protected function encrypt()
 	{
-		fencode($this->_cfgfile);	
+		//加密
+		$cf = get_config();
+		if ($cf['fencode'] && !is_windows())
+			fencode($this->_cfgfile);	
 	}
 	
 	public function save($cfgdb, $over=false)

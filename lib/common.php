@@ -14,9 +14,7 @@ defined( 'RMAGIC' ) or die( 'Request Forbbiden' );
 
 define('IPVER_INET4', 4);
 define('IPVER_INET6', 6);
-/**
- * @api {get} /get_client_ip/:id get_client_ip
- */
+
 /**
  * @api {get} /user/:id Request User information
  * @apiName get_client_ip
@@ -446,12 +444,12 @@ function is_start_slash($path)
 
 function is_start_with($str, $c) 
 {
-	return substr($str, 0, 1) == $c;
+	return substr($str, 0, strlen($c)) == $c;
 }
 
 function is_start_end($str, $c) 
 {
-	return $str[strlen($str)-1] == $c;
+	return $str[strlen($str)-strlen($c)] == $c;
 }
 
 /*
@@ -1004,6 +1002,12 @@ function ifcheck($var, $out)
 	
 	return $checks;
 }
+
+function setchecked($key, &$params=array())
+{
+	$params[$key.'_checked'] = isset($params[$key]) && $params[$key]?'checked':'';	
+}
+
 
 /**
  * get_common_select
@@ -2040,7 +2044,7 @@ function tformat_vtime($ts=0, $format = 'Y-m-d H:i:s', $offset=8)
 	$vt['hour'] = $vt[3];
 	$vt['minute'] = $vt[4];
 	$vt['second'] = $vt[5];
-	$vt['week'] = $vt[6];
+	$vt['week'] = $vt[6]; //6,7
 	
 	return $vt;
 }
@@ -2261,6 +2265,11 @@ function tformat_today()
 }
 
 
+function tformat_ts2datets($ts)	
+{
+	return tformat_ts(tformat_date($ts));
+}
+
 function current_microtime()	
 {
 	list($usec, $sec) = explode(" ", microtime());		
@@ -2280,7 +2289,7 @@ function s_mktime($datetime)
 		
 		$datetime .= " 00:00:00";
 		$d = explode(" ",$datetime);
-		if(count($d) < 2) 
+		if (count($d) < 2) 
 		{
 			return false;
 		}
@@ -2346,13 +2355,9 @@ function __mktime($date, $time)
 		$second = substr($time, 4, 2);
 	}
 	
-	
-	$cf = get_config();
-	$hour = $hour-$cf['timediff'];
-	
 	// rlog("$date, $time, $hour, $minute, $second, $month, $day, $year");
 	// create UNIX TIMESTAMP of the GMT above
-	$ts = mktime($hour, $minute, $second, $month, $day, $year);
+	$ts = tformat_mktime("$year-$month-$day $hour:$minute:$second");
 	
 	return $ts;
 }
@@ -2415,6 +2420,11 @@ function tformat_ts($datetime)
 {
 	return s_mktime($datetime);
 }
+function tformat_mktime($datetime)
+{
+	return s_mktime($datetime);
+}
+
 
 ///////////////////////////////////////////////LOG 日志///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -3576,7 +3586,7 @@ function get_i18n($key='')
 		if (isset($i18n[$key]))
 			return $i18n[$key];
 		else
-			return null;
+			return array();
 	}
 	else
 		return $i18n;
@@ -3611,10 +3621,20 @@ function rexit($message = 0)
 
 function get_userinfo()
 {
+	$userinfo = array();
 	$app = Factory::GetApp();
-	if ($app)
-		return $app->getUserInfo();
-	return false;
+	if ($app) {
+		$res = $app->getUserInfo();
+		//fixed
+		if ($res) {
+			$userinfo = $res;
+			unset($userinfo['password']);
+			unset($userinfo['flags']);
+			unset($userinfo['rid']);
+			unset($userinfo['permisions']);
+		}
+	}
+	return $userinfo;
 }
 
 function get_uid()
@@ -3764,20 +3784,25 @@ function showMsg($status, $msg='', $backurl='')
 		$status = 0;
 		$msg = get_error_string($status);
 	} else if ($status > 0) {
-		$status = 0;
-		$msg = get_error();	
-		if (!$msg)
-			$msg = get_error_string($status);
-	} else {
-		if ($status == RC_E_FAILED)
+			$status = 0;
 			$msg = get_error();	
-		if (!$msg)
-			$msg = get_error_string($status);
-	}	
+			if (!$msg)
+				$msg = get_error_string($status);
+		} else {
+			if ($status == RC_E_FAILED)
+				$msg = get_error();	
+			if (!$msg)
+				$msg = get_error_string($status);
+		}	
 	
 	$status = intval($status);
 	
 	return ($status >= 0)?show_message($msg, $backurl):show_error($msg,  $backurl);
+}
+
+function showErr($status=-1, $msg='', $backurl='')
+{
+	return showMsg($status, $msg, $backurl);
 }
 
 
@@ -3974,7 +3999,7 @@ function is_sbt($name)
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__,"check sbt OK,sbt:".$sbt.", __sbt=".$__sbt);
 		return true;
 	} else {
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__,"check sbt failed sbt:".$sbt.", __sbt=".$__sbt);		
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__,"check sbt failed sbt:".$sbt.", __sbt=".$__sbt.", name=$name");		
 		return false;
 	}
 }
@@ -4872,10 +4897,24 @@ function showStatus($status, $data = array())
 		}	
 	
 	$status = intval($status);
-	//查询错误码描述
-	$res = array('status'=>$status, 'data'=>$data);
-	if ($msg) 
-		$res['msg'] = $msg;
+	
+	//返回结果
+	$res = array('status'=>$status, 'msg'=>$msg, 'data'=>$data);
+	
+	//
+	//if ($status < 0)
+	//	header("HTTP/1.0 400 Error");
+	
+	//跨站请求
+	$cf = get_config();
+	if ($cf['xss_access']) {//允许		   
+		header("Access-Control-Allow-Credentials: true");
+		header("Access-Control-Allow-Origin: http://localhost:8080");
+		//header("Access-Control-Allow-Origin: *");
+		header("Access-Control-Allow-Methods: OPTIONS,GET,POST");
+		header("Access-Control-Allow-Headers: x-requested-with,content-type");
+	}
+	
 	
 	CJson::encodedPrint($res);
 	exit;
@@ -4983,10 +5022,27 @@ function nformat_money($val, $nr=4)
 }
 
 //number_format ( float $number , int $decimals = 0 , string $dec_point = "." , string $thousands_sep = "," ) 
-function nformat_money2($val, $nr=2, $thousands_sep='')
+
+function nformat_moneyv($val, $nr=4)
 {
-	$d = number_format($val, $nr, '.', $thousands_sep);
+	$d = number_format($val, $nr, '.', '');
 	return $d;
+}
+
+function nformat_moneyv4($val)
+{
+	return nformat_moneyv($val, 4);
+}
+
+function nformat_moneyv2($val)
+{
+	return nformat_moneyv($val, 2);
+}
+
+
+function nformat_money2($val)
+{
+	return nformat_money($val, 2);
 }
 
 function nformat_money3($val)
@@ -4999,6 +5055,13 @@ function nformat_moneyW($val, $nr=4)
 	//$d = round($val, $nr);
 	$val /= 10000.0;
 	$d = number_format($val, $nr);
+	return $d;
+}
+
+function nformat_moneyvW($val, $nr=4)
+{
+	$val /= 10000.0;
+	$d = nformat_moneyv($val, $nr);
 	return $d;
 }
 
@@ -5489,7 +5552,7 @@ function parseEthinfoLine($line, &$nif)
 	$tdb = explode(" ", $line);	
 	foreach ($tdb as $key=>$v) {
 		$v = trim($v);
-		if (!$v) 
+		if ($v === '') 
 			continue;
 		$udb[] = $v;
 	}
@@ -5498,13 +5561,19 @@ function parseEthinfoLine($line, &$nif)
 	
 	for($i=0; $i<$nr; $i++) {
 		$val = $udb[$i];
-		var_dump($val);
-		switch ($val) {
+		//var_dump($val);
+		switch ($val) {	
+			//ens35:2   Link encap:Ethernet  HWaddr 00:0c:29:68:f2:aa 
 			case 'Link': //"eno4      Link encap:Ethernet  HWaddr 34:73:79:18:33:06"
-				$nif['name'] = $udb[$i-1];				
+				$name = $udb[$i-1];
+				if (($pos = strpos($name, ':')) !== false) //子接口
+					$name = substr($name, 0, $pos);
+				
+				$nif['name'] = $name;				
 				//encap:Ethernet
 				$nif['type'] = substr($udb[++$i], 6);
 				break;
+			case 'ether': //ether 00:0c:29:5b:cd:8a  txqueuelen 1000  (Ethernet)
 			case 'HWaddr':
 				$nif['hwaddr'] = $udb[++$i];
 				break;
@@ -5515,14 +5584,48 @@ function parseEthinfoLine($line, &$nif)
 				"addr:28.69.92.206"
 				"Bcast:28.69.92.255"
 				"Mask:255.255.255.0"*/
+				//inet 192.168.0.152  netmask 255.255.255.0  broadcast 192.168.0.255
 				
-				$nif['ip'] = substr($udb[$i+1], 5);
-				$nif['netmask'] =substr($udb[$i+3], 5);
+				if (!isset($nif['inet']))
+					$nif['inet'] = array();
 				
-				$i += 3;
+				$ip = array();
+				if (strstr($udb[$i+1], 'addr:')) {
+					$ip['ip'] = substr($udb[$i+1], 5);
+					$ip['netmask'] =substr($udb[$i+3], 5);
+					$i += 3;
+				} else {
+					$ip['ip'] = $udb[$i+1];
+					$ip['netmask'] =$udb[$i+3];
+					$i += 5;	
+				}				
+				$nif['inet'][] = $ip;
 				
 				break;
 			case 'inet6':
+				/*
+				 inet6 addr: fe80::20c:29ff:fe68:f2aa/64 Scope:Link
+				 inet6 addr: 240e:360:95c:c101:20c:29ff:fe68:f2aa/64 Scope:Global
+				*/
+				/*
+				inet6 240e:360:95c:c101::1004  prefixlen 128  scopeid 0x0<global>
+				inet6 240e:360:95c:c101:20c:29ff:fe5b:cd80  prefixlen 64  scopeid 0x0<global>
+				inet6 fe80::20c:29ff:fe5b:cd80  prefixlen 64  scopeid 0x20<link>
+				*/
+				if (!isset($nif['inet6']))
+					$nif['inet6'] = array();
+				
+				$ip = array();
+				if (strstr($udb[$i+1], 'addr:')) {
+					$ip['ip'] = $udb[$i+2];
+					$i += 3;
+				} else {
+					$ip['ip'] = $udb[$i+1];
+					$ip['prefixlen'] =$udb[$i+3];
+					$i += 5;	
+				}				
+				$nif['inet6'][] = $ip;
+				
 				break;
 			case 'UP':
 				/*
@@ -5562,43 +5665,120 @@ function parseEthinfoLine($line, &$nif)
 					
 				*/
 				
+				/*
+				ether 00:0c:29:5b:cd:80  txqueuelen 1000  (Ethernet)
+					RX packets 20957  bytes 1428066 (1.4 MB)
+					RX errors 0  dropped 0  overruns 0  frame 0
+					TX packets 1186  bytes 80346 (80.3 KB)
+					TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+				*/
 				
-				list($name, $sz) = explode(':', $udb[$i+1]);
-				if ($name == 'packets') {
-					$nif['rx_packets'] = $sz;
-					for ($j=0; $j<4; $j++) {
-						list($name, $sz) = explode(':', $udb[$i+2+$j]);
-						$nif['rx_'.$name] = $sz;
+				if (strstr($udb[$i+1],"packets:")) {
+					list($name, $sz) = explode(':', $udb[$i+1]);
+					if ($name == 'packets') {
+						$nif['rx_packets'] = $sz;
+						for ($j=0; $j<4; $j++) {
+							list($name, $sz) = explode(':', $udb[$i+2+$j]);
+							$nif['rx_'.$name] = $sz;
+						}
+						$i += 4;
+					} else {
+						$nif['rx_bytes'] =$sz;
+						$i += 1;
 					}
-					$i += 4;
-				} else {
-					$nif['rx_bytes'] =$sz;
-					$i += 1;
-				}
+				} else if (strstr($udb[$i+1],"bytes:")) { //RX bytes:16465911 (16.4 MB)  TX bytes:16465911 (16.4 MB)
+						list($name, $sz) = explode(':', $udb[$i+1]);
+						$nif['rx_bytes'] =$sz;
+						$i += 1;					
+					}else {
+						if ($udb[$i+1] == "packets") {
+							$nif['rx_packets'] = $udb[$i+2];
+							$nif['rx_bytes'] = $udb[$i+4];
+							$i += 4;
+						} else if ($udb[$i+1] == "errors") {
+								$nif['rx_errors'] = $udb[$i+2];
+								$nif['rx_dropped'] = $udb[$i+4];
+								$nif['rx_overruns'] = $udb[$i+6];
+								$nif['rx_frame'] = $udb[$i+8];
+								
+								$i += 8; 
+							}
+					}
 				
 				break;
 			case 'TX':
-				list($name, $sz) = explode(':', $udb[$i+1]);
-				if ($name == 'packets') {
-					$nif['tx_packets'] = $sz;
-					for ($j=0; $j<4; $j++) {
-						list($name, $sz) = explode(':', $udb[$i+2+$j]);
-						$nif['tx_'.$name] = $sz;
-					}	
-					$i += 4;			
-				} else {
-					$nif['tx_bytes'] =$sz;
-					$i += 1;
-				}
+				
+				if (strstr($udb[$i+1],"packets:")) {
+					list($name, $sz) = explode(':', $udb[$i+1]);
+					if ($name == 'packets') {
+						$nif['tx_packets'] = $sz;
+						for ($j=0; $j<4; $j++) {
+							list($name, $sz) = explode(':', $udb[$i+2+$j]);
+							$nif['tx_'.$name] = $sz;
+						}	
+						$i += 4;			
+					} else {
+						$nif['tx_bytes'] =$sz;
+						$i += 1;
+					}
+				}  else if (strstr($udb[$i+1],"bytes:")) { //RX bytes:16465911 (16.4 MB)  TX bytes:16465911 (16.4 MB)
+						list($name, $sz) = explode(':', $udb[$i+1]);
+						$nif['tx_bytes'] =$sz;
+						$i += 1;					
+					} else {
+						if ($udb[$i+1] == "packets") {
+							$nif['tx_packets'] = $udb[$i+2];
+							$nif['tx_bytes'] = $udb[$i+4];					
+							$i += 4;
+						} else if ($udb[$i+1] == "errors") {
+								$nif['tx_errors'] = $udb[$i+2];
+								$nif['tx_dropped'] = $udb[$i+4];
+								$nif['tx_overruns'] = $udb[$i+6];
+								$nif['tx_carrier'] = $udb[$i+8];
+								$nif['tx_collisions'] = $udb[$i+10];							
+								$i += 10; 
+							}
+					}
 				
 				break;
 			default:
+				//ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+				//ens33:1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+				if ($i == 0 && (strstr($udb[$i+1],"Link") || strstr($udb[$i+1],"flags"))) {
+					$pos = strpos($val, ':');
+					if ($pos !== false ) {
+						$nif['name'] = substr($val, 0, $pos);
+						//var_dump($nif['name']);
+					}				
+				}
+				if (strstr($val,"flags")) {//flags=4163<UP,BROADCAST,RUNNING,MULTICAST>
+					$pos = strpos($val, '<');
+					if ($pos !== false) {
+						$flagsnames = substr($val, $pos+1, -1);
+						$fndb = explode(',', $flagsnames);
+						foreach ($fndb as $k2=>$v2) {
+							switch ($v2) {
+								case 'UP':
+									$nif['status'] = 1;
+									break;
+								case 'RUNNING':
+									$nif['link'] = 1;
+									break;
+								default:
+									break;
+								
+							}
+						}
+					} 					
+				}
+				
+				
 				break;
 		}
 	}
 }
 
-function parseEthinfo($ethinfo)
+function parseEthinfo($ethinfo, &$ifdb=array())
 {
 	$nif = array();
 	$nif['status'] = 0;
@@ -5609,11 +5789,15 @@ function parseEthinfo($ethinfo)
 		$line = trim($v);
 		if (!$line)
 			continue;
-		
 		parseEthinfoLine($line, $nif);
 	}
 	
-	//var_dump($nif);
+	if (!isset($ifdb[$nif['name']])) {
+		$ifdb[$nif['name']] = $nif;
+	} else {//多IP, eg: eth1:1
+		foreach ($nif['inet'] as $key=>$v) 
+			$ifdb[$nif['name']]['inet'][] = $v;			
+	}
 	return $nif;
 }
 
@@ -5728,29 +5912,254 @@ lo        Link encap:Local Loopback
 
 EOT;
 		
+		$data = <<<EOT
+ens33: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.0.152  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 240e:360:95c:c101::1004  prefixlen 128  scopeid 0x0<global>
+        inet6 240e:360:95c:c101:20c:29ff:fe5b:cd80  prefixlen 64  scopeid 0x0<global>
+        inet6 fe80::20c:29ff:fe5b:cd80  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:5b:cd:80  txqueuelen 1000  (Ethernet)
+        RX packets 2788  bytes 186939 (186.9 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 224  bytes 15974 (15.9 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens33:1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 28.69.92.203  netmask 255.0.0.0  broadcast 28.255.255.255
+        ether 00:0c:29:5b:cd:80  txqueuelen 1000  (Ethernet)
+
+ens38: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.10.203  netmask 255.255.255.0  broadcast 192.168.10.255
+        inet6 fe80::20c:29ff:fe5b:cd8a  prefixlen 64  scopeid 0x20<link>
+        ether 00:0c:29:5b:cd:8a  txqueuelen 1000  (Ethernet)
+        RX packets 577  bytes 51506 (51.5 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 516  bytes 75927 (75.9 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens39: flags=4098<BROADCAST,MULTICAST>  mtu 1500
+        ether 00:0c:29:5b:cd:94  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 84  bytes 6352 (6.3 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 84  bytes 6352 (6.3 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+EOT;
+		
 	}
 	
 	$ifdb = array();
 	$ndb = explode("\n\n", $data);
+	
 	foreach($ndb as $key=>$v) {
 		$ethinfo = trim($v);
 		if (!$ethinfo)
 			continue;
-		$nif = parseEthinfo($ethinfo);
 		
-		if (!$nif)
-			continue;
-		
-		$ifdb[$nif['name']] = $nif;
+		parseEthinfo($ethinfo, $ifdb);		
 	}
 	ksort($ifdb);
-	
-	
 	
 	if (isset($ifdb[$ifname]))
 		return $ifdb[$ifname];
 	
 	return $ifdb;	
+}
+
+function parseIpAddressLine($line, &$nif)
+{
+	$udb = array();
+	
+	//1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+	$tdb = explode(" ", $line);
+	foreach ($tdb as $key => $v) {
+		$val = trim($v);
+		$udb[] = $val;
+	}
+	$nr = count($tdb);
+	
+	$i=0;
+	if ($udb[$i] == $nif['id']) {//第1行
+		$i++;
+		
+		//name
+		$name = rtrim($udb[$i++], ':');
+		$nif['name'] = $name;
+		
+		//<LOOPBACK,UP,LOWER_UP>
+		$flags = $udb[$i++];
+		$flags = ltrim($flags, '<');
+		$flags = rtrim($flags, '>');
+		
+		$fndb = explode(',', $flags);
+		foreach ($fndb as $k2=>$v2) {
+			switch ($v2) {
+				case 'UP':
+					$nif['status'] = 1;
+					break;
+				case 'LOOPBACK':
+					$nif['LOOPBACK'] = 1;
+					break;
+				default:
+					break;
+				
+			}
+		}
+	}
+	
+	
+	for(;$i<$nr; $i++) {
+		$val = $udb[$i];
+		switch($val){
+			case 'link/ether':
+				$nif['hwaddr'] = $udb[++$i];
+				break;
+			case 'state':
+				$state = $udb[++$i];//UNKNOWN|UP|DOWN
+				$nif['link'] = ($state == 'UP' || ($nif['LOOPBACK'] == 1 && $state == 'UNKNOWN'))?1:0;
+				break;
+			case 'inet6':
+			case 'inet':
+				if (!isset($nif[$val]))
+					$nif[$val]= array();
+				list($ip, $netmask) = explode('/', $udb[++$i]);
+				$nif[$val][] = array('ip'=>$ip, 'netmask'=>$netmask);					
+				break;
+			default:
+				//var_dump($val);
+				break;
+		}
+	}
+}
+
+/*
+ip address
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:8a:82:ca brd ff:ff:ff:ff:ff:ff
+    inet 192.168.189.129/24 brd 192.168.189.255 scope global ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe8a:82ca/64 scope link 
+       valid_lft forever preferred_lft forever
+3: ens38: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:8a:82:d4 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.10.249/24 brd 192.168.10.255 scope global ens38
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe8a:82d4/64 scope link 
+       valid_lft forever preferred_lft forever
+4: ens39: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:8a:82:de brd ff:ff:ff:ff:ff:ff
+    inet 28.69.92.20/24 brd 28.69.92.255 scope global ens39
+       valid_lft forever preferred_lft forever
+    inet 192.168.0.20/24 brd 192.168.0.255 scope global ens39:2
+       valid_lft forever preferred_lft forever
+    inet 192.168.0.249/24 brd 192.168.0.255 scope global secondary ens39:3
+       valid_lft forever preferred_lft forever
+    inet6 240e:360:95c:c101:20c:29ff:fe8a:82de/64 scope global mngtmpaddr dynamic 
+       valid_lft 85952sec preferred_lft 13952sec
+    inet6 fe80::20c:29ff:fe8a:82de/64 scope link 
+       valid_lft forever preferred_lft forever
+root@erm:~# 
+*/
+function ip_address()
+{
+	$ipinfo = array();
+	
+	$cmd = "ip address";
+	$data = run_output($cmd, $return);
+	if (is_windows()) {
+		$data = <<<EOT
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: ens33: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:8a:82:ca brd ff:ff:ff:ff:ff:ff
+    inet 192.168.189.129/24 brd 192.168.189.255 scope global ens33
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe8a:82ca/64 scope link 
+       valid_lft forever preferred_lft forever
+3: ens38: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:8a:82:d4 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.10.249/24 brd 192.168.10.255 scope global ens38
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe8a:82d4/64 scope link 
+       valid_lft forever preferred_lft forever
+4: ens39: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:8a:82:de brd ff:ff:ff:ff:ff:ff
+    inet 28.69.92.20/24 brd 28.69.92.255 scope global ens39
+       valid_lft forever preferred_lft forever
+    inet 192.168.0.20/24 brd 192.168.0.255 scope global ens39:2
+       valid_lft forever preferred_lft forever
+    inet 192.168.0.249/24 brd 192.168.0.255 scope global secondary ens39:3
+       valid_lft forever preferred_lft forever
+    inet6 240e:360:95c:c101:20c:29ff:fe8a:82de/64 scope global mngtmpaddr dynamic 
+       valid_lft 85952sec preferred_lft 13952sec
+    inet6 fe80::20c:29ff:fe8a:82de/64 scope link 
+       valid_lft forever preferred_lft forever
+EOT;
+		
+	}
+	
+	$nr = 1;
+	$id1 = $id2 = "$nr:";
+	
+	$ifdb = array();
+	$ndb = explode("\n", $data);
+	
+	foreach($ndb as $key=>$v) {
+		$v = trim($v);
+		if (!$v)
+			continue;
+		
+		if (is_start_with($v, $id2)) {
+			$ifdb[$id2] = array('id'=>$id2,'status'=>0, 'link'=>0);
+			$id1 = $id2;
+			$nr ++;
+			$id2 = "$nr:";
+		} 
+		
+		parseIpAddressLine($v, $ifdb[$id1]);	
+		
+	}
+	ksort($ifdb);
+	
+	if (isset($ifdb[$ifname]))
+		return $ifdb[$ifname];
+	
+	return $ifdb;
+}
+
+
+function ifconfig2($ifname='')
+{
+	$ipdb = ip_address();
+	$ifdb = ifconfig($ifname);
+	
+	foreach ($ipdb as $key => $v) {
+		$name = $v['name'];
+		if (isset($ifdb[$name])) {
+			$ifdb[$name]['inet'] = $v['inet'];
+			$ifdb[$name]['inet6'] = $v['inet6'];
+		}
+	}
+	
+	return $ifdb;
 }
 
 
@@ -5874,12 +6283,12 @@ function curlPOST($url, $params=array(), $file=null, $json=false)
 	if ($params) {
 		if ($json) {
 			curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-	            'Content-Type: application/json',
-	            'Accept: application/json'
-	        ));
-	        if (is_array($params)) {
-	            $params = json_encode($params);
-	        }
+						'Content-Type: application/json',
+						'Accept: application/json'
+						));
+			if (is_array($params)) {
+				$params = json_encode($params);
+			}
 		} 
 		
 		@curl_setopt($curl, CURLOPT_POSTFIELDS, $params); //Post
@@ -6213,44 +6622,44 @@ function enString($plaintext, $key, $iv = '', $aad = '')
 {
 	$cipher = 'aes-256-gcm';
 	$ciphertext = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, 
-		$iv, $tag, $aad, 16);
-
+			$iv, $tag, $aad, 16);
+	
 	if (false === $ciphertext) {
 		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, 'Encrypting the input $plaintext failed, please checking your $key and $iv whether or nor correct.');
 		return false;
 	}
 	$res = base64_encode($ciphertext . $tag);
-
+	
 	$res = urlencode($res);
-
+	
 	return $res;
 }
 
 function deString($ciphertext, $key, $iv = '', $aad = '')
 {
 	//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, 'in1', $ciphertext);
-
+	
 	//$ciphertext = urldecode($ciphertext);	
 	//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, 'in2', $ciphertext);
-
+	
 	$ciphertext = base64_decode($ciphertext);
-
+	
 	
 	$authTag = substr($ciphertext, $tailLength = 0 - 16);
-    $tagLength = strlen($authTag);
-
-    if ($tagLength > 16 || ($tagLength < 12 && $tagLength !== 8 && $tagLength !== 4)) {
+	$tagLength = strlen($authTag);
+	
+	if ($tagLength > 16 || ($tagLength < 12 && $tagLength !== 8 && $tagLength !== 4)) {
 		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "The inputs  incomplete, the bytes length must be one of 16, 15, 14, 13, 12, 8 or 4.");
 		return false;
 	}
 	$cipher = 'aes-256-gcm';
 	$plaintext = openssl_decrypt(substr($ciphertext, 0, $tailLength), $cipher, $key, OPENSSL_RAW_DATA, 
-		$iv, $authTag, $aad);
-
+			$iv, $authTag, $aad);
+	
 	if (false === $plaintext) {
 		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "Decrypting the input failed, please checking your $key and $iv whether or nor correct.");
 	}
-
+	
 	return $plaintext;
 }
 
@@ -6261,13 +6670,13 @@ function enParams($params)
 	$key = $cf['accesskey'];
 	$iv = md5($cf['accesskey']);
 	$aad = 's.x.w.a.r.e';
-
-    $sign = sign($key, $params);
-    $params['sign'] = $sign;
-
+	
+	$sign = sign($key, $params);
+	$params['sign'] = $sign;
+	
 	$plaintext = serialize($params);
 	
-
+	
 	return enString($plaintext, $key, $iv, $aad);
 }
 
@@ -6277,21 +6686,21 @@ function deParams($ciphertext)
 	$key = $cf['accesskey'];
 	$iv = md5($cf['accesskey']);
 	$aad = 's.x.w.a.r.e';
-
+	
 	$plaintext = deString($ciphertext, $key, $iv, $aad);
 	if (!$plaintext) {
 		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, 'deString failed!');
 		return false;
 	}
-
+	
 	$params = unserialize($plaintext);
-
+	
 	$sign = sign($key, $params);
 	if ($sign != $params['sign']) {
 		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, 'invalid sign');
 		return false;
 	}
-
+	
 	return $params;
 }
 
@@ -6382,15 +6791,15 @@ function s_hidestr($string, $start=0, $length=0, $re ='*')
 	for($i=0; $i<$begin; $i++) {
 		$res .= $strarr[$i];
 	}
-
+	
 	for($i=$begin; $i<=$end; $i++) {
 		$res .= $re;
 	}
-
+	
 	$end_start = $end+1;
 	if ($last - $end > $start)
 		$end_start = $last - $start;
-
+	
 	for ($i=$end_start; $i < $last; $i++) { 
 		$res .= $strarr[$i];
 	}
@@ -6403,4 +6812,32 @@ function s_hidestr($string, $start=0, $length=0, $re ='*')
 function cutstr($str, $nr=32)
 {
 	return substr($str, 0, $nr);
+}
+
+function equalf($a, $b, $n=6)
+{
+	return round($a - $b,$n) == 0;
+}
+
+function is_model($name)
+{
+	$res = false;
+	$filename = RPATH_APPMODELS.DS.$name.'.php';
+	if (file_exists($filename)) {//本地应用目录下的models优先
+		$res = true;
+	} else {				
+		$modpathinfo = Factory::GetModelPathInfo($name);
+		if ($modpathinfo)  {
+			$filename = $modpathinfo['modpath'];
+			$appname  = $modpathinfo['appname'];
+			if (file_exists($filename)) {
+				$res = true;					
+			}
+		} else {				
+			$filename = RPATH_MODELS.DS.$name.'.php';
+			if (file_exists($filename))
+				$res = true;		
+		}
+	}
+	return $res;
 }

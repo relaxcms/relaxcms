@@ -173,6 +173,16 @@ $menus = array(
 			'level' => 2,
 			'sort'=>10,
 			),
+		'system_menu'=>array (
+			'mid'=>'602',
+			'name'	=>'system_menu',
+			'component'=>'system_menu',
+			'task'	=>'',
+			'icon' => '',
+			'parent' => 'system',
+			'level' => 2,	
+			'sort'=>10,		
+			),
 			
 		'system_app'=>array (
 			'mid'=>'602',
@@ -227,7 +237,6 @@ $menus = array(
 			),
 				
 			
-			/*
 		'help_restfulapi'=>array(
 			'mid'=>'403',
 			'name'	=>'help_restfulapi',
@@ -235,9 +244,9 @@ $menus = array(
 			'task'	=>'',
 			'icon' => '',
 			'parent' => 'help',
-			'hidden'=>true,
-			'linkurl'=>'docs/api/',
-			),*/
+			'linkurl'=>'docs/api',
+			),
+
 		'help_manual'=>array(
 			'mid'=>'405',
 			'name'	=>'help_manual',

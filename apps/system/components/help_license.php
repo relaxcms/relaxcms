@@ -25,6 +25,8 @@ class HelpLicenseComponent extends CFileDTComponent
 	
 	public function show(&$ioparams=array())
 	{
+		$this->enableJSCSS(array('fileview'));
+
 		$m = Factory::GetModel('license');
 		$m->autoUpdateLicense();
 		

@@ -74,25 +74,25 @@ class CMailer
 				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "add attachment :".$v['file']);
 			}			
 		}
-		
+		$res = false;
 		try {
 			ob_start();
 			$res = $mail->Send();
-			if (!$res) {
-				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call mail->Send failed! res=$res");
-			}
-			$res = ob_get_contents();
+			$res2 = ob_get_contents();
 			ob_end_clean();
-			if(strval($res)=="") {
-				return true;
+			if (!$res) {				
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call mail->Send failed! res=$res, res2=$res2");
 			}
+			
 		} catch (phpmailerException $e) {
-			$res = $e->errorMessage(); //Pretty error messages from PHPMailer
-		}catch (Exception $e) {
-			$res = $e->getMessage(); //Boring error messages from anything else!
+			$res2 = $e->errorMessage(); //Pretty error messages from PHPMailer
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "phpmailerException! res2=$res2");
+		} catch (Exception $e) {
+			$res2 = $e->getMessage(); //Boring error messages from anything else!
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "Exception! res2=$res2");
 		}
 		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $res);
-		return false;		
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $res);
+		return $res;		
 	}
 }

@@ -194,7 +194,7 @@ class CDTComponent extends CUIComponent
 	protected function init(&$ioparams=array())
 	{
 		parent::init($ioparams);
-		$ioparams['dlg'] = $this->requestInt('dlg');
+		$ioparams['_dlg'] = $ioparams['dlg'] = $this->requestInt('dlg');
 	}
 	
 	protected function enableMenuItem($midb, $enable=true)
@@ -301,7 +301,14 @@ class CDTComponent extends CUIComponent
 
 	protected function initRequestParams()
 	{
-		$this->assign('requestparams', $_REQUEST);
+		//for hidden request
+		$hiddrequetdb = array();
+		foreach ($_REQUEST as $key=>$v) {
+			if (!is_array($v))
+				$hiddrequetdb[$key] = $v;
+			
+		}
+		$this->assign('requestparams', $hiddrequetdb);
 	}	
 	
 	protected function show(&$ioparams=array())
@@ -457,37 +464,37 @@ class CDTComponent extends CUIComponent
 		return true;
 	}
 	
-	
-	protected function add(&$ioparams=array())
+	protected function addForModel($modname, &$ioparams=array())
 	{
-		$m = $this->getModel();		
-		$modinfo = $m->getModelInfo();		
+		$m = Factory::GetModel($modname);		
 		if ($this->_sbt) {
 			
 			$this->getParams($params);
-			
+			unset($params['id']);
 			$this->prepSubmitParams($params, $ioparams);
 			
 			$res = $m->set($params, $ioparams);
 			
 			$data = array();
-			if (isset($ioparams['data']))
-				$data = $ioparams['data'];
 			if ($res)				
 				$this->postSubmitParams($params, $ioparams);
+			if (isset($ioparams['data']))
+				$data = $ioparams['data'];
 			
 			showStatus($res, $data);
 			
 			return $res;
 		}
 		
-		$modname = $modinfo['name'];		
 		$table_id = 'mod_table_'.$modname;
 		$this->assign('table_id', $table_id);
 		
 		$this->initParams($params, $ioparams);
 		$tname = $this->_task;
-		$this->initParamsForAdd($params, $ioparams);
+		$initTaskName = "initParamsFor".ucfirst($tname);
+		if (method_exists($this, $initTaskName))
+			$this->$initTaskName($params, $ioparams);
+
 		$fields = $m->getFieldsForInputAdd($params, $ioparams);
 		if (!$fields) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "WARNING: getFieldsForInput$tname failed!", $tname, $modinfo);
@@ -508,18 +515,22 @@ class CDTComponent extends CUIComponent
 		return $fields;		
 	}
 	
-	
-	protected function edit(&$ioparams=array())
+	protected function add(&$ioparams=array())
 	{
-		$m = $this->getModel();
+		$modname = $this->getModelName();		
+		$res = $this->addForModel($modname, $ioparams);	
+		return $res;		
+	}
+	
+	protected function editForModel($modname, &$ioparams=array())
+	{
+		$m = Factory::GetModel($modname);		
 		
-		$modinfo = $m->getModelInfo();
-				
 		if ($this->_sbt) {
 			$this->getParams($params);
 			
 			$this->prepSubmitParams($params, $ioparams);
-							
+			
 			$res = $m->set($params, $ioparams);
 			
 			$data = array();
@@ -533,7 +544,6 @@ class CDTComponent extends CUIComponent
 			return $res;
 		}
 		
-		$modname = $modinfo['name'];		
 		$table_id = 'mod_table_'.$modname;
 		$this->assign('table_id', $table_id);
 		
@@ -544,7 +554,7 @@ class CDTComponent extends CUIComponent
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "WARNING: getFieldsForInput$tname failed!", $tname, $modinfo);
 			$fields = array();
 		}
-				
+		
 		$this->assign('fields', $fields);		
 		$this->assign('params', $params);
 		
@@ -559,6 +569,13 @@ class CDTComponent extends CUIComponent
 		return $fields;
 	}
 	
+	
+	protected function edit(&$ioparams=array())
+	{
+		$modname = $this->getModelName();
+		$res = $this->editForModel($modname, $ioparams);		
+		return $res;		
+	}	
 	
 	
 	protected function doEdit($modname, &$ioparams=array())
@@ -633,14 +650,20 @@ class CDTComponent extends CUIComponent
 	{
 		$query = $_REQUEST["q"];
 		
+		$this->getParams($params);
+		
 		$modname = $ioparams['vpath'][0];
 		$fieldname = $ioparams['vpath'][1];
 		
+		
+		if (!isset($params['__keyword'])) {
+			$params['__keyword'] = $query;
+		}
 				
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, 'modname='.$modname.', fieldname='.$fieldname);
 		
 		$m = $this->getModel();
-		$udb = $m->select(array('__keyword'=>$query));
+		$udb = $m->select($params, $ioparams);
 		
 		$results = array();		
 		foreach($udb as $key=>$v) {
@@ -648,7 +671,7 @@ class CDTComponent extends CUIComponent
 			$results[] = array(
 				"value" => $v['name'],
 					"desc" => $desc,
-				//"img" => "http://lorempixel.com/50/50/?" . (rand(1, 10000) . rand(1, 10000)),
+				//"img" => "http://relaxcms.com/50/50/?" . (rand(1, 10000) . rand(1, 10000)),
 				"tokens" => array($query, $query . rand(1, 10))
 			);
 		}

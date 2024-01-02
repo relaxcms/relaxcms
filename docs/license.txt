@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright 2007-2022 RelaxCMS Team
+Copyright 2007-2023 RelaxCMS Team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 MIT 许可协议
 
-版权所有 (c) 2007-2022, RelaxCMS 团队
+版权所有 (c) 2007-2023, RelaxCMS 团队
 
 特此向任何得到本软件副本或相关文档的人授权：被授权人有权使用、复制、修改、 合并、出版、发布、散布、再授权和/或贩售软件及软件的副本，及授予被供应人同等权利，只需服从以下义务：
 

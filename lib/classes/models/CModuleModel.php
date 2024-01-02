@@ -47,6 +47,16 @@ class CModuleModel extends CTableModel
 	}
 	
 	
+	public function formatForView(&$row, &$ioparams = array())
+	{
+		//content
+		$res = parent::formatForView($row, $ioparams);
+		
+		//$row['_content'] = htmlspecialchars($row['content']);
+		
+		return $res;
+	}
+	
 	public function set(&$params, &$ioparams=array())
 	{
 		$res = parent::set($params);
@@ -65,7 +75,6 @@ class CModuleModel extends CTableModel
 	public function setModuleParams($mid, $params)
 	{
 		
-
 		$params['mid'] = $mid;
 		$m = Factory::GetModel('module_params');
 		$res = $m->set($params);

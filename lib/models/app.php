@@ -71,7 +71,7 @@ class AppModel extends CAppModel
 		return $res;
 	}
 
-	protected function getActions($row=array())
+	protected function getActions($row=array(), &$ioparams=array())
 	{
 		$actions = $this->_default_actions;
 		
@@ -442,6 +442,7 @@ class AppModel extends CAppModel
 		$nr_failed = 0;
 		foreach ($apps as $key=>$v) {
 			if (!$v) {
+				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "key=$key", $apps, $appinfo);
 				$app = Factory::GetApp($key);
 				if ($app) {
 					if (($res = $app->install())) {//表存在，可能报错
