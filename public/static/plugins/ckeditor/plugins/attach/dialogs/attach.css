@@ -1,0 +1,8 @@
+.attList { border: 1px solid red; }
+.attList ul li { list-style:none; display:block; padding:2px; float:left; }
+.attList ul { border-bottom:1px dashed #ccc; padding:2px; clear:both; display:block; height:22px;}
+.input1 { width:100px; float:left; border:1px solid red; display:inline; }
+.attList .title { width:200px;}
+.attList .title a { cursor:pointer;}
+.attList .size { width:100px; text-align:right;}
+.attList .type img { width:16px; height:16px;}
