@@ -1,0 +1,43 @@
+<!--顶部主题图-->
+<style type="text/css">
+.banner { background: url("$params[photo]") no-repeat center; background-size: cover;height: 320px}
+.top-banner {
+  height: 320px;
+  position: relative;
+  color: #ffffff;
+}
+.top-banner:after {
+  position: absolute;
+  content: "";
+  height: 320px;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.top-banner .banner-detail {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -600px;
+  z-index: 100;
+  padding-top: 80px;
+}
+.top-banner .banner-detail .b_title {
+  font-size: 34px;
+  padding-bottom: 10px;
+}
+.top-banner .banner-detail .b_info {
+  font-size: 16px;
+  color: #d6d6d6;
+}
+</style>
+
+
+<!--顶部主题图-->
+<div class="banner top-banner">
+    <div class="web_ banner-detail">
+        <div class="b_title animated fadeInUp wow column_name"> $params[name] </div>
+        <div class="b_info animated fadeInDown wow column_info">$params[description] </div>
+    </div>
+</div>

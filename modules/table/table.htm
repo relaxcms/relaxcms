@@ -1,0 +1,76 @@
+<form name="lvform" method="post">
+<!--# if($hidefields) { #-->
+<input type="hidden" name="params[__hidefields]" value="$hidefields" class="form-filter" />
+<!--# } #-->
+
+	<input type="hidden" name="dlg" value="$dlg" class="form-filter" />
+<!--# foreach($hidden_filter_fields as $key=>$v) { #-->
+<input type="hidden" name="params[$key]" value="$v" class="form-filter" />
+<!--# } #-->
+
+<!-- BEGIN  Listview PORTLET-->
+<div class="portlet light listview lv$col" id="mylistview_$modname" 
+data-modname="$modname"
+data-url="$_basename/$comname"
+data-col="$col"
+data-dlg="$dlg"
+data-notabhead="$notabhead"
+data-notoolbar="$notoolbar"
+data-keyword="$_keyword"
+data-vmask="$vmask"
+data-defaultviewtype="$defaultviewtype"
+>
+
+	<template name="toolbar">
+	
+	<div id="toolbar$table_id" class="form-inline searchbar">
+<!--# foreach($sfdb as $key=>$v) { if (!$v['searchinput']) continue; #-->
+    <div class="form-group">
+            $v[searchinput]
+    </div>
+<!--# } #-->
+
+<!--# foreach($sfdb as $key=>$v) { if (($v['searchable'] & 2) == 2) { #-->
+    <div class="form-group">
+            $v[input]
+    </div>
+<!--# }} #-->
+    <input type="button" class="btn btn-primary filter-field btnSearch" id="query$table_id" value="搜索"/>
+</div> 
+
+		
+	</template>
+
+</div>
+<!-- END Listview PORTLET -->
+</form>
+
+
+<script language="javascript">
+    $(document).ready(function() {
+
+    //blueimp-gallery
+    if (!$.Gallery) {
+        $('#blueimp-gallery').hide();
+    }
+    
+	//listview
+	var listview = null;
+	$("#mylistview_$modname").listview({
+		search:true,
+		pagination:true,
+		onLoad: function(lv) {
+			listview = lv;
+		},
+		onDone:function (lv) {
+			//console.log("onDone....");
+		}
+	});
+
+	//search
+	$('#btnSearch').on('click', function(e){
+		listview.reload();
+	});
+});
+
+</script>
