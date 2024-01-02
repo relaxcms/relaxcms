@@ -1,0 +1,28 @@
+﻿<!DOCTYPE HTML >
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$scf[title]</title>
+<meta name="keywords" content="$scf[title]" />
+<meta name="description" content="$scf[title]" />
+<link href="$_dstroot/css/frontend.css" rel="stylesheet" type="text/css" />
+<script src="$_dstroot/js/frontend.js" language="javascript" ></script>
+
+<link href="$_theroot/global/plugins/video/css/video-js.css" rel="stylesheet" type="text/css" />
+<script src="$_theroot/global/plugins/video/js/video.min.js" type="text/javascript"></script>
+<script src="$_theroot/global/plugins/video/js/videojs-contrib-hls.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+<video id="my-video" width="600px" height="420px" class="video-js vjs-default-skin" controls 
+poster="800.jpg">
+    <source src="$videoinfo[url]" type="video/mp4">
+</video>
+
+<script type="text/javascript">
+    var player = videojs('my-video');
+    player.play();
+</script>
+</body>
+</html>
