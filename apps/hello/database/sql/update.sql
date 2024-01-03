@@ -1,0 +1,1 @@
+alter table cms_hello add video varchar(256) null;
