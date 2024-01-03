@@ -1,5 +1,5 @@
 % RelaxCMS简介
-% 版本：0.8.14 / 更新时间：2023.8.31
+% 版本：0.9.1 / 更新时间：2024.1.2
 
 
 
@@ -56,33 +56,79 @@ RelaxCMS是一款基于PHP开发的WEB应用框架,主要用于构建WEB应用�
 
 		https://www.relaxcms.com
 		
-- RELAXCMS 演示
-
-		https://demo.relaxcms.com		
+- RELAXCMS 官方下载
+		
+		svn co https://svnproject.relaxcms.com/svn/relaxcms				
 
 - GITHUB下载
 
 		svn co https://github.com/relaxcms/relaxcms.git
 
+#在线演示
+
+		https://demo.relaxcms.com	
+
+
 #一键安装
 
--- 支持LINUX环境下一键安装，推荐使用Ubuntu 16.04/18.04 Server LTS
+-- 支持LINUX环境下一键安装（CRAB+RC），推荐使用Ubuntu 16.04/18.04 Server LTS
 
 
 		if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/install.sh;else wget -O install.sh https://www.relaxcms.com/install/install.sh;fi;bash install.sh
 		
 
--- 注：默认安装RelaxCMS官网发布的最新稳定版本		
+-- 注：默认安装RelaxCMS官网发布的最新稳定版本
+
+
+
+#一键更新CRAB运行环境
+
+-- LINUX环境下支持一键更新CRAB运行环境(仅更新CRAB)，执行：
+
+		if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/updatecrab.sh;else wget -O updatecrab.sh https://www.relaxcms.com/install/updatecrab.sh;fi;bash updatecrab.sh
+
+
+
+
+#一键安装RC
+
+-- 支持LINUX环境下一键安装RC，适合安装好CRAB，还没有安装RC或安装完0.8.14及之前的RC，默认安装到/opt/crab/var/www目录下，执行命令：
+
+
+
+		if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/installrc.sh;else wget -O installrc.sh https://www.relaxcms.com/install/installrc.sh;fi;bash installrc.sh
+
+
+#一键更新RC
+
+-- 一键更新RC适用于RC已安装好，想把RC升级到更新版本，不跨版本，如0.9.0.0升级0.9.0.123，可以在RC的安装目录下，如：/opt/crab/var/www执行以下一键更新RC命令：
+
+
+		if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/updaterc.sh;else wget -O updaterc.sh https://www.relaxcms.com/install/updaterc.sh;fi;bash updaterc.sh
+
+-- 注：一键更新RC,须在RC部署目录下执行
+
+
+#一键升级RC
+
+-- 一键升级RC适用于RC已安装好，想把RC升级到更新版本，可跨版本，如0.9.0.0升级0.10.0.123，可以在RC的安装目录下，如：/opt/crab/var/www执行以下一键升级RC命令：
+
+
+		if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/upgrade.sh;else wget -O upgrade.sh https://www.relaxcms.com/install/upgrade.sh;fi;bash upgrade.sh
+
+-- 注：一键升级RC,须在RC部署目录下执行
+-- 注：等同RC的安装目录/opt/crab/var/www/bin下执行: ./upgrade.sh (版本：0.9.0以上)
+			
 
 #快速安装
 
 -- 从RelaxCMS官网下载RelaxCMS 最新版本，如：https://www.relaxcms.com/f/35/relaxcms-0.8.14.962.tar.gz
 
--- 从RelaxCMS官网下载RelaxCMS最新版本，运行环境CRAB: 
+-- 从RelaxCMS官网下载运行环境CRAB: 
 
-	LINUX版本：https://www.relaxcms.com/f/17/crab-0.8.4.51-x86_64.tar.gz，下载后，解压安装，./setup.sh命令安装。
+	LINUX版本：crab-<VERSION>-x86_64.tar.gz，下载后，解压安装，./setup.sh命令安装。
 	
-	WINDOWS版本：https://www.relaxcms.com/f/38/crab-0.8.3.28-win32.exe，下载后，点击安装，开发调试使用，生产环境不建议用。
+	WINDOWS版本：crab-<VERSION>-win32.exe，下载后，点击安装，开发调试使用，生产环境不建议用。
 
 
 
