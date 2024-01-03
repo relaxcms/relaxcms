@@ -675,9 +675,9 @@ class InstallComponent extends CUIComponent
   RewriteRule ^sapi(.*)$ /cgi-bin/sapi.cgi/api/$1 [NC,PT,L]
 
   RewriteRule ^f/(.*)$ system.php/f/$1 [NC,PT,L]
-  RewriteRule ^file/(.*)$ index.php/file/$1 [NC,PT,L]
-  RewriteRule ^list/(.*)$ index.php?c=list&id=$1 [NC,PT,L]
-  RewriteRule ^content/(.*)$ index.php?c=content&id=$1 [NC,PT,L]
+  RewriteRule ^file/(.*)$ front.php/file/$1 [NC,PT,L]
+  RewriteRule ^list/(.*)$ front.php?c=list&id=$1 [NC,PT,L]
+  RewriteRule ^content/(.*)$ front.php?c=content&id=$1 [NC,PT,L]
   RewriteRule ^api(.*)$ system.php/api/$1 [NC,PT,L]
 
   RewriteRule ^admin(.*)$ system.php/$1 [NC,PT,L]
