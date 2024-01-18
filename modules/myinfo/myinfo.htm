@@ -1,0 +1,66 @@
+<!-- BEGIN MYINFO -->
+<style type="text/css">
+    .main-sidebar-portlet {
+  padding: 30px 0 0 0 !important; }
+    .main-userpic img {
+  float: none;
+  margin: 0 auto;
+  width: 50%;
+  height: 50%;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  border-radius: 50% !important; }
+
+</style>
+<div class="portlet light main-sidebar-portlet bordered">
+    <!-- SIDEBAR USERPIC -->
+    <div class="main-userpic">
+        <img src="$myinfo[avatar]" class="img-responsive" alt=""> </div>
+    <!-- END SIDEBAR USERPIC -->
+    <!-- SIDEBAR USER TITLE -->
+    <div class="main-title">
+        <table class="table table-light">
+            <tr>
+                <td width="80" class="ar">UID :</td> 
+                <td>$myinfo[uid]</td>
+            </tr>
+            <tr>
+                <td class="ar">用户名 :</td> 
+                <td class="fb18">$myinfo[name]</td>
+            </tr>
+            <tr>
+                <td class="ar">昵称 : </td> 
+                <td>$myinfo[nickname]</td>
+            </tr>
+            <tr>
+                <td class="ar">电子邮件 : </td> 
+                <td>$myinfo[email]</td>
+            </tr>
+            <tr>
+                <td class="ar">层级 : </td> 
+                <td>$myinfo[level]</td>
+            </tr>
+        </table>
+    </div>
+    <!-- END SIDEBAR USER TITLE -->
+    
+    <!-- SIDEBAR MENU -->
+    <div class="profile-usermenu">
+        <ul class="nav">
+            <li class="active">
+                <a href="$_base">
+                    <i class="icon-home"></i> 我的主页 </a>
+            </li>
+            <li>
+                <a href="$_basename/my_info">
+                    <i class="icon-settings"></i> 个人信息设置 </a>
+            </li>
+            <li>
+                <a href="$_basename/my_password">
+                    <i class="icon-lock"></i> 修改密码 </a>
+            </li>
+        </ul>
+    </div>
+    <!-- END MENU -->
+</div>
+<!-- END MYINFO -->

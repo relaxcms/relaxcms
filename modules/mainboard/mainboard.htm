@@ -1,0 +1,37 @@
+
+<!--# if ($layout0) { #-->
+
+<!-- BEGIN DASHBOARD STATS -->
+<!--# $nr = count($layout0); for ($i=0; $i<$rows; $i++) { #-->
+    <div class="row">
+        <!--# for ($j=0; $j<4; $j++) { $idx = $i*4+$j; if ($idx >= $nr) break; $v2 = $layout0[$i*4+$j]; $url = $v2['url']?$v2['url']:'javascript:;';#-->
+
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a href="$v2[url]">
+                <div class="dashboard-stat2 bordered $v2[class]">
+                    <div class="display">
+                        <div class="number">
+                            <h3 class="$v2[font]">
+                                <span data-counter="counterup" data-value="$v2[number]">
+                                    $v2[number] 
+                               </span>
+                                <small class="$v2[font] t5">$v2[uname]</small>
+                            </h3>
+                            <small>$v2[name]</small>
+                        </div>
+                        <div class="icon">
+                          <i class="$v2[icon]"></i>
+                        </div>
+                    </div>
+                </div>
+            </a> 
+        </div>
+
+        <!--# } #-->
+    </div>
+    <!--# } #-->
+    <!-- END DASHBOARD STATS -->
+    
+    <div class="clearfix">
+    </div>
+<!--# } #-->
