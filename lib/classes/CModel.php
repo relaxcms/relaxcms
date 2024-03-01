@@ -157,6 +157,11 @@ class CModel
 		$this->_init();
 	}
 	
+	function __destruct()
+	{
+		$this->_fini();
+	}
+	
 	/**
 	 * CModel PHP4兼容构造函数
 	 */
@@ -370,6 +375,10 @@ class CModel
 		$this->_initFeild();
 		$this->_sortField();		
 		$this->_initActions();		
+	}
+	
+	protected function _fini()
+	{
 	}
 	
 	
@@ -1077,7 +1086,8 @@ class CModel
 			$notitle = 'data-notitle=1';
 		
 		
-		$res = "<div id='param_$name' class='gallery-img' data-url='$_base/gallery' data-name='$name' data-model='$mname' data-noabar=1 $notitle data-mid='$mid' $w $h   class='form-control' > </div> ";
+		$res = "<div id='param_$name' class='gallery' data-url='$_base/gallery' data-name='$name' data-model='$mname' data-noabar=1 $notitle data-mid='$mid' $w $h > </div> ";
+		
 		
 		return $res;
 	}
@@ -1094,7 +1104,7 @@ class CModel
 
 		$res = nformat_money($val,2);
 
-		$res = '￥'.$res;
+		//$res = '￥'.$res;
 
 		return $res;
 	}
@@ -1168,6 +1178,23 @@ class CModel
 	{
 		return is_numeric($value) && $value > 0 ?tformat($value, $format): ($value == 0?'':$value);
 	}
+	
+	
+	protected function formatPasswordForView($params, $field, &$ioparams=array())
+	{
+		$name = $field['name'];
+		if (isset($params[$name]))
+			$val = $params[$name];
+		else 
+			$val = '';
+		if ($val) {	
+			$val = s_hidestr($val, 3, -4);
+		}
+		
+		return $val;
+	}
+	
+	
 	
 	/**
 	 * formatForView 格式化记录显示
@@ -1272,6 +1299,10 @@ class CModel
 				case 'content':
 					$row['_'.$key] = $this->formatContentForView($row, $fields[$key], $ioparams);
 					break;
+				case 'password':
+					$row['_'.$key] = $this->formatPasswordForView($row, $fields[$key], $ioparams);
+					break;
+				
 				default:
 					break;
 			}
@@ -1542,6 +1573,38 @@ class CModel
 	}
 	
 	
+	protected function decryptPassword($password)
+	{
+		if (isset($_SESSION['__aeskey'])) {
+			$__aeskey = $_SESSION['__aeskey'];
+			
+			$e = Factory::GetEncrypt();
+			$password = $e->aesDecryptJS($__aeskey, $password);
+		}
+		
+		return $password;
+	}
+	
+	
+	protected function parseInputPassword($field, &$params)
+	{
+		$name = $field['name'];
+		$value = trim($params[$name]);
+		
+		$value = $this->decryptPassword($value);
+		$params[$name] = $value;
+		
+		$name2 = $name.'2';
+		if (isset($params[$name2])) {
+			$params[$name2] = $this->decryptPassword($params[$name2]);
+		}
+				
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "name=$name, value=$value!", $params);
+		
+		return $value;
+	}
+	
+	
 	/**
 	 * parseInput 解析输入
 	 *
@@ -1613,6 +1676,10 @@ class CModel
 					$params[$key] = $this->parseInputSize($params[$key]);
 					break;	
 				
+				case 'password'://解码 PASSWORD
+					$this->parseInputPassword($this->_fields[$key], $params);
+					break;	
+				
 				default:
 					break;
 			}
@@ -1637,7 +1704,7 @@ class CModel
 						}					
 						break;				
 					case 'TIMESTAMP':
-						if (!$v['readonly'] ||  empty($params[$this->_pkey])) {
+						if (!$v['readonly'] || empty($params[$this->_pkey])) {
 							$params[$key] = time();						
 						}					
 						break;
@@ -5270,9 +5337,7 @@ class CModel
 		return $res;
 	}
 	
-		
-	
-	
+
 	/**
 	 * buildInputForCKEditor 构建CKEditor控件
 	 *
@@ -5372,7 +5437,7 @@ class CModel
 	 */
 	protected function buildInputForFileselector(&$field, $params,$ioparams=array())
 	{
-		Factory::GetApp()->getActiveComponent()->enableJSCSS(array('fileview'));
+		Factory::GetApp()->getActiveComponent()->enableJSCSS(array('bupload'));
 		
 		$name = $field['name'];
 		if (isset($params[$name]))
@@ -5393,21 +5458,21 @@ class CModel
 		$res = "<div class='input-group'>";
 		$res .= "<span><textarea  class='form-control' rows='3' autocomplete='off' name='params[$name]' id='viewcontent_$name' >$val</textarea></span>";
 		$res .= "<span class='input-group-btn vt'>";
-		$res .= "<button type='button' class='btn default' id='param_$name'  
+		$res .= "<button type='button' class='btn default fileinput-button ' id='param_$name'  
 				data-url='$_base/filecontent' 
 				data-tpl='fileselector' 
 				data-viewcontent='#viewcontent_$name' 
 				data-model='$mname' 
 				data-oid='$oid' 
 				data-sbt='$sbt' $utype $maxsize >
-				<span class='fileinput-button'>选择<input type='file' name='files[]' class='inputfile'></span>
+				<span>选择<input type='file' name='files[]' class='inputfile'></span>
 				</button>
 				
 				
 				</span>
 				</div>";
 		
-		$res .= "<script language='javascript'>jQuery(document).ready(function() { $('#param_$name').tileupload({autoupload:true}); });</script>";		
+		$res .= "<script language='javascript'>jQuery(document).ready(function() { $('#param_$name').bupload({autoupload:true}); });</script>";		
 		
 		return $res;
 	}
@@ -5494,6 +5559,9 @@ class CModel
 	 */
 	protected function buildInputForPassword(&$field, $params, &$ioparams=array())
 	{
+		//set pkey
+		Factory::GetApp()->getActiveComponent()->setPKey($ioparams);
+		
 		$name = $field['name'];
 		$val = $params[$name];
 		

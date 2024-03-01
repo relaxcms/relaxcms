@@ -101,7 +101,7 @@ $menus = array(
 			'name'	=>'system_user',
 			'component'=>'system_user',
 			'task'	=>array('show'=>'r', 'add'=>'a', 'edit'=>'u', 'del'=>'d'),
-			'icon' => '',
+			'modname' => 'user',
 			'level' => 2,
 			'parent' => 'system',
 			'sort'=>3,

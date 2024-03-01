@@ -5,6 +5,9 @@
  * @brief 
  * 
  * 模板类
+ * 
+ * @copyright
+ * Copyright (c), 2024, relaxcms.com
  *
  */
 

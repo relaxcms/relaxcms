@@ -11,7 +11,7 @@
          <button type="button" href="$_base/$v[name]" class="btn $v[class]  btn-sm tmilink" title="$v[title]" action="$v[action]" id="$table_id$v[name]"  msg="$v[msg]"> 
             <i class="$v[icon]"></i> $v[title] </button>
         <!--#  } else { #-->
-    <button type="button" class="btn btn-sm green tileupload mt-ladda-btn ladda-button mt-progress-demo" 
+    <button type="button" class="btn btn-sm btn-primary fileinput-button bupload " 
 	data-loading-text="Loading..." 
 	data-style="zoom-in"
 	data-tpl="simplebutton" 
@@ -21,8 +21,8 @@
     data-uptype="$v[uptype]"
     <!--# } #-->
 	data-sbt="$sbt">	
-	<span class="ladda-label fileinput-button"> 
-	    <i class="$v[icon]"></i>$v[title]<input type="file" name="files[]" multiple="" class="inputfile"></span>
+	<span class="ladda-label "> 
+	    <i class="$v[icon]"></i>$v[title]<input type="file" name="files[]" multiple="" ></span>
 </button>
         <!--#  } } } #-->
 
@@ -52,7 +52,7 @@
 
 <div class="portlet-body" >
 
-<div class="listview" id="listview$table_id" 
+<div class="listview lv" id="listview$table_id" 
     data-url="$_base"
     data-col="6"
     data-dlg="$dlg"
@@ -97,8 +97,11 @@
 
 <script type="text/javascript">
 jQuery(document).ready(function() {
+    if ($.fn.bupload) {        
+        $('.bupload').bupload({});
+    }
     if (!$.fn.listview)
-    	return false;
+        return false;
     	
     var lv = $("#listview$table_id");
 	var lvObj = new Listview(lv);

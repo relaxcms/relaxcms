@@ -31,5 +31,7 @@ class HelpVersionComponent extends CUIComponent
 		$this->assign("changelog", $changelog);		
 		$this->assign('sys_product_id', get_product_id());
 		$this->assign('sys_product_version', get_product_version());
+		
+	
 	}
 }

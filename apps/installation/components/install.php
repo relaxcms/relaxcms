@@ -28,10 +28,26 @@ class InstallComponent extends CUIComponent
 			$params['updateapi'] = 'https://www.relaxcms.com/api';
 		}
 	}
+
+	protected function initPath()
+	{
+		$dir = RPATH_CACHE;
+		if (!is_dir($dir))
+			s_mkdir($dir);
+
+		$dir = RPATH_CONFIG;
+		if (!is_dir($dir))
+			s_mkdir($dir);
+		
+		$dir = RPATH_DATA;
+		if (!is_dir($dir))
+			s_mkdir($dir);
+	}
 	
 	public function show(&$ioparams=array())
 	{
-		
+		$this->initPath();
+
 		//welcome
 		$desc = s_read(RPATH_DOCUMENT.DS.'welcome.txt');
 		$desc = str_replace("\n", "<p>", $desc);
@@ -45,15 +61,16 @@ class InstallComponent extends CUIComponent
 
 		$params['description'] = $desc;
 		$params['license'] = $_license;	
-		$params['product_name'] = "RC";
+		!isset($params['product_name']) && $params['product_name'] = "RelaxCMS";
 		
 		//
 		$params['product_id'] = get_product_id();
 		$params['product_version'] = get_product_version();
 		
 		//DB
-		$dbcfg = get_dbconfig($params['dbtype']);	
+		$dbcfg = get_default_dbconfig($params['dbtype']);	
 		$params = array_merge($params, $dbcfg);
+		
 		
 		//manager
 		$manager = get_manager();	
@@ -88,7 +105,7 @@ class InstallComponent extends CUIComponent
 	protected function checkDBSupport()
 	{
 		$params = array(
-				'dbo'=>'PDO',
+				'pdo'=>'PDO',
 				'mysql'=>'mysql_connect',
 				'mysqli'=>'mysqli_connect',
 				'mssql'=>'sqlsrv_connect', 
@@ -163,8 +180,7 @@ class InstallComponent extends CUIComponent
 		
 		
 		//check
-		$supports_check = array('SQL'=>'sql', 
-			'Socket'=>'socket_create', 'SSL'=>'openssl_open', 'curl'=>'curl_exec');
+		$supports_check = array('SQL'=>'sql', 'SSL'=>'openssl_open', 'curl'=>'curl_exec');
 
 		foreach($supports_check as $key=>$v)
 		{
@@ -226,8 +242,6 @@ class InstallComponent extends CUIComponent
 
 		//版本
 		$data['cdb'] = $res;
-
-		
 
 		
 		showStatus($pass, $data);

@@ -9,7 +9,7 @@
         <div class="row tl">
             <!--# for($j=0; $j<$cols && $i<$nr; $j++) { $v = $_udb[$i++]; $fade = ($j==0)?'fadeInLeft':($j == $cols-1?'fadeInRight':($i<=$cols?'fadeInDown':'fadeInUp'));  #-->
             <div class="col-md-$col_width animated $fade wow">
-                <h2> $v[name] </h2>
+                <h2> <a href='$_basename/content/$v[id]'>$v[name]</a> </h2>
                 <table class="table table-striped table-bordered table-hover">            
                     <tr>
                         <td width="200"> 版本： </td>
@@ -101,6 +101,14 @@
                             </span>
                         </td>
                     </tr>
+
+                    <tr>
+                        <td> </td>
+                        <td> 
+                            <a href='$_basename/content?id=$v[id]' target="_blank">详细</a>
+                        </td>
+                    </tr>
+
                 </table>
             </div>
             <!--# } #-->

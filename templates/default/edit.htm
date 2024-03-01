@@ -127,8 +127,20 @@ jQuery(document).ready(function() {
                 CKEDITOR.instances[instance].updateElement(); 
         }
 
-       var  formData = $(form).serializeArray();
-       //console.log(formData);
+        var pkey = "$pkey";
+
+        var  formData = $(form).serializeArray();
+        //加密
+        for (i=0; i<formData.length; i++) {
+            //type
+            var name = formData[i].name;
+            var inputtype = $('input[name="'+name+'"]', $(form)).attr('type');
+            //console.log('name='+name+',inputtype='+inputtype);
+
+            if (inputtype == "password") {
+                formData[i].value = encrypt(formData[i].value, pkey);
+            }
+        }
        
        $.post(form.action, formData, function(res) {
             if (res.status == 0) {

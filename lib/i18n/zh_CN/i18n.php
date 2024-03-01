@@ -1,16 +1,10 @@
 <?php
 $i18n = array(
-		'str_system_name' => 'RC',
-		'str_system_subtitle' => 'Relax Content Management System',
-		'str_system_title' =>  '简木内容管理系统',
-		'str_system_corporation' =>  '3NWARE',
-		'str_system_copyright_corp' =>  '3N',
-		
 		/* 基本目录 */
 		
 		'menu_my'				=>	'我的面板',
 		'menu_main'				=>  '我的面板',
-		'menu_my_info'			=>	'我的账户',
+		'menu_my_info'			=>	'我的信息',
 		'menu_my_password'		=>	'修改密码',
 		'menu_my_ip'			=>	'登录IP限制',
 		
@@ -74,6 +68,8 @@ $i18n = array(
 			),
 		/* DB*/
 		'sel_dbcharset' => array('latin1'=> 'latin1', 'utf8'=>'utf8'),
+		'sel_dbtype' => array('mysqlpdo'=> 'MysqlPDO','mysql'=> 'MYSQL','mysqli'=> 'MySQLi','mssql'=> 'MSSQL','sqlite'=> 'SQLite','sqlitepdo'=> 'SQLitePDO',
+		'psql'=> 'PostgreSQL','mongo'=> 'MongoDB'),	
 
 		/* 常用字串 */
 		'str_success' => '操作成功',
@@ -221,7 +217,6 @@ $i18n = array(
 		
 		//user
 		'sel_user_type' => array('0'=>'管理',  '1'=>'普通'),				
-		'sel_user_account_type' => array('2'=>'邮件', '3'=>'手机', '255'=>'其他'),				
 
 		
 		//my
@@ -288,7 +283,7 @@ $i18n = array(
 			'modelname'=> '文库',
 			'id' => array('title' => 'ID'),
 			'name' => array('title' => '名称'),
-			'alias' => array('title' => '别名', 'comment'=>'剧集、专辑显示名称，如：01、02等'),
+			'filename' => array('title' => '文件名'),
 			'extname' => array('title' => '扩展名',),
 			'path' => array('title' => '路径'),
 			'size' => array('title' => '字节'),
@@ -324,4 +319,3 @@ $i18n = array(
 		'sel_user_auth_type'=>array('1'=>'个人', '2'=>'企业'),
 		'sel_user_auth_status'=>array('0'=>'未审', '1'=>'已审', '2'=>'审核未通过'),
 );
-?>

@@ -140,8 +140,11 @@ class CSplashClientModel extends CNoTableModel
 		$params = get_sysinfo();				
 		$res = curlPOST($url, array('params'=>$params));
 		if ($res) {
-			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $res);
 			$res2 = CJson::decode($res);
+			if (!$res2) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "invalid '$res' !");
+				return false;
+			}
 			$this->downloadDesktopBackground($res2['data'], $bgdir, $force);			
 		}
 		

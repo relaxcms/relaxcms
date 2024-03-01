@@ -6,7 +6,7 @@
  * 文件视图
  *
  */
-class FileviewModule extends CModule
+class FileviewModule extends CListviewModule
 {
 	function __construct($name, $attribs)
 	{
@@ -18,41 +18,19 @@ class FileviewModule extends CModule
 		$this->__construct($name, $attribs);
 	}
 	
-
-	protected function show(&$ioparams = array())
+	protected function getModel()
 	{
-		$nosidebar = isset($this->_attribs['nosidebar'])?intval($this->_attribs['nosidebar']):false;	
+		return isset($this->_attribs['modname'])?$this->_attribs['modname']:'file';
+	}
+
+	public function show(&$ioparams = array())
+	{
+		$res = parent::show($ioparams);
+		
 		//最大上传限制
 		$uploadmaxsize = get_upload_max_filesize();
-
-		$uploadmaxsize -= 4*1024*1024; //减小1M
-		
-		$tablename = 'file';
-		$params = get_var("params", array());		
-		
-		if (isset($ioparams['params'])) 
-			$params = $ioparams['params'];
-		$m = Factory::GetModel($tablename);
-		$modinfo = $m->getModelInfo();
-		
-		$fields = $m->getFieldsForSearch($params, $ioparams);
-		/*foreach ($fields as $key => &$v) {
-			$v['sortable'] = $v['sortable']?'true':'false';
-		}*/		
-		$pkey = $modinfo['pkey'];
-		$this->assign('pkey', $fields[$pkey]);
-		
-		$this->assign('tablename', $tablename);
-		$mi18n  = get_i18n('mod_'.$tablename);
-		$this->assign('mi18n', $mi18n);
-				
-		//$mi18n[modelname]
-		!$table_title && $table_title = $mi18n['modelname'];
-		$this->assign('table_title', $table_title);
-		
-		$this->assign('fields', $fields);
-				
+		$uploadmaxsize -= 4*1024*1024; //减小4M
 		$this->assign('uploadmaxsize', $uploadmaxsize);
-		$this->assign('nosidebar', $nosidebar?"nosidebar":"");	
+		
 	}
 }

@@ -8,17 +8,11 @@
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png">
 
-<link rel="stylesheet" href="../../themes/man/css/uikit.gradient.css">
-
-        <link href="../../themes/man/css/uikit.css" rel="stylesheet" >
-        <link href="../../themes/man/css/video-js.css" rel="stylesheet" />
-        <script src="../../themes/man/js/jquery-2.2.1.min.js"></script>
-        <script src="../../themes/man/js/uikit/uikit.js"></script>
-        <script src="../../themes/man/js/uikit/scripts.js"></script>
-        <script src="../../themes/man/js/uikit/jquery.sticky-kit.js "></script>
-
+        <link href="../../static/css/man.css" rel="stylesheet" >
+        <script src="../../static/js/man.js"></script>
+        
         <meta name="generator" content="pandoc-uikit" />
-                <meta name="author" content="版本：0.8.14 / 更新时间：2023.8.31" />
+                <meta name="author" content="版本：0.9.1 / 更新时间：2024.1.2" />
                         <title>RelaxCMS简介</title>
         <style type="text/css">code{white-space: pre;}</style>
                                                         </head>
@@ -31,7 +25,7 @@
                         <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
                     <h1 class="uk-heading-large">RelaxCMS简介</h1>
-                                                            <p class="uk-text-large">版本：0.8.14 / 更新时间：2023.8.31</p>
+                                                            <p class="uk-text-large">版本：0.9.1 / 更新时间：2024.1.2</p>
                                     </div>
             </div>
             
@@ -48,7 +42,12 @@
                             <li><a href="#开发环境">开发环境</a></li>
                             <li><a href="#运行环境">运行环境</a></li>
                             <li><a href="#源码下载">源码下载</a></li>
+                            <li><a href="#在线演示">在线演示</a></li>
                             <li><a href="#一键安装">一键安装</a></li>
+                            <li><a href="#一键更新crab运行环境">一键更新CRAB运行环境</a></li>
+                            <li><a href="#一键安装rc">一键安装RC</a></li>
+                            <li><a href="#一键更新rc">一键更新RC</a></li>
+                            <li><a href="#一键升级rc">一键升级RC</a></li>
                             <li><a href="#快速安装">快速安装</a></li>
                             <li><a href="#源码目录结构说明">源码目录结构说明</a></li>
                             </ul>
@@ -89,22 +88,38 @@
 <ul>
 <li><p>RELAXCMS 官网</p>
 <pre><code>https://www.relaxcms.com</code></pre></li>
-<li><p>RELAXCMS 演示</p>
-<pre><code>https://demo.relaxcms.com       </code></pre></li>
+<li><p>RELAXCMS 官方下载</p>
+<pre><code>svn co https://svnproject.relaxcms.com/svn/relaxcms             </code></pre></li>
 <li><p>GITHUB下载</p>
 <pre><code>svn co https://github.com/relaxcms/relaxcms.git</code></pre></li>
 </ul>
+<h1 id="在线演示">在线演示</h1>
+<pre><code>    https://demo.relaxcms.com   </code></pre>
 <h1 id="一键安装">一键安装</h1>
-<p>– 支持LINUX环境下一键安装，推荐使用Ubuntu 16.04/18.04 Server LTS</p>
+<p>– 支持LINUX环境下一键安装（CRAB+RC），推荐使用Ubuntu 16.04/18.04 Server LTS</p>
 <pre><code>    if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/install.sh;else wget -O install.sh https://www.relaxcms.com/install/install.sh;fi;bash install.sh
     </code></pre>
 <p>– 注：默认安装RelaxCMS官网发布的最新稳定版本</p>
+<h1 id="一键更新crab运行环境">一键更新CRAB运行环境</h1>
+<p>– LINUX环境下支持一键更新CRAB运行环境(仅更新CRAB)，执行：</p>
+<pre><code>    if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/updatecrab.sh;else wget -O updatecrab.sh https://www.relaxcms.com/install/updatecrab.sh;fi;bash updatecrab.sh</code></pre>
+<h1 id="一键安装rc">一键安装RC</h1>
+<p>– 支持LINUX环境下一键安装RC，适合安装好CRAB，还没有安装RC或安装完0.8.14及之前的RC，默认安装到/opt/crab/var/www目录下，执行命令：</p>
+<pre><code>    if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/installrc.sh;else wget -O installrc.sh https://www.relaxcms.com/install/installrc.sh;fi;bash installrc.sh</code></pre>
+<h1 id="一键更新rc">一键更新RC</h1>
+<p>– 一键更新RC适用于RC已安装好，想把RC升级到更新版本，不跨版本，如0.9.0.0升级0.9.0.123，可以在RC的安装目录下，如：/opt/crab/var/www执行以下一键更新RC命令：</p>
+<pre><code>    if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/updaterc.sh;else wget -O updaterc.sh https://www.relaxcms.com/install/updaterc.sh;fi;bash updaterc.sh</code></pre>
+<p>– 注：一键更新RC,须在RC部署目录下执行</p>
+<h1 id="一键升级rc">一键升级RC</h1>
+<p>– 一键升级RC适用于RC已安装好，想把RC升级到更新版本，可跨版本，如0.9.0.0升级0.10.0.123，可以在RC的安装目录下，如：/opt/crab/var/www执行以下一键升级RC命令：</p>
+<pre><code>    if [ -f /usr/bin/curl ];then curl -sSLO https://www.relaxcms.com/install/upgrade.sh;else wget -O upgrade.sh https://www.relaxcms.com/install/upgrade.sh;fi;bash upgrade.sh</code></pre>
+<p>– 注：一键升级RC,须在RC部署目录下执行 – 注：等同RC的安装目录/opt/crab/var/www/bin下执行: ./upgrade.sh (版本：0.9.0以上)</p>
 <h1 id="快速安装">快速安装</h1>
 <p>– 从RelaxCMS官网下载RelaxCMS 最新版本，如：https://www.relaxcms.com/f/35/relaxcms-0.8.14.962.tar.gz</p>
-<p>– 从RelaxCMS官网下载RelaxCMS最新版本，运行环境CRAB:</p>
-<pre><code>LINUX版本：https://www.relaxcms.com/f/17/crab-0.8.4.51-x86_64.tar.gz，下载后，解压安装，./setup.sh命令安装。
+<p>– 从RelaxCMS官网下载运行环境CRAB:</p>
+<pre><code>LINUX版本：crab-&lt;VERSION&gt;-x86_64.tar.gz，下载后，解压安装，./setup.sh命令安装。
 
-WINDOWS版本：https://www.relaxcms.com/f/38/crab-0.8.3.28-win32.exe，下载后，点击安装，开发调试使用，生产环境不建议用。</code></pre>
+WINDOWS版本：crab-&lt;VERSION&gt;-win32.exe，下载后，点击安装，开发调试使用，生产环境不建议用。</code></pre>
 <h1 id="源码目录结构说明">源码目录结构说明</h1>
 <figure>
 <img src="img/srcdir.png" alt="源码截图" /><figcaption>源码截图</figcaption>

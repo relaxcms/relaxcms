@@ -117,6 +117,29 @@ class SystemConfigComponent extends CConfigComponent
 
 		showStatus($res?0:-1);
 	}
+	protected function edit(&$ioparams = array())
+	{
+		$db1 = $this->request('db1');
+		$db2 = $this->request('db2');
+		$db3 = $this->request('db3');
+		
+		if (!$db1){
+			$db1['enable'] = 0;
+			$res1 = set_dbconfig('db1', $db1);
+		}
+		if (!$db2) {
+			$db2['enable'] = 0;
+			$res2 = set_dbconfig('db2', $db2);
+		}
+		if (!$db3){
+			$db3['enable'] = 0;
+			$res3 = set_dbconfig('db3', $db3);
+		}
+		
+		
+		$res = parent::edit($ioparams);
+		return $res;
+	}
 	
 	protected function copyForLoginBackground($files, $ioparams=array())
 	{

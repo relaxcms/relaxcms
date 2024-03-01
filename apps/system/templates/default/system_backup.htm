@@ -12,7 +12,7 @@
 							<div class="tools">
 								<a href="javascript:;" class="collapse">
 								</a>
-								<a href="#portlet-config" data-toggle="modal" class="config">
+								<a href="#" data-toggle="modal" class="refresh">
 								</a>
 							</div>
 						</div>
@@ -233,7 +233,7 @@
 										        <div class="btn-group  pull-right">
 										        <div class="form-actions">
 											        
- <button type="button" class="btn green tileupload mt-ladda-btn ladda-button mt-progress-demo" 
+ <button type="button" class="btn green fileinput-button tileupload" 
 	data-loading-text="Loading..." 
 	data-style="zoom-in"
 	data-url="$_base/simpleupload" 
@@ -242,7 +242,7 @@
 	data-nopreview="true" 
 	data-donereload="true" 
 	data-sbt="$sbt">
-	<span class="ladda-label fileinput-button">上传<input type="file" name="files[]" multiple="" class="inputfile"></span>
+	<span>上传<input type="file" name="files[]" multiple="" class="inputfile"></span>
 </button>
 
                                                 </div>
@@ -576,7 +576,7 @@ var initBackup = function () {
 
 $(document).ready(function() {  
     initBackup();
-	$(".tileupload").tileupload({
+	$(".tileupload").bupload({
 		autoupload:true,
 	});	
 	

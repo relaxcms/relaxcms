@@ -136,6 +136,7 @@ class CUserModel extends CTableModel
 		$m2 = Factory::GetModel('privilege2group');
 		$params = array('gid'=>array('in'=>$_gids));	
 		$udb = $m2->select($params);
+		//var_dump($udb);exit;
 		
 		
 		$permisions = array();
@@ -147,7 +148,6 @@ class CUserModel extends CTableModel
 			$permisions[$v['pid']] = $old | $v['permision'];
 		}
 		$userinfo['permisions'] = $permisions;	
-		
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "OUT", $permisions);
 		return true;
 	}
@@ -240,7 +240,7 @@ class CUserModel extends CTableModel
 	public function getByName($name)
 	{
 		$res = $this->getOne(array('name'=>$name));
-		if (!$res) {
+		if (!$res && is_model('user_account')) {
 			$m = Factory::GetModel('user_account');
 			$res = $m->getOne(array('account'=>$name));
 			if (!$res) {
@@ -703,17 +703,6 @@ class CUserModel extends CTableModel
 		return $this->isUser($userinfo); 
 	}
 	
-	protected function decryptPassword($password)
-	{
-		if (isset($_SESSION['__aeskey'])) {
-			$__aeskey = $_SESSION['__aeskey'];
-			
-			$e = Factory::GetEncrypt();
-			$password = $e->aesDecryptJS($__aeskey, $password);
-		}
-		
-		return $password;
-	}
 	
 	
 	protected function setSessionInfo(&$userinfo)
@@ -867,6 +856,9 @@ class CUserModel extends CTableModel
 
 	public function checkAccountAutoRegisterLogin($account)
 	{
+		if (!is_model('user_account'))
+			return false;
+			
 		$m = Factory::GetModel('user_account');
 		$res = $m->getOne(array('account'=>$account));
 		if (!$res) {
@@ -1086,8 +1078,10 @@ class CUserModel extends CTableModel
 		
 		//绑定绑户
 		$uid = $res['id'];
-		$m = Factory::GetModel('user_account');
-		$this->bindAccountUID($uid, $account);
+		if (is_model('user_account')) {
+			$m = Factory::GetModel('user_account');
+			$this->bindAccountUID($uid, $account);
+		}
 
 		//设置登录
 		$this->setSession($res);
@@ -1102,7 +1096,7 @@ class CUserModel extends CTableModel
 	 * ======================================================================*/
 	
 	public function hasPrivilegeOf($pid, $perm=0)
-	{
+	{		
 		if (!$pid) //不需要权限
 			return true;
 			
@@ -1833,8 +1827,10 @@ Array
 			$m->delete(array('uid'=>$id));
 			
 			//删除绑定帐户
-			$m = Factory::GetModel('user_account');
-			$m->delete(array('uid'=>$id));
+			if (is_model('user_account')) {
+				$m = Factory::GetModel('user_account');
+				$m->delete(array('uid'=>$id));
+			}
 			
 			//删除第三方绑定帐户
 			$m = Factory::GetModel('oauth_user');
@@ -1959,6 +1955,11 @@ Array
 	
 	public function forgetPassword($email, $ioparams=array())
 	{
+		if (!is_model('user_account')) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "no account!");
+			return false;
+		}
+			
 		$m = Factory::GetModel('user_account');
 		$res = $m->getOne(array('account'=>$email));
 		if (!$res) {
@@ -2093,6 +2094,11 @@ Array
 	
 	public function bindAccountUID($uid, $account, $type=0)
 	{
+		if (!is_model('user_account')) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "no account!");
+			return false;
+		}
+		
 		if ($type == 0) {
 			if (is_email($account))
 				$type = UAT_EMAIL;
@@ -2123,6 +2129,11 @@ Array
 	
 	public function bindAccount($params)
 	{
+		if (!is_model('user_account')) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "no user account!");
+			return false;
+		}
+		
 		if (!$params)
 			return false;
 		
@@ -2168,33 +2179,35 @@ Array
 			return false;
 		}
 		
-		$m = Factory::GetModel('user_account');
-		$accounts = $m->select(array('uid'=>$uid));
-		
-		$i = 1;
-		foreach ($accounts as $v) {
-			$type = $v['type'];
-			$account = $v['account'];
+		if (is_model('user_account')) {
+			$m = Factory::GetModel('user_account');
+			$accounts = $m->select(array('uid'=>$uid));
 			
-			$idx = 'account'.$i++;
-			$userinfo[$idx] = $account;
-			
-			switch($type) {
-				case UAT_EMAIL://email
-					$userinfo['email'] = $account;
-					$userinfo['hasEmail'] = true;
-					
-					break;
-				case UAT_MOBILE://mobile
-					$userinfo['mobile'] = $account;
-					$userinfo['hasMobile'] = true;
-					break;
-				default:					
-					break;
+			$i = 1;
+			foreach ($accounts as $v) {
+				$type = $v['type'];
+				$account = $v['account'];
+				
+				$idx = 'account'.$i++;
+				$userinfo[$idx] = $account;
+				
+				switch($type) {
+					case UAT_EMAIL://email
+						$userinfo['email'] = $account;
+						$userinfo['hasEmail'] = true;
+						
+						break;
+					case UAT_MOBILE://mobile
+						$userinfo['mobile'] = $account;
+						$userinfo['hasMobile'] = true;
+						break;
+					default:					
+						break;
+				}
 			}
+			
+			$userinfo['accounts'] = $accounts;
 		}
-		
-		$userinfo['accounts'] = $accounts;
 		
 		return $userinfo;
 		
@@ -2215,6 +2228,7 @@ Array
 		$wallet = $m->getOne(array('uid'=>$uid));
 		if(!$wallet)
 			$wallet = array('money'=>0, 'bean'=>0, 'point'=>0);
+		$m->formatForView($wallet);
 		
 		$wallinfo = array_merge($userinfo, $wallet);
 		

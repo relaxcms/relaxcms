@@ -691,6 +691,14 @@ class CUIComponent extends CComponent
 						'js' => array(
 							'core'=>'js/fileview.js',),
 						),
+					'bupload'=> array(
+						'enable'=>false,
+						'css' => array(
+							'core'=> 'css/bupload.css'
+							),
+						'js' => array(
+							'core'=>'js/bupload.js',),
+						),
 					'listview'=> array(
 						'enable'=>false,
 						'css' => array(
@@ -750,10 +758,10 @@ class CUIComponent extends CComponent
 					'cropimg'=> array(
 						'enable'=>false,
 						'css' => array(
-							'core'=>'css/cropimg.min.css',
+							'core'=>'css/cropimg.css',
 							),
 						'js' => array(
-							'core'=>'js/cropimg.min.js',
+							'core'=>'js/cropimg.js',
 							),
 						),	
 					),
@@ -884,7 +892,8 @@ class CUIComponent extends CComponent
 		$width = isset($ioparams['vpath'][$offset])?$ioparams['vpath'][$offset++]:640;
 		$height = isset($ioparams['vpath'][$offset])?$ioparams['vpath'][$offset++]:480;
 		$img = Factory::GetImage();	
-		$img->mknopic("请选择图片(大小:640x480)", $width, $height);	
+		//$img->mknopic("请选择图片(大小:640x480)", $width, $height);	
+		$img->mknopic("Select IMG(640x480)", $width, $height);	
 		exit;
 	}	
 	
@@ -896,7 +905,7 @@ class CUIComponent extends CComponent
 		$img = Factory::GetImage();
 		$imgfile = isset($ioparams['imgfile'])?$ioparams['imgfile']:false;
 		if (!$imgfile || !is_file($imgfile)) {
-			$img->mknopic("请选择图片(大小:{$width}x{$height})", $width, $height);	
+			$img->mknopic("Select IMG({$width}x{$height})", $width, $height);	
 		} else {
 			header("Content-type: image/png");
 			$res = readfile($imgfile);	
@@ -968,13 +977,14 @@ class CUIComponent extends CComponent
 		
 	protected function selectdir(&$ioparams)
 	{
+		$ioparams['dlg'] = 1;
 		$this->setTpl("selectdir");
 	}
 	
 	protected function selectfile(&$ioparams=array())
 	{
 		$ioparams['dlg'] = 1;
-		$this->requestInt('type', -1);
+		$this->request('type', -1);
 		$this->setTpl("selectfile");
 	}
 	
@@ -1425,7 +1435,7 @@ class CUIComponent extends CComponent
 		$token['seccodeimg'] = $this->genSecCodeImage();
 		$token['sbt'] = mk_sbt($name);
 
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, '__aeskey='.$pkey.',sbt='.$token['sbt'].',name='.$name);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, '__aeskey='.$pkey.',sbt='.$token['sbt'].',name='.$name);
 		
 		
 		return $token;
@@ -1453,5 +1463,17 @@ class CUIComponent extends CComponent
 			return false;
 		}
 		return true;
+	}
+	
+	public function setPKey(&$ioparams=array())
+	{
+		if (!isset($ioparams['__aeskey'])) {
+			//公key
+			$pkey = md5(time());
+			$this->assignSession('__aeskey', $pkey);		
+			$this->assign('pkey', $pkey);				
+			
+			$ioparams['__aeskey'] = $pkey;
+		}
 	}
 }

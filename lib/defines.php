@@ -21,6 +21,7 @@ define( 'RPATH_TEMPLATES',			RPATH_ROOT.DS.'templates');
 define( 'RPATH_APPDIR',				RPATH_APPS.DS.APPNAME);
 define( 'RPATH_FRONT',				RPATH_APPS.DS.'front');
 define( 'RPATH_CONFIG', 			RPATH_ROOT.DS.'config');
+define( 'RPATH_CONFIG_DATA',		RPATH_CONFIG.DS.'data');
 define( 'RPATH_CONFIG_SSL', 		RPATH_CONFIG.DS.'ssl');
 define( 'RPATH_SHELL',				RPATH_ROOT.DS.'bin');
 define( 'RPATH_DOCUMENT',	 		RPATH_ROOT.DS.'docs' );

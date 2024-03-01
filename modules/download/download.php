@@ -21,6 +21,7 @@ class DownloadModule extends CContentModule
 	public function show(&$ioparams=array()) 
 	{
 		$udb = parent::show($ioparams);
+			$ioparams['detail'] = true;
 
 		$_udb = array();
 		foreach ($udb as $key => $v) {

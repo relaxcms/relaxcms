@@ -41,7 +41,6 @@ class CContentModel extends CTableModel
 			case 'video':
 				$f['input_type'] = 'video';
 				$f['show'] = false;	
-				$f['searchable'] = true;				
 				break;
 			case 'cid':
 				$f['input_type'] = 'treemodel';
@@ -65,6 +64,7 @@ class CContentModel extends CTableModel
 				$f['input_type'] = 'ckeditor';
 				$f['show'] = false;	
 				break;
+			case 'description':
 			case 'summary':
 				$f['show'] = false;		
 				break;
@@ -96,12 +96,8 @@ class CContentModel extends CTableModel
 				$f['edit'] = false;
 				break;
 			case 'ctime':
-				$f['readonly'] = true;
-				$f['edit'] = false;
-			//case 'taxis':
-				$f['show'] = false;
-				break;
-
+				$f['readonly'] = true;	
+				$f['show'] = false;			
 			case 'ts':
 				$f['input_type'] = 'TIMESTAMP';
 				$f['edit'] = false;
@@ -211,7 +207,7 @@ class CContentModel extends CTableModel
 		}
 
 
-		$row['extinfo'] = $extinfo;
+		$row['_extinfo'] = $extinfo;
 		$row['__ctype'] = $__ctype;
 		
 		//$cid = $row['cid'];
@@ -221,7 +217,7 @@ class CContentModel extends CTableModel
 				
 		$name = $row['name'];
 		
-		$row['_name'] = " <a href='$url' target='_blank'> $name </a> $extinfo";
+		$row['_name'] = " <a href='$url' target='_blank'> $name </a>";
 		
 		
 		

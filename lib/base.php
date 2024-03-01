@@ -124,9 +124,9 @@ class RC
 		@ini_set('display_errors', 1);
 		@ini_set('log_errors', 1);
 		
-		set_error_handler(array(__CLASS__, show_error_callback), E_ERROR);
-        set_exception_handler(array(__CLASS__, show_exception_callback));
-		register_shutdown_function(array(__CLASS__, show_shutdown_callback));
+		set_error_handler(array(__CLASS__, 'show_error_callback'), E_ERROR);
+        set_exception_handler(array(__CLASS__, 'show_exception_callback'));
+		register_shutdown_function(array(__CLASS__, 'show_shutdown_callback'));
 		
 
 		date_default_timezone_set('UTC');

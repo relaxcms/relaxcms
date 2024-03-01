@@ -43,7 +43,7 @@ class CBackupModel extends CDataModel
 		foreach ($tables as $key => $v) {
 			$name = str_replace('cms_', '', $v['Name']);
 			if (in_array($name, $no_backup_system_model)) {
-				continue;
+				$v['disabled'] = true;
 			}
 			
 			$v['name'] = $name;

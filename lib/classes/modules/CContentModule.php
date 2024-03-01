@@ -71,7 +71,7 @@ class CContentModule extends CModule
 			
 		$params['module_id'] = $mid;
 		
-		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $params);
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $params);
 		
 		$udb = $this->getList($params, $num, $ioparams);
 		

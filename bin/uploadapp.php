@@ -14,6 +14,7 @@ $tgz = isset($argv[1])?$argv[1]:'relaxcms-0.8.5.151-update.tar.gz';
 $apiurl = 'http://localhost/rc8/api';
 $token = 'f8aa5c93345dbec7fadcbcea2fed30c7';
 $secret = '47b76ce7e87078da959603ee11746457c0560367';
+$release=0;
 
 for ($i=1; $i<$argc; $i++) {
 	$val = $argv[$i];
@@ -29,6 +30,10 @@ for ($i=1; $i<$argc; $i++) {
 		case '-s':
 		case '--secret':
 			$secret = $argv[++$i];
+			break;
+		case '-r':
+		case '--release':
+			$release = intval($argv[++$i]);
 			break;
 		default:
 			if (file_exists($val))
@@ -65,6 +70,7 @@ if (!$ssid) {
 $url = $apiurl.'/postLastVersion';
 $params = array();
 $params['ssid'] = $ssid;
+$params['release'] = $release;
 
 $res = curlPOST($url, $params, $tgz);
 

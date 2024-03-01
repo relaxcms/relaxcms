@@ -13,7 +13,7 @@ class CSqlite extends SQLite3
 	{
 	}
 		
-	function CSqlite(  )
+	function CSqlite()
 	{
 		$this->__construct();
 	}	

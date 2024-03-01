@@ -25,7 +25,7 @@ class CDBConfig extends CConfig
 			$instances = array();
 		}
 		
-		if (in_array($name,array('mysql', 'sqlite','mssql', 'pqsql','mongo','mysqlpdo'))) {
+		if (in_array($name,array('mysql', 'sqlite', 'sqlitepdo', 'mssql', 'pqsql','mongo','mysqlpdo'))) {
 			$options['dbtype'] = $name;
 		}
 		

@@ -21,7 +21,7 @@ class CMyPasswordComponent extends CUIComponent
 	
 	public function show(&$ioparams = array())
 	{
-		$this->enableJSCSS(array( 'crypto', 'encrypt'), true);
+		//$this->enableJSCSS(array( 'crypto', 'encrypt'), true);
 		
 		//公key
 		$pkey = md5(time());

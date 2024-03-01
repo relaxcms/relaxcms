@@ -20,6 +20,7 @@ class CBackupComponent extends CFileDTComponent
 		
 	public function show(&$ioparams=array(), $force=-1)
 	{
+		$this->enableJSCSS(array('bupload'));
 		$this->initActiveTab(3, $force);
 		
 		

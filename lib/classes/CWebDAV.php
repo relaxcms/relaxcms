@@ -186,7 +186,7 @@ class CWebDAV
 		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN", $ioparams, $_SERVER);
 		
 		$m = Factory::GetFile();
-		$_uribase = $ioparams['_uribase'];
+		$_uribase = $ioparams['_uri'];
 		
 		//$ioparams['_path'] = s_hslash(ltrim($ioparams['_path'], '/webdav'));
 		$files = $m->webdav_PROPFIND($ioparams);

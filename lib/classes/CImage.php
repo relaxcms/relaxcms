@@ -980,7 +980,7 @@ class CImage
 			return false;
 		}*/
 		
-		//Ìî³ä
+		//å¡«å……
 		//imagefill($im, 0, 0, $bgcolor);
 		
 		$textcolor = imagecolorallocate($im, 0, 0, 0);
@@ -989,7 +989,10 @@ class CImage
 		
 		//$font = RPATH_SUPPORTS.DS."fonts".DS."song.ttf";
 		$font = RPATH_SUPPORTS.DS."fonts".DS."msyhbd.ttf";
-		
+		if (!file_exists($font)) {
+			$font = RPATH_SUPPORTS.DS."fonts".DS."CourierNew.ttf"; 
+			//$text = "IMG $width x $height";
+		}
 		
 		// imagettftext ( resource $image , float $size , float $angle , int $x , int $y , int $color , string $fontfile , string $text ) : array
 		$res = imagettftext($im, 10, 0, $x, $y, $textcolor, $font, $text);
@@ -1013,6 +1016,10 @@ class CImage
 	
 	public function mknopic($text, $width=128, $height=128)
 	{
+		// Set the environment variable for GD
+		//$res = putenv('GDFONTPATH=' . RPATH_SUPPORTS.DS.'fonts');
+		//$fontsearchpath = getenv("GDFONTPATH");
+
 		!$width && $width=128;
 		!$height && $height=128;
 		
@@ -1028,7 +1035,7 @@ class CImage
 			return false;
 		}
 		
-		//Ìî³ä
+		//å¡«å……
 		imagefill($im, 0, 0, $bgcolor);
 		
 		$nr = strlen($text);
@@ -1043,15 +1050,23 @@ class CImage
 		
 		// imagestring ( resource $image , int $font , int $x , int $y , string $s , int $col ) : bool
 		
-		$font = RPATH_SUPPORTS.DS."fonts".DS."song.ttf";
+		//CourierNew.ttf
+		$font = RPATH_SUPPORTS.DS."fonts".DS."song.ttf"; 
+		if (!file_exists($font)) {
+			$font = RPATH_SUPPORTS.DS."fonts".DS."CourierNew.ttf"; 
+			//$text = "IMG $width x $height";
+		}
 		
 		$szdb = array(14, 12, 10, 8, 7);
 		foreach ($szdb as $key=>$v) {
 			$size = $v;
 			
-			$box   = imagettfbbox($size, $angle, $font, $text);
-			if( !$box )
+			$box = imagettfbbox($size, $angle, $font, $text);			
+			if( !$box ) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call imagettfbbox failed!");
 				return false;
+			}
+
 			$min_x = min( array($box[0], $box[2], $box[4], $box[6]) );
 			$max_x = max( array($box[0], $box[2], $box[4], $box[6]) );
 			$min_y = min( array($box[1], $box[3], $box[5], $box[7]) );
@@ -1064,28 +1079,30 @@ class CImage
 			
 			if ($t_width > $width)
 				continue;
+				
+			//var_dump($t_width);exit;
 			
 			$x = ceil(($width - $t_width)/2);
 			$y = ceil(($height)/2);
 			
 			break;
 		}
-		
-		
+		//font:å†…ç½®å­—ä½“1,2,3,4,5
+		//$res = imagestring ( $im , 0 , $x , $y , $text , $textcolor );
 		$res = imagettftext($im, $size, $angle, $x, $y, $textcolor, $font, $text);
 		if (!$res){
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call imagettftext failed!");
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call imagettftext failed!");
 			return false;
 		}		
-		
-		$res = imagepng($im, $previewimgfile);
+		header("Content-type: image/png");
+		$res = imagepng($im);
 		if (!$res){
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call ImageColorAllocateAlpha failed!");
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call imagepng failed!");
 			return false;
 		}
 		imagedestroy($im);
 		
-		return $previewimgfile;
+		return true;
 	}
 	
 	
@@ -1100,7 +1117,7 @@ class CImage
 		list($orig_width, $orig_height, $bigType) = $szs;
 		$mimetype = $szs['mime'];
 		
-		//w,hÎª0Ê±£¬Ê¹ÓÃÔ­³ß´ç
+		//w,hä¸º0æ—¶ï¼Œä½¿ç”¨åŽŸå°ºå¯¸
 		!$w && $w = $orig_width;
 		!$h && $h = $orig_height;
 		

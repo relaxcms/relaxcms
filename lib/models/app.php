@@ -26,6 +26,20 @@ class AppModel extends CAppModel
 		$this->__construct($name, $options);
 	}
 	
+	/*protected function _initFieldEx(&$f)
+	{
+		parent::_initFieldEx($f);
+		
+		switch ($f['name']) {
+			case 'remote':
+			case 'local':
+				$f['searchable'] = 2;	
+				break;
+			default:
+				break;
+		}
+	}*/
+	
 	protected function _initActions()
 	{
 		parent::_initActions();
@@ -63,7 +77,10 @@ class AppModel extends CAppModel
 		//$row['url'] = $_base."/detail?id=$id";
 		
 		//url
-		$row['extinfo'] = $extinfo;
+		$row['_extinfo'] = $extinfo;
+		
+		//name
+		$row['_name'] = $row['name'];
 
 
 		
@@ -282,10 +299,23 @@ class AppModel extends CAppModel
 		
 		//同步远程APP	
 		$res = false;	
+		$rdb = array();
 		foreach ($udb as $key=>$v) {
 			$res = $this->loadRemoteAppOne($v);
 			if (!$res)
 				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "setRemoteAppOne failed!");
+			
+			$rdb[$v['name']] = $v;
+		}
+		
+		//检查是否需要删除本地的记录
+		$cdb = $this->gets(array('remote'=>1));
+		foreach ($cdb as $key=>$v) {
+			$appname = $v['name'];
+			if (!isset($rdb[$appname]) && $v['local'] != 1) {
+				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "remove $appname !");
+				$this->del($v['id']);
+			}
 		}
 		
 		return $res;
@@ -442,7 +472,7 @@ class AppModel extends CAppModel
 		$nr_failed = 0;
 		foreach ($apps as $key=>$v) {
 			if (!$v) {
-				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "key=$key", $apps, $appinfo);
+				//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "key=$key", $apps, $appinfo);
 				$app = Factory::GetApp($key);
 				if ($app) {
 					if (($res = $app->install())) {//表存在，可能报错
@@ -573,7 +603,7 @@ class AppModel extends CAppModel
 		$idb = array();
 		foreach ($apps as $key=>$v) {
 			if (!in_array($key, $names)) {
-				$pdb[$key] = $v;				
+				$pdb[$key] = $v;
 			} else {
 				//检查依赖项
 				if ($this->check_app_depends($key)) { //依赖存在， 不动
@@ -586,14 +616,32 @@ class AppModel extends CAppModel
 		$apps = $pdb;
 		cache_apps($apps);
 		
+		
+		foreach ($names as $key=>$v) {
+			if (!file_exists(RPATH_APPS.DS.$v)) {
+				$idb[] = $v;
+			}
+		}		
+		
 		if ($dropall) { //当前uninstall只清理数据
 			foreach ($idb as $key=>$v) {
 				$app = Factory::GetApp($v);
 				if ($app) {
 					$app->uninstall($dropall?1:0);					 
+				} else {
+					//crab 扩展, 如: ffmpeg
+					rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "undo '$v' ... ");
+					$m = Factory::GetUpgrade();
+					$res = $m->undoUpgradeCrab($v);
+					if ($res) {
+						$_params = array('id'=>$appinfo['id'], 'local'=>0);
+						$this->update($_params);
+					}
 				}
 			}
 		}
+		
+		
 		//重新缓存菜单
 		Factory::GetApp()->cache();					
 		
@@ -669,7 +717,7 @@ class AppModel extends CAppModel
 		
 		$up = Factory::GetUpgrade();		
 		$res = $up->upgrade($pfile);
-		if (!$data) {
+		if (!$res) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call upgrade failed!");
 			return false;
 		}

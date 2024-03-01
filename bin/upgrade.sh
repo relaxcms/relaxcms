@@ -41,7 +41,7 @@ URL="$APIURL/getAppOneKeyInstallPackage?name=relaxcms&type=0&currentversion=$CUR
 INSTALLFILE=relaxcms.tgz
 echo -n "downloading RELAXCMS from $APIURL ..."
 if [ -f /usr/bin/curl ];then 
-	curl -o $INSTALLFILE -sSLO "$URL";
+	curl -k -o $INSTALLFILE -sSLO "$URL";
 else 
 	wget -O $INSTALLFILE "$URL";
 fi;
@@ -67,6 +67,9 @@ fi
 #setup package
 if [ -x setup.sh ] ; then
 	echo -n "setup ..."
+	if [ -f web/bin/upgrade.sh ]; then
+		mv -f web/bin/upgrade.sh $WEBDIR/bin/upgrade.sh.new
+	fi
 	cp -rf web/* $WEBDIR/
 	if [ $? -ne 0 ] ; then
 			echo "copy FAILED!"
@@ -91,4 +94,8 @@ chown crab.root $WEBDIR -R
 cd $CDIR
 rm -f $INSTALLFILE
 rm -rf tmp
+#fixed upgrade.sh
+if [ -f $WEBDIR/bin/upgrade.sh.new ]; then
+	mv $WEBDIR/bin/upgrade.sh.new $WEBDIR/bin/upgrade.sh
+fi
 echo "OK."

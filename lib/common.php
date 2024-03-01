@@ -460,6 +460,8 @@ function is_url($path)
 	$udb = parse_url($path);
 	if (!$udb)
 		return false;
+	if (!isset($udb['scheme']))
+		return false;
 	
 	$schema = $udb['scheme'];
 	return $schema == 'http' ||  $schema == 'https';
@@ -1915,7 +1917,7 @@ function nformat_size($num)
  * @return mixed 格式化字节字串，如：输入：1024，输出: 1 KB
  *
  */
-function nformat_human_file_size($bytes) 
+function nformat_human_file_size($bytes, $nr=1) 
 {
 	if (!$bytes)
 		return '0';
@@ -1926,24 +1928,24 @@ function nformat_human_file_size($bytes)
 	if ($bytes < 1024) {
 		return "$bytes B";
 	}
-	$bytes = round($bytes / 1024, 0);
+	$bytes = round($bytes / 1024, $nr);
 	if ($bytes < 1024) {
 		return "$bytes KB";
 	}
-	$bytes = round($bytes / 1024, 1);
+	$bytes = round($bytes / 1024, $nr);
 	if ($bytes < 1024) {
 		return "$bytes MB";
 	}
-	$bytes = round($bytes / 1024, 1);
+	$bytes = round($bytes / 1024, $nr);
 	if ($bytes < 1024) {
 		return "$bytes GB";
 	}
-	$bytes = round($bytes / 1024, 1);
+	$bytes = round($bytes / 1024, $nr);
 	if ($bytes < 1024) {
 		return "$bytes TB";
 	}
 	
-	$bytes = round($bytes / 1024, 1);
+	$bytes = round($bytes / 1024, $nr);
 	return "$bytes PB";
 }
 
@@ -1999,6 +2001,7 @@ function nformat_get_human_file_size($val)
 
 
 
+define('BYTES_PER_GBPS', 125000000);
 define('BYTES_PER_MBPS', 125000);
 define('BYTES_PER_KBPS', 125);
 
@@ -2014,6 +2017,20 @@ function nformat_bps($bytes)
 			$res =  round($bytes, 2)."bps";
 		}
 	
+	return $res;
+}
+
+function nformat_speed($bytes) 
+{
+	if ($bytes >= BYTES_PER_GBPS) {
+		$res = round($bytes/BYTES_PER_GBPS,0)."G";
+	} else if ($bytes >= BYTES_PER_MBPS) {
+		$res = round($bytes/BYTES_PER_MBPS,0)."M";
+	} else if ($bytes >= BYTES_PER_KBPS) {
+		$res = round($bytes/BYTES_PER_KBPS, 2)."K";
+	} else {
+		$res =  round($bytes, 2)."b";
+	}	
 	return $res;
 }
 
@@ -3480,9 +3497,9 @@ function get_dbconfig($name='db0', $dbtype='mysql')
 	return $res;
 }
 
-function get_default_dbconfig()
+function get_default_dbconfig($dbtype='mysql')
 {
-	return get_dbconfig();
+	return get_dbconfig('db0', $dbtype);
 }
 
 function set_dbconfig($name='db0', $cfgdb, $dbtype='mysql', $over=false)
@@ -4140,10 +4157,22 @@ function sapi_shell($id, $options=array())
 	$options['id'] = $id;
 	$data = requestSAPI('/shell/run', $options);
 	
-	//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__,"sapi_shell res: $data");
+	rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__,"sapi_shell res: $data");
 	
 	return $data;
 }
+
+function sapi_shell_exec($cmd, $options=array())
+{
+	$options['cmd'] = $cmd;
+	$data = requestSAPI('/shell/exec', $options);
+	
+	rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__,"sapi_shell res: $data");
+	
+	return $data;
+}
+
+
 
 function sapi_restart_apache($options=array())
 {
@@ -4173,6 +4202,10 @@ function sapi_reboot($options=array())
 	return sapi_shell(5, $options);
 }
 
+function sapi_shutdown($options=array())
+{
+	return sapi_shell(7, $options);
+}
 
 
 /**
@@ -4195,14 +4228,15 @@ function sapi_setwebtimer($options=array())
  * @return mixed This is the return value description
  *
  */
-function sapi_shell_vhost($subcmd, $username)
+function sapi_shell_vhost($subcmd, $params)
 {
-	$params = array();
 	$params['subcmd'] = $subcmd;
-	$params['username'] = $username;
+	$params['username'] = $params['name'];
 	
-	$data = requestSAPI('/shell/vhost', $params);
-	rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "sapi_shell_vhost res: $data");	
+	$res = sapi_shell(3, $params);
+	rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "sapi_shell_vhost res: ", $res);	
+	
+	return $res;
 }
 
 
@@ -4309,7 +4343,7 @@ function array_sort_by_field(&$array, $fieldname, $desc = false)
 {
 	$fieldArr = array();
 	foreach ($array as $k => $v) {
-		$fieldArr[$k] = $v[$fieldname];
+		$fieldArr[$k] = isset($v[$fieldname])?$v[$fieldname]:0;
 	}
 	$sort = $desc == false ? SORT_ASC : SORT_DESC;
 	return array_multisort($fieldArr, $sort, $array);
@@ -4341,8 +4375,11 @@ function utf8_strlen($str)
 	return $count;
 	
 }
-
-function safeEncoding($string, $outEncoding = 'UTF-8') 
+/*
+ 1. 梁祝.mp4(C1 BA D7 A3 2E 6D 70 34)
+符合UTF-8双字节码（110XXXXX - 10XXXXXX）
+*/
+function safeEncoding($string, $outEncoding = 'UTF-8', $gbcheck=false) 
 {
 	$encoding = "UTF-8";
 	for ($i=0; $i < strlen($string); $i++) {
@@ -4350,18 +4387,35 @@ function safeEncoding($string, $outEncoding = 'UTF-8')
 		if ($val < 128) //单字节ascii
 			continue;
 		
-		if ($val >= 192 && $val <= 223) { // 2bytes
+		if ($val >= 192 && $val <= 223) { // 2bytes(110x xxxx 10xx xxxx)  C0(1100 0000)-DF(1101 1111)
 			$val2 = ord($string{$i+1});
-			if ($val2 >= 128 && $val2 <= 191) {
+			if ($val2 >= 128 && $val2 <= 191) { //
+				if ($gbcheck) {
+					$g1 = $val - 0xa0;
+					if ($g1 >= 1 && $g1 <= 94) { // 区位码转内码CP936, 区+0xa0, 位+0xa0
+						//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "IN4...");
+						//第一个字节判断通过 
+						$g2 = $val2 -0xa0;
+						if ($g2 >= 1 && $g2 <= 94) {
+							//第二个字节判断通过 
+							$encoding = "GB2312";
+							break;
+						}
+					}
+				}
+				
 				$i++;
+				//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "IN1...");
 				continue;
 			}
 		} else if ($val >= 224 && $val <= 239) { //3bytes
 			$val2 = ord($string{$i+1});
 			if ($val2 >= 128 && $val2 <= 191) {
 				$val3 = ord($string{$i+2});
-				if ($val2 >= 128 && $val2 <= 191) {
+				if ($val3 >= 128 && $val3 <= 191) {
 					$i += 2;
+					//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "IN2...");
+					
 					continue;
 				}
 			}
@@ -4369,10 +4423,11 @@ function safeEncoding($string, $outEncoding = 'UTF-8')
 				$val2 = ord($string{$i+1});
 				if ($val2 >= 128 && $val2 <= 191) {
 					$val3 = ord($string{$i+2});
-					if ($val2 >= 128 && $val2 <= 191) {
-						$val3 = ord($string{$i+3});
-						if ($val2 >= 128 && $val2 <= 191) {
+					if ($val3 >= 128 && $val3 <= 191) {
+						$val4 = ord($string{$i+3});
+						if ($val4 >= 128 && $val4 <= 191) {
 							$i += 3;
+							//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "IN3...");
 							continue;
 						}
 					}
@@ -4382,6 +4437,7 @@ function safeEncoding($string, $outEncoding = 'UTF-8')
 		
 		$g1 = ord($string{$i}) - 0xa0;
 		if ($g1 >= 1 && $g1 <= 94) { // 区位码转内码CP936, 区+0xa0, 位+0xa0
+			//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "IN4...");
 			//第一个字节判断通过 
 			$g2 = ord($string{++$i}) -0xa0;
 			if ($g2 >= 1 && $g2 <= 94) {
@@ -4391,6 +4447,8 @@ function safeEncoding($string, $outEncoding = 'UTF-8')
 			}
 		}
 	}
+	
+	//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "encoding=$encoding, outEncoding=$outEncoding");
 	
 	if (strtoupper($encoding) == strtoupper($outEncoding))
 		return $string;
@@ -4909,8 +4967,8 @@ function showStatus($status, $data = array())
 	$cf = get_config();
 	if ($cf['xss_access']) {//允许		   
 		header("Access-Control-Allow-Credentials: true");
-		header("Access-Control-Allow-Origin: http://localhost:8080");
-		//header("Access-Control-Allow-Origin: *");
+		//header("Access-Control-Allow-Origin: http://localhost:8080");
+		header("Access-Control-Allow-Origin: *");
 		header("Access-Control-Allow-Methods: OPTIONS,GET,POST");
 		header("Access-Control-Allow-Headers: x-requested-with,content-type");
 	}
@@ -6657,7 +6715,7 @@ function deString($ciphertext, $key, $iv = '', $aad = '')
 			$iv, $authTag, $aad);
 	
 	if (false === $plaintext) {
-		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "Decrypting the input failed, please checking your $key and $iv whether or nor correct.");
+		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "Decrypting the input failed, please checking your key '$key' and iv '$iv' whether or nor correct.");
 	}
 	
 	return $plaintext;
@@ -6704,6 +6762,34 @@ function deParams($ciphertext)
 	return $params;
 }
 
+
+function enSimpleString($data, $key='3.n.w.a.r.e')
+{
+	$iv = md5($key);
+	$aad = 's.x.w.a.r.e';
+	
+	$res = enString($data, $key, $iv, $aad);
+	
+	return $res;
+}
+
+
+function deSimpleString($ciphertext, $key='3.n.w.a.r.e')
+{
+	$iv = md5($key);
+	$aad = 's.x.w.a.r.e';
+	
+	
+	$ciphertext = urldecode($ciphertext);	
+	
+	$plaintext = deString($ciphertext, $key, $iv, $aad);
+	if (!$plaintext) {
+		rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, 'deString failed!');
+		return false;
+	}
+	
+	return $plaintext;
+}
 
 function formatColorTitle($value, $title='')
 {

@@ -28,6 +28,9 @@ class HelpUpgradeComponent extends CUpgradeComponent
 		parent::show($ioparams);
 		$this->initActiveTab(2);
 		
+		$this->assign('sys_product_version', get_product_version());
+		
+		
 		$cf = get_config();
 		$this->assign('sys_updateapi', $cf['updateapi']); 
 	}

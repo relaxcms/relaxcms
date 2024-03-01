@@ -20,12 +20,6 @@ class CUserComponent extends CDTComponent
 		$this->__construct($name, $options);
 	}
 	
-	protected function _init()
-	{
-		parent::_init();
-		$this->_modname = 'user';
-	}
-	
 	protected function resetpassword(&$ioparams=array())
 	{
 		$m = Factory::GetModel('user');

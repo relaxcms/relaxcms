@@ -375,7 +375,7 @@ class CComponent  extends CObject
 	protected function hasPrivilegeOf(&$ioparams=array())
 	{
 		if (!hasPrivilegeOf($this->_name, $ioparams['tname'])) {
-			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "no privilege of '{$this->_name} > {$ioparams['tname']}'!");
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "no privilege of '{$this->_name} > {$ioparams['tname']}'!");
 			return false;
 		}
 		

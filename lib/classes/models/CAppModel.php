@@ -31,6 +31,8 @@ class CAppModel extends CTableModel
 	
 	protected function _initFieldEx(&$f)
 	{
+		parent::_initFieldEx($f);
+		
 		switch ($f['name']) {
 			case 'type':
 				$f['input_type'] = "selector";	

@@ -189,11 +189,13 @@
 							                                                    </td>
 							                                                </tr>
 							                                                
+							                                                
+							                                                
 							                                                <tr>
 							                                                    <td> 5 </td>
-							                                                    <td> Socket </td>
+							                                                    <td> CURL </td>
 							                                                    <td> 支持 </td>
-							                                                    <td id="cstatus-5"> <span class="label label-sm label-danger"> 否 </span>  </td>
+							                                                    <td id="cstatus-5"> <span class="label label-sm label-success"> 是 </span></td>
 							                                                    <td id="cpass-5">
 							                                                        <span class="label label-sm label-danger"> 否 </span>
 							                                                    </td>
@@ -201,20 +203,10 @@
 							                                                
 							                                                <tr>
 							                                                    <td> 6 </td>
-							                                                    <td> CURL </td>
-							                                                    <td> 支持 </td>
-							                                                    <td id="cstatus-6"> <span class="label label-sm label-success"> 是 </span></td>
-							                                                    <td id="cpass-6">
-							                                                        <span class="label label-sm label-danger"> 否 </span>
-							                                                    </td>
-							                                                </tr>
-							                                                
-							                                                <tr>
-							                                                    <td> 7 </td>
 							                                                    <td> SSL </td>
 							                                                    <td> 支持 </td>
-							                                                    <td id="cstatus-7"> <span class="label label-sm label-danger"> 否 </span> </td>
-							                                                    <td id="cpass-7">
+							                                                    <td id="cstatus-6"> <span class="label label-sm label-danger"> 否 </span> </td>
+							                                                    <td id="cpass-6">
 							                                                        <span class="label label-sm label-danger"> 否 </span>
 							                                                    </td>
 							                                                </tr>
@@ -229,7 +221,7 @@
                                                                 <span class="required"> * </span>
                                                             </label>
                                                             <div class="col-md-4">
-                                                                <input type="text" class="form-control" name="params[product_name]" value="RelaxCMS" />
+                                                                <input type="text" class="form-control" name="params[product_name]" value="$params[product_name]" />
                                                                 <span class="help-block"> 系统名称 </span>
                                                             </div>
                                                         </div>
@@ -260,13 +252,7 @@
                                                             </label>
                                                             <div class="col-md-4">
                                                                 <select name="params[dbtype]" class="form-control">
-                                                                	<option value="mysql">MySQL</option>
-                                                                	<option value="mysqlpdo">MysqlPDO</option>
-                                                                	<option value="mysqli">MySQLi</option>
-                                                                	<option value="mssql">MSSQL</option>
-                                                                	<option value="sqlite">SQLite</option>
-                                                                	<option value="psql">PostgreSQL</option>
-                                                                	<option value="mongo">MongoDB</option>
+                                                                	$dbtype_select
                                                                 </select>
                                                             </div>
                                                             
@@ -278,7 +264,7 @@
                                                             </label>
                                                             <div class="col-md-4">
                                                                 <input type="text" class="form-control" name="params[dbhost]" value="$params[dbhost]"/>
-                                                                <span class="help-block"> 数据库服务IP或域名,如：127.0.0.1 </span>
+                                                                <span class="help-block"> 数据库服务IP或域名,如：127.0.0.1|127.0.0.1:3306 </span>
                                                             </div>
                                                         </div>
                                                        

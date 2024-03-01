@@ -26,6 +26,7 @@ class BannerModule extends CContentModule
 		//photos
 		$udb = array();
 		$photos = isset($this->_attribs['photos'])?$this->_attribs['photos']:'';
+		$photo0='';
 		if ($photos) {
 			$pdb = explode(',', $photos);
 			foreach ($pdb as $key => $v) {
@@ -33,6 +34,7 @@ class BannerModule extends CContentModule
 				//$item['name'] = $v;
 				$item['photo'] = $v;
 				$udb[] = $item;
+				$photo0 = $v;
 			}
 		}
 
@@ -45,8 +47,8 @@ class BannerModule extends CContentModule
 				if ($res)
 					$v['content'] = $res;
 			}
-			if (empty($v['photo'])) {
-				$v['photo'] = $udb[$idx++]['photo'];
+			if (empty($v['photo']) ) {
+				$v['photo'] = isset($udb[$idx])?$udb[$idx++]['photo']:$photo0;
 			}
 		}
 

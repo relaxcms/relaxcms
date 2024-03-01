@@ -113,6 +113,7 @@ class MysqlpdoDatabase extends CDatabase
 		try {
 			//连接
 			$params = array(
+					//PDO::ATTR_PERSISTENT=>true,
 					PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, //默认是PDO::ERRMODE_SILENT, 0, (忽略错误模式)
 					PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // 默认是PDO::FETCH_BOTH, 4
 					);
@@ -184,8 +185,14 @@ class MysqlpdoDatabase extends CDatabase
 	public function query($sql, $method = '') 
 	{
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "IN");
-		if (!$this->_link)
-			$this->connect();
+		if (!$this->_link) {
+			$this->connect();			
+			if (!$this->_link) {
+				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "no connect!");
+				return false;
+			}
+			
+		}
 		
 		$sql = $this->_prefix_replace($sql);	
 		

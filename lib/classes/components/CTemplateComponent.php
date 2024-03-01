@@ -23,6 +23,8 @@ class CTemplateComponent extends CTreeDTComponent
 	
 	protected function _init()
 	{
+		parent::_init();
+		
 		$this->_default_vmask = 5;
 		$this->_default_viewtype = 1;
 		$this->enableMenuItem('add,edit,del', false);
@@ -46,13 +48,5 @@ class CTemplateComponent extends CTreeDTComponent
 		$m = $this->getModel();		
 		$res = $m->setup($this->_id, $ioparams);		
 		showStatus($res?0:-1);
-	}
-	
-	//detail
-	protected function detail(&$ioparams=array())
-	{
-		$this->setActiveTab(3);
-		$res = parent::detail($ioparams);
-		$this->setTpl('site_template_detail');
 	}
 }

@@ -2,8 +2,11 @@
 defined( 'RMAGIC' ) or die( 'Request Forbbiden' );
 
 /**
+ * @name
+
  * 应用基类
  *
+ * Copyright (c), 2024, relaxcms.com
  */
 class CApplication extends CObject
 {
@@ -427,6 +430,22 @@ class CApplication extends CObject
 	public function getMyInfo(&$ioparams=array())
 	{
 		return false;
+	}	
+
+	public function getMyMainBoardInfo(&$ioparams=array())
+	{
+		$udb = $this->getDashbordInfo($ioparams);
+
+		$ddb = array();
+		if ($udb){
+			foreach ($udb as $key => $v) {
+				if (isset($v['level']) && ($v['level'] & 1)) {
+					$ddb[] = $v;
+				}
+			}
+		}
+
+		return $ddb;
 	}	
 	
 	/* ==============================================================================================

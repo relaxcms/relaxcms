@@ -67,7 +67,7 @@ $i18n = array(
 		'sel_ajaxsystime' => array('1'=>'开启', '0'=>'关闭'),
 		'sel_webtimer' => array('1'=>'开启', '0'=>'关闭'),
 
-		'sel_dbtype' => array('mysqlpdo'=> 'MysqlPDO','mysql'=> 'MYSQL','mysqli'=> 'MySQLi','mssql'=> 'MSSQL','sqlite'=> 'SQLite',
+		'sel_dbtype' => array('mysqlpdo'=> 'MysqlPDO','mysql'=> 'MYSQL','mysqli'=> 'MySQLi','mssql'=> 'MSSQL','sqlite'=> 'SQLite','sqlitepdo'=> 'SQLitePDO',
 			'psql'=> 'PostgreSQL','mongo'=> 'MongoDB'),	
 
 	/*用户组*/		
@@ -157,6 +157,7 @@ $i18n = array(
 	'mod_user' => array(
 			'modelname'=> '用户',
 			'uid' => array('title' => 'ID'),
+			'uid' => array('title' => 'UID'),
 			'username' => array('title' => '用户名'),
 			'truename' => array('title' => '真实姓名'),
 			'avatar' => array('title' => '头像'),
@@ -440,4 +441,3 @@ $i18n = array(
 		),
 		
 );
-?>

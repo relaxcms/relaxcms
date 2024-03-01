@@ -5,9 +5,9 @@
  * @brief 
  * SQLite3 数据库管理
  *
- * eg: https://www.php.net/manual/zh/function.pg-connect.php
- * 
+ * eg: https://www.php.net/manual/zh/class.sqlite3.php
 
+ * 
  * 
  * 
  */
@@ -16,8 +16,11 @@ class SqliteDatabase extends CDatabase
 	protected $_dbrootdir = '';
 	function __construct($name, $options)
 	{
-		$this->_dbrootdir = RPATH_DATA;
-		parent::__construct($name, $options);
+		$this->_dbrootdir = RPATH_CONFIG_DATA;
+		if (!is_dir($this->_dbrootdir))
+			mkdir($this->_dbrootdir);
+			
+		parent::__construct($name, $options);		
 	}
 	
 	function SqliteDatabase($name, $options)
@@ -36,10 +39,9 @@ class SqliteDatabase extends CDatabase
 			return false;
 		} 
 		
-		$dbfile = $this->_dbrootdir.DS.$this->_options['dbname'];
+		$dbfile = str_replace(DS,'/', $this->_dbrootdir.DS.$this->_options['dbname'].'.db');
 		
 		$res = $link->open($dbfile);	
-			
 		
 		$this->_link = $link;
 			
@@ -89,15 +91,18 @@ class SqliteDatabase extends CDatabase
 		return true;
 	}
 	
-	
+	protected function dbfile($dbname)
+	{
+		!$dbname && $dbname = $this->_options['dbname'];
+		$dbfile = str_replace(DS,'/', $this->_dbrootdir.DS.$dbname.'.db');
+		
+		return $dbfile;
+	}
 	
 	public function db_space($dbname='')
 	{
-		$o_size = 0;
-		$query = mysql_query("SHOW TABLE STATUS");
-		while ($rs = $this->fetch_array($query)) {
-			$o_size = $o_size + $rs['Data_length'] + $rs['Index_length'];
-		}
+		$file = $this->dbfile($dbname);
+		$o_size = filesize($file);
 		
 		$o_size	 = nformat_size($o_size);
 		return $o_size;		
@@ -148,13 +153,14 @@ class SqliteDatabase extends CDatabase
 			$tdb = explode("\n", $sql);
 			
 			$tableinfo = $this->parseCreateTableSql($tdb);
-			$fdb = $tableinfo['fdb'];
+			$_fdb = $tableinfo['fdb'];
 			$pkey = $tableinfo['pkey'];			
+			$fdb = array();
 			
-			foreach ($fdb as $key=>$v) {
+			foreach ($_fdb as $key=>$v) {
 										
 				$name = $v['name'];
-				$is_primary_key = ($pkey == $name)?true:false;
+				$is_primary_key = isset($v['is_primary_key']) ? $v['is_primary_key']: (($pkey == $name)?true:false);
 				
 				$type = $v['type'];
 								
@@ -245,8 +251,7 @@ class SqliteDatabase extends CDatabase
 	
 	function num_rows($query) 
 	{
-		$rows = mysql_num_rows($query);
-		return $rows;
+		return $query->rowCount();
 	}
 	
 	function free_result($query) 
@@ -266,11 +271,11 @@ class SqliteDatabase extends CDatabase
 	
 	function get_version()
 	{
-		return mysql_get_server_info($this->_link);
+		return $this->_link->version();
 	}	
 	
 	//关闭数据库
-	protected function close()
+	public function close()
 	{
 		$this->_link->close();
 		$this->_link = 0;
@@ -436,21 +441,188 @@ class SqliteDatabase extends CDatabase
 	/* ==========================================
 	 * SQL SCRIPTS HELPER FUNCTIONS
 	 * ==========================================*/
+	
+	/**
+	 * buildCreateTableSql
+		
+	eg:
+	Array
+	(
+	   [tableinfo] => Array
+	       (
+	           [name] => cms_server
+	           [ifnotexists] =>
+	           [fdb] => Array
+	               (
+	                   [0] => Array
+	                       (
+	                           [name] => id
+	                           [null] =>
+	                           [type] => int
+	                           [length] => 0
+	                       )
+		
+	                   [1] => Array
+	                       (
+	                           [name] => name
+	                           [null] =>
+	                           [type] => varchar
+	                           [length] => 64
+	                       )
+		
+	                   [2] => Array
+	                       (
+	                           [name] => description
+	                           [null] => 1
+	                           [type] => text
+	                           [length] => 0
+	                       )
+		
+	                   [3] => Array
+	                       (
+	                           [name] => ip
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 64
+	                       )
+		
+	                   [4] => Array
+	                       (
+	                           [name] => webrooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+		
+	                   [5] => Array
+	                       (
+	                           [name] => rtmprooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+		
+	                   [6] => Array
+	                       (
+	                           [name] => hlsrooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+		
+	                   [7] => Array
+	                       (
+	                           [name] => vodrooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+		
+	                   [8] => Array
+	                       (
+	                           [name] => ts
+	                           [null] =>
+	                           [type] => bigint
+	                           [length] => 0
+	                       )
+		
+	                   [9] => Array
+	                       (
+	                           [name] => flags
+	                           [null] =>
+	                           [type] => int
+	                           [length] => 0
+	                           [default] => 0,
+	                       )
+		
+	                   [10] => Array
+	                       (
+	                           [name] => status
+	                           [null] =>
+	                           [type] => int
+	                           [length] => 0
+	                           [default] => 0,
+	                       )
+		
+	               )
+		
+	           [index] => Array
+	               (
+	                   [0] => Array
+	                       (
+	                           [indextype] => primary
+	                           [indexfields] => id
+	                       )
+		
+	               )
+		
+	           [pkey] => id
+	       )
+		
+	   [type] => createtable
+	   [sql] => create table cms_server(
+	id int not null,
+	name varchar(64) not null,
+	description text null,
+	ip varchar(64) null,
+	webrooturl varchar(128) null,
+	rtmprooturl varchar(128) null,
+	hlsrooturl varchar(128) null,
+	vodrooturl varchar(128) null,
+	ts bigint not null,
+	flags int not null default 0,
+	status int not null default 0,
+	primary key(id)
+	)
+	)
+		
+		
+	*/
+	
+	protected function buildCreateTableSql($sqlinfo)
+	{
+		// default
+		$tableinfo = $sqlinfo['tableinfo'];
+		$name = $tableinfo['name'];
+		$fdb = $tableinfo['fdb'];
+		$sql = "create table $name ( \n";
+		foreach ($fdb as $key=>$v) {
+			$sql .= " $v[name] ".($v['length'] > 0?$v['type'].'('.$v['length'].')':$v['type']).' '.($v['null']?' null ': 'not null');
+			$sql .= isset($v['default'])?' default '.$v['default']:' ';
+			
+			$sql .= $tableinfo['pkey'] == $v['name']?' primary key ':' ';
+			
+			$sql .= ",\n";			
+		}
+		
+		$sql = rtrim($sql, ",\n");
+		$sql.=")\n";
+		
+		
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, "sql=$sql");
+		
+		return $sql;
+		
+	}
+	
+	
 	protected function importSql($sqlinfo)
 	{
 		switch ($sqlinfo['type']) {
 			case 'createtable':
+				$sql = $this->buildCreateTableSql($sqlinfo);
+				break;
 			case 'droptable':
 			case 'createview':
 			case 'insertinto':
 			case 'data':
-				break;
 			default:
+				$sql = $sqlinfo['sql'];
 				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "unknow sql type '{$v['type']}'!");
 				break;
 		}
-		
-		$sql = $sqlinfo['sql'];
+
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $sqlinfo);
 		$res =  $this->query($sql);
 		if (!$res) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call query failed!sql=$sql");
@@ -541,13 +713,13 @@ class SqliteDatabase extends CDatabase
 			} 
 			
 			$pre = strtolower(substr($v, 0, 4));
-			rlog('$pre='.$pre);
+			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, '$pre='.$pre);
 			if ($pre == "drop" || $pre == "crea")
 			{
-				rlog($v);
+				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $v);
 				$res = $this->query($v);
 			} else {
-				rlog('unknown sql='.$v);
+				rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, 'unknown sql='.$v);
 			}
 		}
 		return $res;				
@@ -555,7 +727,9 @@ class SqliteDatabase extends CDatabase
 	
 	function get_last_error()
 	{
-		return mysql_error($this->_link);
+		$errorCode =  $this->_link->lastErrorCode();
+		$errorInfo =  $this->_link->lastErrorMsg();
+		return $errorInfo.'('.$errorCode.')';
 	}
 		
 	public function escape_string($data)

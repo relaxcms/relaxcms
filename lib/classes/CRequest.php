@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * @file
+ *
+ * @brief 
+ * 
+ * 请求类
+ * 
+ * @copyright
+ * Copyright (c), 2024, relaxcms.com
+ *
+ */
 class CRequest extends CObject
 {
 	/**
@@ -119,7 +129,6 @@ class CRequest extends CObject
 	 */
 	protected $_weburl;
 	
-	protected $_uribase;
 	
 	public function __construct($options=array())
 	{
@@ -286,23 +295,7 @@ class CRequest extends CObject
 			$vpath = ltrim($this->_path, '/');			
 			$this->_vpath = explode('/', $vpath);
 		}	
-		
-		//uriroot
-		// /webdav/a/123?t=PROPFIND
-		// /rc6/test/test_webdav.php/a/123
-		// /webdav/a/123
-
-		$uribase = $_SERVER['SCRIPT_URL'];
-		if ($path) {
-			$pos = strpos($uribase, $path);			
-		}	else {
-			$pos = strpos($uribase, '?');
-		}		
-		if ($pos !== false) {//'?'及后面的query_string去掉
-			$this->_uribase = substr($uribase, 0, $pos);
-		} else {
-			$this->_uribase = $uribase;
-		}
+			
 				
 		//schema
 		$schema = '';
@@ -384,7 +377,7 @@ class CRequest extends CObject
 	    [HTTP_SEC_FETCH_MODE] => cors
 	    [HTTP_SEC_FETCH_SITE] => same-site
 		*/
-		if ($_SERVER['HTTP_SEC_FETCH_MODE'] == 'cors' 
+		if (isset($_SERVER['HTTP_SEC_FETCH_MODE']) && $_SERVER['HTTP_SEC_FETCH_MODE'] == 'cors' 
 			&& $_SERVER['HTTP_ORIGIN'] && $this->_rooturl != $_SERVER['HTTP_ORIGIN'] 
 			&& $method == "OPTIONS") 
 			showStatus(0);
@@ -434,9 +427,8 @@ class CRequest extends CObject
 				case 'firefox':
 				case 'chrome':
 				case 'msie':
-					$val = $udb[++$i];
 					$this->_useragent_browser = $name;
-					$this->_useragent_browser_ver = $val;
+					$this->_useragent_browser_ver = isset($udb[$i+1])?$udb[++$i]:'no';
 					break;
 				case 'iphone':
 				case 'windows':
@@ -479,7 +471,6 @@ class CRequest extends CObject
 	public function getRequestParams(&$ioparams=array())
 	{
 		$ioparams['_uri'] = $this->_uri;
-		$ioparams['_uribase'] = $this->_uribase;
 		$ioparams['_base'] = $this->_basename.$this->_path;
 		$ioparams['_basename'] = $this->_basename;
 		$ioparams['_baseroot'] = $this->_baseroot;
@@ -513,18 +504,17 @@ class CRequest extends CObject
 		$ioparams['vpath'] = $this->_vpath;
 		$ioparams['vpath_offset'] = 0;
 		$ioparams['method'] = $this->_method;
-		
-		
+				
 		//解析<PLG>/<COMPONENT>/<TASK>?
-		$aname = $_REQUEST['app'];
-		$cname = $_REQUEST['component'];
-		$tname = $_REQUEST['task'];	
-		$oname = $_REQUEST['output'];	
+		$aname = isset($_REQUEST['app'])?$_REQUEST['app']:'';
+		$cname = isset($_REQUEST['component'])?$_REQUEST['component']:'';
+		$tname = isset($_REQUEST['task'])?$_REQUEST['task']:'';	
+		$oname = isset($_REQUEST['output'])?$_REQUEST['output']:'';	
 		
-		!$aname && $aname = $_REQUEST['a'];
-		!$cname && $cname = $_REQUEST['c'];
-		!$tname && $tname = $_REQUEST['t'];
-		!$oname && $oname = $_REQUEST['o'];
+		!$aname && $aname = isset($_REQUEST['a'])?$_REQUEST['a']:'';
+		!$cname && $cname = isset($_REQUEST['c'])?$_REQUEST['c']:'';
+		!$tname && $tname = isset($_REQUEST['t'])?$_REQUEST['t']:'';
+		!$oname && $oname = isset($_REQUEST['o'])?$_REQUEST['o']:'';
 					
 		$ioparams['aname'] = $aname;
 		$ioparams['cname'] = $cname;

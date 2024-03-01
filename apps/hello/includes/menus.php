@@ -7,7 +7,9 @@ $menus = array(
 			'class' => 'fa fa-cogs',
 			'task'	=>'',
 			'parent' => '',
-			'level' => 1,		
+			'level' => 1,	
+			'sort' => 1
+	
 	),
 
 	'hello'=>array(

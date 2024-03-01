@@ -33,9 +33,11 @@ class SystemSuperComponent extends CUIComponent
 		
 		$this->assign('pkey', $pkey);		
 		
+		$manager = get_manager();
 			
 		$userinfo = get_userinfo();
 		$this->assign('newsupername', $userinfo['name']);		
+		$this->assign('params', $manager);		
 	}
 	
 	

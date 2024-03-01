@@ -64,9 +64,11 @@ class CFrontApplication extends CMainApplication
 	}
 	
 		
-	protected function isComponent2($cname)
+	protected function isComponent($cname)
 	{
-		return true;
+		$res = parent::isComponent($cname);
+		
+		return $res;
 	}
 
 	protected function getDefaultComponent()

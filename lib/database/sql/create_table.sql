@@ -28,17 +28,6 @@ create table cms_user (
   primary key(id)
 );
 
-
-create table cms_user_account (
-  id int NOT NULL,
-  uid int NOT NULL comment 'UID',
-  account varchar(32) NOT NULL comment '帐号',
-  type int not null, 
-  status int not null, 
-  UNIQUE(account),
-  primary key(id)
-);
-
 create table cms_user_seccode (
   id int NOT NULL,
   secid	varchar(64)	not null,
@@ -212,9 +201,8 @@ create table cms_file (
   flags int null default 0,
   status int not null default 0,
   INDEX(type),
-  UNIQUE KEY(pid,name),
+  UNIQUE KEY(pid,filename),
   UNIQUE KEY(path),
-  UNIQUE KEY(filename),
   primary key(id)
 );
 

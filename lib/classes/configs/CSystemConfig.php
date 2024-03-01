@@ -59,7 +59,7 @@ class CSystemConfig extends CConfig
 		//验证码超时		
 		!isset($cfg['seccodetimeout']) && $cfg['seccodetimeout'] = 300;
 		//验证码仅数字
-		!isset($cfg['seccodeonleynum']) && $cfg['seccodeonleynum'] = 1;
+		!isset($cfg['seccodeonleynum']) && $cfg['seccodeonleynum'] = 0;
 		
 		//! 默认模板名称
 		!isset($cfg['tplname']) && $cfg['tplname'] =  'default';
@@ -84,7 +84,20 @@ class CSystemConfig extends CConfig
 		//DOCUMENT_ROOT
 		$document_root = str_replace(DS, '/', $_SERVER['DOCUMENT_ROOT']);
 		empty($cfg['docrootdir']) && $cfg['docrootdir'] = $document_root;
-		empty($cfg['homedir']) && $cfg['homedir'] = substr($document_root, 0, strpos($document_root, "/var"));
+		if (empty($cfg['homedir'])) { //探测家目录所在
+			$tdb = explode('/', $document_root);
+			$homedir = $tdb[0];
+			$nr = count($tdb);
+			for($i=1; $i<$nr; $i++) {
+				$homedir .= '/'.$tdb[$i];
+				if ((file_exists($homedir.DS.'bin'.DS.'crabd') || file_exists($homedir.DS.'bin'.DS.'crabd.exe')) && 
+						is_dir($homedir.DS.'var')) {
+					break;
+				}
+			}
+						
+			$cfg['homedir'] = $homedir;
+		}
 		$cfg['vardir'] = $cfg['homedir']."/var";
 
 		//update API

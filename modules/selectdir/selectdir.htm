@@ -4,13 +4,13 @@
 <link href="$_dstroot/css/fileview.css" rel="stylesheet" type="text/css" />        
     
     <div class="fv">
-        <div class="treetable" id="mytreetable" data-url="php/t.php/treetable">
+        <div class="treetable" id="mytreetable" data-url="$_base/jstree">
             <div class="row">                
                 <div class="col-md-12 col-sm-12 col-xs-12 fv-main">
                     <div class="portlet box">
                         <div class="portlet-body">
                             <div>全部</div>
-                                <div id="tree_4" class="tree-demo"> </div>
+                            <div id="myjstree" class="tree-demo"> </div>
                             </div>
                         </div>
 
@@ -18,14 +18,13 @@
                 </div>
             </div>
         </div>
-
     </div>
 
 <script src="$_dstroot/plugins/jstree/dist/jstree.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
-         var jstree = $("#tree_4").jstree({
+         var jstree = $("#myjstree").jstree({
             "core" : {
                 "themes" : {
                     "responsive": false
@@ -116,7 +115,7 @@
             "plugins" : ["contextmenu", "dnd", "state", "types" ]
         });
          // handle link clicks in tree nodes(support target="_blank" as well)
-        $('#tree_4').on('select_node.jstree', function(e,data) { 
+        $('#myjstree').on('select_node.jstree', function(e,data) { 
             window.selected_id = data.node.id;
                 //console.log(node);
         }).on('move_node.jstree', function (e, data) {
@@ -187,7 +186,7 @@
         }
 
         function delete_item(id) {
-         console.log('id='+id);  
+            console.log('id='+id);  
             var formData = {
                 'params[id]':id,
             };

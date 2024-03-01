@@ -40,13 +40,15 @@ function t2t($name)
 	file_exists($file) && unlink($file);
 	$file = $tdir.DS.'contentdb.php';
 	file_exists($file) && unlink($file);
-		
+
+	$modules = array();
+			
 	$fdb = s_readdir($dir, "files");
 	foreach ($fdb as $key=>$v) {
 		
 		$data = s_read($dir.DS.$v);
 		
-		$data = t2tData($name, $data);
+		$data = t2tData($name, $data, $modules);
 		
 		//include
 		$data = t2tParseIncludeHeader($v, $tdir, $data);
@@ -56,6 +58,8 @@ function t2t($name)
 		$tplfile = $tdir.DS.$tname;	
 		s_write($tplfile, $data);		
 	}
+
+	$_modules = implode(' ', $modules);
 	
 	//config
 	$config = <<<EOT
@@ -63,7 +67,8 @@ function t2t($name)
 \$appcfg = array (
 	'name' => '$name',
 	'title' => '$name',	
-'description' => '$name',	
+	'description' => '$name',	
+	'dmodules'=>'$_modules',
 	'version' => '0.1.0',
 	'copyright' => 'RC',
 	'website' => 'https://www.relaxcms.com',
@@ -78,7 +83,7 @@ EOT;
 }
 
 
-function t2tData($name, $data)
+function t2tData($name, $data, &$modules=array())
 {
 	//catalog
 	t2tParseCatalog($name, $data);
@@ -232,7 +237,7 @@ function t2tData($name, $data)
 	//navbar
 	$data = t2tParseNavbar($data);
 	//module
-	$data = t2tParseModule($name, $data);
+	$data = t2tParseModule($name, $data, $modules);
 	//var
 	$data = t2tParseVar($data);
 
@@ -443,11 +448,30 @@ function t2tParseIncludeHeader($name, $tdir, $data)
 	//<!-- BEGIN PAGECONTENT -->
 	//<!-- END PAGECONTENT -->
 	$matches = array();
-	$res = preg_match_all("/<!--\s*[\s]*BEGIN PAGECONTENT\s*[\s]*-->(.+)<!--\s*[\s]*END PAGECONTENT\s*[\s]*-->/isU", $data, $matches);
+	$res = preg_match_all("/<!--\s*[\s]*BEGIN PAGECONTENT\s*([\w+\s*=('|\"|?)[^(\1)].+(\1)?]*)?\s*[\s]*-->(.+)<!--\s*[\s]*END PAGECONTENT\s*[\s]*-->/isU", $data, $matches);
 	
+
 	
 	if ($res && count($matches[1]) == 1) {
-		$pagecontent_data = $matches[1][0];
+		$prefix = 'i';
+		$isdefault = false;
+		$nr = count($matches);
+		if ($nr > 1 && $matches[1][0]) {
+			$args = attr2array2(strtolower($matches[1][0]));
+			foreach ($args as $k2 => $v2) {
+				if ($k2 == 'prefix') {
+					$prefix = trim($v2);
+				}
+				if ($k2 == 'default' && intval($v2) == 1) {
+					$isdefault = true;
+				}
+			}
+		}
+
+		$head = $prefix.'head';
+		$foot = $prefix.'foot';
+		
+		$pagecontent_data = $matches[3][0];
 		$len = strlen($pagecontent_data);
 		
 		$pos = strpos($data, $pagecontent_data);
@@ -456,20 +480,20 @@ function t2tParseIncludeHeader($name, $tdir, $data)
 		$foot_data = substr($data, $pos+$len);
 		
 		//header.htm
-		$file = $tdir.DS."head.htm";
-		if (!file_exists($file) || $is_index) {
+		$file = $tdir.DS."$head.htm";
+		if ((!file_exists($file) || $is_index) && !$isdefault) {
 			s_write($file, $head_data);
 		}
 		
 		//footer.htm
-		$file = $tdir.DS."foot.htm";
-		if (!file_exists($file) || $is_index) {
+		$file = $tdir.DS."$foot.htm";
+		if ((!file_exists($file) || $is_index) && !$isdefault) {
 			s_write($file, $foot_data);
 		}
 		
 		//replace
-		$data = str_replace($head_data, '<rdoc:include file="head.htm" />', $data);
-		$data = str_replace($foot_data, '<rdoc:include file="foot.htm" />', $data);
+		$data = str_replace($head_data, '<rdoc:include file="'.$head.'.htm" />', $data);
+		$data = str_replace($foot_data, '<rdoc:include file="'.$foot.'.htm" />', $data);
 	}
 	
 	return $data;
@@ -781,7 +805,6 @@ function t2tParseModuleSingleContent($dirname, $name, $innerData)
 	$_content = stripslashes($innerData);
 	//$res = preg_match_all("/<(\w+)\b\s*([\w+\s*=('|\"|?)[^(\1)].+(\1)?]*)?\s*[\s]*>(.+)<\/(\w+)>/isU", $_content, $matches);
 	$res = preg_match_all("/catalog([\w+\s*=('|\"|?)[^(\1)].+(\1)?]*)?\s*[\s]*>(.+)<\/(\w+)>/isU", $_content, $matches);
-	var_dump($matches); exit;
 
 	//$res = preg_match_all("/content\s*[\s]*.*([\w+\s*=('|\"|?)[^(\1)].+(\1)?]*)?\s*[\s]*>(.+)<\/(\w+)>/isU", $_content, $matches);
 	//var_dump($matches); exit;
@@ -845,9 +868,34 @@ function t2tParseModuleSingle($dirname, $name, $args, $innerData)
 		default:
 			break;
 	}*/
+	$dir = RPATH_MODULES.DS.$name;
+	$file = $dir.DS.$name.'.htm';
+	if (!is_dir($dir)) {//模块不存在，创建一个
+		s_mkdir($dir);
+		s_write($file, $innerData) ;
+
+$tpl_module = <<<EOT
+<?php
+class %sModule extends CModule
+{
+	function __construct(\$name, \$attribs)
+	{
+		parent::__construct(\$name, \$attribs);
+	}
+	
+	function %sModule(\$name, \$attribs)
+	{
+		\$this->__construct(\$name, \$attribs);
+	}
+}
+EOT;
+		$cname = ucfirst($name);
+		$module_data = sprintf($tpl_module, $cname, $cname);
+		s_write($dir.DS.$name.'.php', $module_data);
+	}
 }
 
-function t2tParseModule($dirname, $data)
+function t2tParseModule($dirname, $data, &$modules=array())
 {
 	//BEGIN MODULE MYPROFILE
 
@@ -867,8 +915,10 @@ function t2tParseModule($dirname, $data)
 			$new[] = "<rdoc:include type='module' name='$name' $args />";
 
 
-			//特别解析
+			//单个解析
 			t2tParseModuleSingle($dirname, $name, $args, $matches[4][$i]);
+			
+			$modules[] = $name;
 		}
 		
 		//

@@ -26,7 +26,6 @@ $i18n = array(
 	'str_database_connect_error'	=>	'数据库连接错误，请检查',
 		
 	'str_next' => '下一步',
-	'sel_dbtype' => array('mysql'=> 'MYSQL'),
 	'sel_dbcharset' => array('latin1'=> 'latin1', 'utf8'=>'utf8'),
 	'str_install_dbuser_exists' => '数据库用户已经存在',
 	'str_dbuser_error' => '数据库用户错误，请检查',

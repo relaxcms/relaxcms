@@ -3,8 +3,9 @@ $i18n = array(
 	'str_system_name' => 'RC',
 	'str_system_subtitle' => 'Relax Content Management System',
 	'str_system_title' =>  'RC',
-	'str_system_corporation' =>  'RC',
-	
+	'str_system_corporation' => 'RC',
+	'str_system_copyright_corp' => 'RC',
+		
 	/* 通用选择器 */
 	'sel_language' => array('zh_CN'=>'简体中文'/*, 'zh_TW'=>'繁体中文'*/, 'en'=>'English'),
 	'sel_layout' => array('fluid'=>'自适应', 'boxed'=> '固定宽度'),

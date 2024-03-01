@@ -9,7 +9,7 @@
  */
 defined( 'RMAGIC' ) or die( 'Request Forbbiden' );
 
-class ListviewModule extends CListModule
+class ListviewModule extends CListviewModule
 {
 	function __construct($name, $attribs)
 	{
@@ -63,7 +63,6 @@ class ListviewModule extends CListModule
 			}
 		}
 				
-		//默认视图
 		$m2 = Factory::GetModel('catalog');
 		$cataloginfo = $m2->get($cid);
 		if ($cataloginfo) {

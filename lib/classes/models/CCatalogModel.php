@@ -112,6 +112,137 @@ class CCatalogModel extends CTableModel
 		return true;
 	}
 
+
+	public function queryForInputTpl_list_root($name, $val, $params=array(), &$ioparams=array())
+	{
+		/*
+			[tpl_list_root] =>
+		    [tpl_list] => list
+		    [tpl_content_root] =>
+		    [tpl_content] => adfad
+		*/
+		$tpl_list_root = $params['tpl_list_root'];
+		$tpl_list = $params['tpl_list'];
+
+		$m = Factory::GetModel('site_config');
+		$scf = $m->getParams();
+		!$tpl_root && $tpl_root = $scf['template'];
+
+		$m2 = Factory::GetModel('template');
+		$udb = $m2->select(array('isdir'=>1,'status'=>1));
+		
+		$tdb = array();
+		$idx = 0;
+		$pos = 0;
+		foreach ($udb as $key => $v) {
+			$tdb[] = $v['name'];
+			if ($v['name'] == $tpl_root) { //当前
+				$pos = $idx;
+			}
+			$idx ++;
+		}
+
+		//rlog($pos, $val, $tdb);
+
+		$nr = count($tdb);
+		$pos =  ($nr <= 1)?0: ($pos+1)%$nr;
+
+		$res = array('value'=>$tdb[$pos]);
+		return $res;
+	}
+
+	public function queryForInputTpl_content_root($name, $val, $params=array(), &$ioparams=array())
+	{
+		return $this->queryForInputTpl_list_root($name, $val, $params, $ioparams);
+	}
+
+
+
+
+	public function queryForInputTpl_list($name, $val, $params=array(), &$ioparams=array())
+	{
+		/*
+			[tpl_list_root] =>
+		    [tpl_list] => list
+		    [tpl_content_root] =>
+		    [tpl_content] => adfad
+		*/
+		$tpl_list_root = $params['tpl_list_root'];
+		$tpl_list = $params['tpl_list'];
+
+		$m = Factory::GetModel('site_config');
+		$scf = $m->getParams();
+		!$tpl_list_root && $tpl_list_root = $scf['template'];
+		$m2 = Factory::GetModel('template');
+		$tinfo = $m2->getOne(array('name'=>$tpl_list_root, 'isdir'=>1, 'status'=>1));
+		$tid = $tinfo['id'];
+		$udb = $m2->select(array('pid'=>$tid));
+		
+		$tdb = array();
+		$idx = 0;
+		$pos = 0;
+		foreach ($udb as $key => $v) {
+			if (is_start_with($v['name'],"list")) { //内容页
+				$tdb[] = $v['name'];
+				if ($v['name'] == $tpl_list) { //当前
+					$pos = $idx;
+				}
+				$idx ++;
+			}
+		}
+
+		//rlog($pos, $val, $tdb);
+
+		$nr = count($tdb);
+		$pos =  ($nr <= 1)?0: ($pos+1)%$nr;
+
+		$res = array('value'=>$tdb[$pos]);
+		return $res;
+	}
+
+
+	public function queryForInputTpl_content($name, $val, $params=array(), &$ioparams=array())
+	{
+		/*
+			[tpl_list_root] =>
+		    [tpl_list] => list
+		    [tpl_content_root] =>
+		    [tpl_content] => adfad
+		*/
+		$tpl_list_root = $params['tpl_list_root'];
+		$tpl_content_root = $params['tpl_content_root'];
+		$tpl_content = $params['tpl_content'];
+
+		$m = Factory::GetModel('site_config');
+		$scf = $m->getParams();
+		!$tpl_content_root && $tpl_content_root = $scf['template'];
+		$m2 = Factory::GetModel('template');
+		$tinfo = $m2->getOne(array('name'=>$tpl_content_root, 'isdir'=>1,'status'=>1));
+		$tid = $tinfo['id'];
+		$udb = $m2->select(array('pid'=>$tid));
+		
+		$tdb = array();
+		$idx = 0;
+		$pos = 0;
+		foreach ($udb as $key => $v) {
+			if (is_start_with($v['name'],"content")) { //内容页
+				$tdb[] = $v['name'];
+				if ($v['name'] == $tpl_content) { //当前
+					$pos = $idx;
+				}
+				$idx ++;
+			}
+		}
+
+		//rlog($pos, $val, $tdb);
+
+		$nr = count($tdb);
+		$pos =  ($nr <= 1)?0: ($pos+1)%$nr;
+
+		$res = array('value'=>$tdb[$pos]);
+		return $res;
+	}
+
 	protected function buildInputForModel2($params, $field, $ioparams = array(), $has_default=false, $names=array())
 	{
 		return 	parent::buildInputForModel($params, $field, $ioparams, false, array('title'));
@@ -203,7 +334,8 @@ class CCatalogModel extends CTableModel
 		$row['previewUrl'] = $v['photoUrl'];
 		
 		//url 本页菜单
-		$row['url'] = ($row['flags'] & CTF_NAV)?$ioparams['_webroot']."/list/$id":$ioparams['_basename'].'#param_catalog_'.$id;		
+		$url = is_url($row['linkurl'])?$row['linkurl']:((is_start_with($row['linkurl'], '#'))?$row['linkurl']:$ioparams['_webroot']."/list/$id");
+		$row['url'] = $url; //($row['flags'] & CTF_NAV)?$url:$ioparams['_basename'].'#param_catalog_'.$id;		
 	}
 	
 	
@@ -562,7 +694,7 @@ class CCatalogModel extends CTableModel
 		
 		$curl = $ioparams['_webroot'].'/list/'.$cid;
 		if ($type == 1) {
-			$position = " <li> <a href='".$curl."' > ".$catalog[$cid]['name']."</a>  </li>" . $position;
+			$position = " <li> <a href='".$curl."' > ".$catalog[$cid]['name']."</a>  </li> " . $position;
 		} else {
 			$position = "  > <a href='".$curl."' > ".$catalog[$cid]['name']."</a> " . $position;
 		}

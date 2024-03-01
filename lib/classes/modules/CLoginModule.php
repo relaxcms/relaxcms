@@ -23,9 +23,9 @@ class CLoginModule extends CModule
 		$this->assign('pkey', $this->_attribs['__aeskey']);
 		
 		$m = Factory::GetModel('oauth');
+		
 		$params = array('status'=>1,'auth'=>1);
 		$udb = $m->selectForView($params, $ioparams);	
-
 
 		$this->assign('thirdAccountLoginOptions', $udb);
 		
@@ -34,6 +34,6 @@ class CLoginModule extends CModule
 		$seccodetimeout = isset($cf['seccodetimeout'])?$cf['seccodetimeout']:5;
 		$this->assign('seccodetimeout', $seccodetimeout);
 		
-		return $res;
+		return true;
 	}	
 }

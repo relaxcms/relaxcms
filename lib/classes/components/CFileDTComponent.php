@@ -234,7 +234,7 @@ class CFileDTComponent extends CDTComponent
 		$params = array();
 		$this->getParams($params);
 		
-		//Ĭ��ҳ���С
+		//默认页面大小
 		$cf = get_config();
 		$default_page_size = $cf['page_size'];
 		if ($default_page_size <= 0) 
@@ -366,6 +366,15 @@ class CFileDTComponent extends CDTComponent
 		$this->setdir($ioparams);
 	}
 	
+	protected function newfile(&$ioparams=array())
+	{
+		$this->getParams($params);		
+		$m = Factory::GetModel('file');
+		$res = $m->newTxtFile($params, $ioparams);
+		
+		showStatus($res?0:-1);	
+	}
+	
 	protected function upload(&$ioparams=array())
 	{
 		$ioparams['model'] = isset($_REQUEST['model'])?$_REQUEST['model']:'';
@@ -419,21 +428,36 @@ class CFileDTComponent extends CDTComponent
 	
 	public function jstree(&$ioparams=array())
 	{
-		$pid = isset($_REQUEST["parent"])?intval($_REQUEST["parent"]):0;
+		$pid = $_REQUEST["parent"];
 		
 		$params = array();
-		
-		$fdb = $this->doGetSubDir($pid, $params, $ioparams);
-		
+				
 		$data = array();
-		foreach ($fdb as $key => $v) {
+		if ($pid == '#') {
+			$data[] = array(
+					'id'=>0,
+					'text'=>'顶层根目录',
+					'icon'=> "fa fa-folder icon-lg icon-state-warning",
+					'children'=>true,
+					'state'=>array("disabled"=>false, "opened"=>true, "selected"=>true)
+					);
 			
-			$v["text"] = $v['name'];
-			$v["icon"] = "fa fa-folder icon-lg icon-state-warning";
-			$v["children"] = true;
-			$v["type"] = "root";
+		} else {
+			$pid = intval($pid);
 			
-			$data[] = $v;
+			
+			$fdb = $this->doGetSubDir($pid, $params, $ioparams);
+			foreach ($fdb as $key => $v) {
+				
+				$v["text"] = $v['name'];
+				$v["icon"] = "fa fa-folder icon-lg icon-state-warning";
+				$v["children"] = $v['hasChildren'];
+				//$v["type"] = "root";
+				//if ($v['pid'] == 0)
+				//	$v["state"] = array("disabled"=>false, "opened"=>true, "selected"=>true);
+				
+				$data[] = $v;
+			}
 		}
 		
 		header('Content-type: text/json');
@@ -515,5 +539,17 @@ class CFileDTComponent extends CDTComponent
 		
 		CJson::encodedPrint(array('files' => $fdb));		
 		exit;		
+	}
+	
+	protected function moveto(&$ioparams=array())
+	{
+		$params = array();
+		$this->getParams($params);
+		
+		$m = Factory::GetModel('file');
+		$res = $m->moveto($params, $ioparams);
+		
+		showStatus($res?0:-1);
+		
 	}
 }

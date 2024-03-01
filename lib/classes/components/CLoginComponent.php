@@ -108,6 +108,7 @@ class CLoginComponent extends CUIComponent
 	protected function checkSecCode($captcha)
 	{
 		$cf = get_config();
+
 		if (!isset($cf['enable_captcha']) || !$cf['enable_captcha'])
 			return true;
 
@@ -130,10 +131,8 @@ class CLoginComponent extends CUIComponent
 			else 
 				$seccode = '';	
 
-			if (!isset($params['account']) 
-				&& !isset($params['seccode']) 
-				&& !$this->checkSecCode($seccode)) {
-				rlog(RC_LOG_INFO, __FILE__, __LINE__, "invalid seccode!");
+			if ( !$this->checkSecCode($seccode)) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "invalid seccode!");
 				showStatus(RC_E_INVALID_CAPTCHA);
 				return false;
 			}
@@ -144,7 +143,7 @@ class CLoginComponent extends CUIComponent
 				//redirect($gourl);
 				$backurl = $this->request('backurl');
 				!$backurl && $backurl = str_replace('/login', '', $ioparams['_uri']);
-				//rlog(RC_LOG_INFO, __FILE__, __LINE__, "login OK!backurl=$backurl");
+				rlog(RC_LOG_INFO, __FILE__, __LINE__, __FUNCTION__, "login OK!backurl=$backurl");
 				
 				showStatus(0, array('backurl'=>$backurl));
 				return true;

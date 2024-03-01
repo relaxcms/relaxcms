@@ -297,6 +297,9 @@ class CDatabase
 		for ($i=3; $i<count($udb); $i++) {
 			$key = strtolower($udb[$i]);
 			switch($key) {
+				case 'primary':
+					$field['is_primary_key'] = true;
+					break;
 				case 'default':
 					$field['default'] = $udb[++$i];
 					break;
@@ -321,26 +324,38 @@ class CDatabase
 		//$firstline = array_shift($tdb);
 		//create table if not exists cms_admin(
 		foreach ($tdb as $key=>$v) {
+			$v = trim($v);
+			$v = str_replace("\t", ' ',$v);
 			
-			$udb = explode(' ', $v);
-			$f0 = strtolower(trim($udb[0]));
-			$f1 = strtolower(trim($udb[1]));
-			$f2 = strtolower(trim($udb[2]));
-			$f3 = strtolower(trim($udb[3]));
+			$_udb = explode(' ', $v);
+			$udb = array();
+			foreach ($_udb as $k2=>$v2) {
+				$v2 = trim($v2);
+				$v2 = rtrim($v2,',');
+				if (!$v2)
+					continue;
+					
+				$udb[] = $v2;	
+			}
+			
+			$f0 = strtolower(trim($udb[0])); //name
+			$f1 = strtolower(trim($udb[1])); //type
+			$f2 = strtolower(trim($udb[2])); //lenght
+			$f3 = strtolower(trim($udb[3])); //null or not null
 			
 			if ($f0 == 'create' && $f1 == 'table')	{
 				$this->parseTableName($udb, $tableinfo);				
 			} 			
 			//index
-			elseif (preg_match_all('#index[\s+]?[\w+]*\((.*)\)#isU', $v, $matchs)) {
+			elseif (preg_match_all('#index[\s+]?[\w+]*[\s+]?\((.*)\)#isU', $v, $matchs)) {
 				$this->parseTableIndex('index', $matchs[1][0], $tableinfo);
 			}			
 			//unique
-			elseif  (preg_match_all('#unique[\s+]?[\w+]*\((.*)\)#isU', $v, $matchs)) {
+			elseif  (preg_match_all('#unique[\s+]?[\w+]*[\s+]?\((.*)\)#isU', $v, $matchs)) {
 				$this->parseTableIndex('unique', $matchs[1][0], $tableinfo);
 			}
 			//primary
-			elseif  (preg_match_all('#primary[\s+]?[\w+]*\((.*)\)#isU', $v, $matchs)) {
+			elseif  (preg_match_all('#primary[\s+]?[\w+]*[\s+]?\((.*)\)#isU', $v, $matchs)) {
 				$this->parseTableIndex('primary', $matchs[1][0], $tableinfo);
 			} else if ($f0[0] == ')') {//)ENGINE=MyISAM DEFAULT CHARSET=utf8;"
 				$field = $this->parseTableEngine($f0, $v, $udb, $tableinfo);	
@@ -390,8 +405,7 @@ class CDatabase
 				$tdb[] = $value;
 				$item = array();
 								
-				if (preg_match("/create\s+table/i", $sql))
-				{
+				if (preg_match("/create\s+table/i", $sql)) {
 					$extra = substr(strrchr($sql, ')'), 1);
 					$tabtype = substr(strchr($extra, '=') ,1);
 					$tabtype = substr($tabtype, 0,  strpos($tabtype,strpos($tabtype,' ') ? ' ' : ';'));
@@ -428,6 +442,149 @@ class CDatabase
 		}
 		
 		return $sqldb;
+	}
+	
+	
+	/**
+	 * buildCreateTableSql
+	
+	eg:
+	Array
+	(
+	   [tableinfo] => Array
+	       (
+	           [name] => cms_server
+	           [ifnotexists] =>
+	           [fdb] => Array
+	               (
+	                   [0] => Array
+	                       (
+	                           [name] => id
+	                           [null] =>
+	                           [type] => int
+	                           [length] => 0
+	                       )
+	
+	                   [1] => Array
+	                       (
+	                           [name] => name
+	                           [null] =>
+	                           [type] => varchar
+	                           [length] => 64
+	                       )
+	
+	                   [2] => Array
+	                       (
+	                           [name] => description
+	                           [null] => 1
+	                           [type] => text
+	                           [length] => 0
+	                       )
+	
+	                   [3] => Array
+	                       (
+	                           [name] => ip
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 64
+	                       )
+	
+	                   [4] => Array
+	                       (
+	                           [name] => webrooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+	
+	                   [5] => Array
+	                       (
+	                           [name] => rtmprooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+	
+	                   [6] => Array
+	                       (
+	                           [name] => hlsrooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+	
+	                   [7] => Array
+	                       (
+	                           [name] => vodrooturl
+	                           [null] => 1
+	                           [type] => varchar
+	                           [length] => 128
+	                       )
+	
+	                   [8] => Array
+	                       (
+	                           [name] => ts
+	                           [null] =>
+	                           [type] => bigint
+	                           [length] => 0
+	                       )
+	
+	                   [9] => Array
+	                       (
+	                           [name] => flags
+	                           [null] =>
+	                           [type] => int
+	                           [length] => 0
+	                           [default] => 0,
+	                       )
+	
+	                   [10] => Array
+	                       (
+	                           [name] => status
+	                           [null] =>
+	                           [type] => int
+	                           [length] => 0
+	                           [default] => 0,
+	                       )
+	
+	               )
+	
+	           [index] => Array
+	               (
+	                   [0] => Array
+	                       (
+	                           [indextype] => primary
+	                           [indexfields] => id
+	                       )
+	
+	               )
+	
+	           [pkey] => id
+	       )
+	
+	   [type] => createtable
+	   [sql] => create table cms_server(
+	id int not null,
+	name varchar(64) not null,
+	description text null,
+	ip varchar(64) null,
+	webrooturl varchar(128) null,
+	rtmprooturl varchar(128) null,
+	hlsrooturl varchar(128) null,
+	vodrooturl varchar(128) null,
+	ts bigint not null,
+	flags int not null default 0,
+	status int not null default 0,
+	primary key(id)
+	)
+	)
+	
+	
+	*/
+	protected function buildCreateTableSql($sqlinfo)
+	{
+		// default
+		return $sqlinfo['sql'];
 	}
 	
 	protected function importSql($sqlinfo)

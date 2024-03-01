@@ -6,7 +6,8 @@
  * @brief 
  * 
  * 文件基础模型类
- *
+ * 
+ * Copyright (c), 2024, relaxcms.com
  */
 
 defined( 'RMAGIC' ) or die( 'Request Forbbiden' );
@@ -40,6 +41,7 @@ class CFileModel extends CTableModel
 	* ===========================================================================*/
 	protected function _initFieldEx(&$f)
 	{
+		parent::_initFieldEx($f);
 		
 		switch ($f['name']) {
 			
@@ -54,11 +56,7 @@ class CFileModel extends CTableModel
 				//$f['edit'] = false;
 				break;
 			case 'cuid':
-				$f['readonly'] = true;
-				$f['edit'] = false;
-				$f['show'] = false;
-				$f['input_type'] = 'UID';
-				break;
+				$f['readonly'] = true;				
 			case 'uid':
 				$f['input_type'] = 'UID';
 				$f['edit'] = false;
@@ -66,6 +64,7 @@ class CFileModel extends CTableModel
 				break;
 			case 'ctime':
 				$f['show'] = false;
+				$f['readonly'] = true;				
 			case 'ts':
 				$f['input_type'] = 'TIMESTAMP';
 				$f['edit'] = false;
@@ -89,7 +88,7 @@ class CFileModel extends CTableModel
 			case 'hits':
 				$f['show'] = false;
 			case 'size':
-				//$f['input_type'] = "SIZE";
+				$f['input_type'] = "SIZE";
 				$f['sortable'] = true;
 			case 'uses':
 				$f['edit'] = false;
@@ -315,7 +314,9 @@ class CFileModel extends CTableModel
 		}
 		
 		$row['playurl'] = $playurl;				
-		$row['extinfo'] = " <a href='$playurl' data-url='$playurl' class='videobox' data-id='".$row['id']."' title='test video play'><i class='fa fa-film'></i></a>";
+		$row['_extinfo'] = " <a href='$playurl' data-url='$playurl' class='videobox' data-id='".$row['id']."' title='test video play'><i class='fa fa-film'></i></a>";
+		$row['_name'] = "<a href='$row[url]' class='videobox' data-url='$playurl' data-id='$row[id]'>$row[name]</a>";
+		
 		
 		if ($row['snap_id'] > 0) {
 			$snapinfo = $this->get($row['snap_id']);
@@ -334,13 +335,15 @@ class CFileModel extends CTableModel
 		
 		$row['playurl'] = $playurl;		
 		
-		$row['extinfo'] = " <a href='$playurl' data-url='$playurl' class='audiobox' data-id='".$row['id']."'><i class='fa fa-music'></i></a>";
+		$row['_extinfo'] = " <a href='$playurl' data-url='$playurl' class='audiobox' data-id='".$row['id']."'> <i class='fa fa-music'></i> </a>";
 	}
 	
 	public function formatForImageUrl(&$row, $storageinfo, $ioparams=array())
 	{
 		//
-		$row['extinfo'] = "<i class='fa fa-image'></i>";
+		$row['_extinfo'] = "<a href='$row[url]' class='gallery-img' data-url='$row[url]' data-id='$row[id]' > <i class='fa fa-image'></i> </a>";
+		$row['_name'] = "<a href='$row[url]' class='gallery-img' data-url='$row[url]' data-id='$row[id]'>$row[name]</a>";
+		
 		if ($row['snap_id'] > 0) { //是从视频中截取来的图			
 			$snapinfo = $this->get($row['snap_id']);
 			if ($snapinfo) {				
@@ -377,6 +380,22 @@ class CFileModel extends CTableModel
 		
 		return true;
 	}
+	
+	protected function formatForSummary(&$row)
+	{
+		$keydb = array('type', 'size', 'description');
+		$fields = $this->getFields();
+		$_summary = '';
+		foreach ($fields as $key=>$v) {
+			if (in_array($key, $keydb)) {
+				$val = (isset($row['_'.$key])?$row['_'.$key]:$row[$key]);
+				if ($val) {
+					$_summary .= $v['title'].':'.(isset($row['_'.$key])?$row['_'.$key]:$row[$key]).' / ';
+				}
+			}
+		}
+		$row['_summary'] = rtrim($_summary, '/ ');
+	}
 		
 	
 	public function formatForView(&$row, &$ioparams = array())
@@ -394,27 +413,29 @@ class CFileModel extends CTableModel
 		//title
 		$row['title'] = $row['name'];
 		
+		//format name
+		
+		
 		//status
 		$row['status'] = $this->formatLabelColorForView($status, $row['status']);
 				
-		//icon
-		/*if ($row['isdir']) {
-			$row['icon'] = $ioparams['_theroot']."/global/img/filetypes/dir.gif";	
-		} else {
-			$row['icon'] = $ioparams['_theroot']."/global/img/filetypes/".$row['extname'].".gif";
-		}*/
-		if ($row['isdir']) {
-			$row['icon'] = "ft-dir";	
-		} else {
-			$row['icon'] = "ft-$row[extname]";
-		}
 		
 		//url
 		$this->formatForViewUrl($row, $ioparams);
 		
+		//dir and icon
+		if ($row['isdir']) {
+			$row['icon'] = "ft-dir";
+			$class = "isdir";
+		} else {
+			$row['icon'] = "ft-$row[extname]";
+			$class = "file";
+		}
+		$row['_name'] = "<a href='$row[url]' class='$class' data-id='$row[id]'>$row[name]</a>";
+		
 		
 		//default extinfo
-		$row['extinfo'] = "";
+		$row['_extinfo'] = "";
 		
 		switch($type) {
 			case FT_VIDEO:
@@ -430,21 +451,121 @@ class CFileModel extends CTableModel
 				break;
 		}
 			
-		
-		
 		$row['summary'] = $row['description'];
 		
 		//mimetype
 		$row['mimetypename'] = $this->ext2mimetype($row['extname']);
 		
+		//for listview
+		$row['__ctype'] = $type;
+		
+		//_summary
+		$this->formatForSummary($row);
 		
 		return true;
 	}
 	
-	
-	public function selectForView(&$params=array(), &$ioparams=array())
+	protected function getActions($row=array(), &$ioparams=array())
 	{
-		$data = $this->select($params, $params);	
+		$id = $row['id'];
+		$actions = parent::getActions($row, $ioparams);
+		
+		/*
+		<div id="optContextMenu">
+            <ul class="dropdown-menu pull-left" role="menu">
+                <li>
+                    <a href="#"  class="detail" data-id='detail'>
+                        <i class="fa fa-file"></i> 查看 </a>
+                </li>
+                <li>
+                    <a href="javascript:;"  class="download" data-id='download'>
+                        <i class="fa fa-download"></i> 下载
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;"  class="rename" data-id='rename'>
+                        <i class="fa fa-edit"></i> 重命名 </a>
+                </li>
+                <li>
+                    <a href="javascript:;"  class="edit" data-id='edit'>
+                        <i class="fa fa-edit"></i> 编辑 </a>
+                </li>
+                <li class="divider"> </li>
+                <li>
+                    <a href="javascript:;" class="remove" data-id='remove'>
+                        <i class="fa fa-trash-o"></i> 删除
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" class="moveto" data-id='moveto'>
+                        <i class="fa fa-cut"></i>移动到
+                    </a>
+                </li>
+
+                <li>
+                    <a href="javascript:;" class="copyto" data-id='copyto'>
+                        <i class="fa fa-copy"></i>复制到
+                    </a>
+                </li>                
+            </ul>
+        </div>*/
+		
+		//下载
+		$actions[] = array(
+				'name'=>'download',
+				'icon'=>'fa fa-download',
+				'title'=>'下载',
+				'class'=>'btn-primary',
+				'action'=>'alink',
+				'enable'=>true,
+				);
+		
+		//重命名
+		$actions[] = array(
+				'name'=>'rename',
+				'icon'=>'fa fa-edit',
+				'title'=>'重命名',
+				'class'=>'btn-primary',
+				'action'=>'edit',
+				'enable'=>true,
+				);
+		
+		//移动到
+		$actions[] = array(
+				'name'=>'moveto',
+				'icon'=>'fa fa-cut',
+				'title'=>'移动到',
+				'class'=>'btn-primary',
+				'action'=>'moveto',
+				'enable'=>true,
+				);
+				
+		//复制到
+		$actions[] = array(
+				'name'=>'copyto',
+				'icon'=>'fa fa-copy',
+				'title'=>'复制到',
+				'class'=>'btn-primary',
+				'action'=>'copyto',
+				'enable'=>true,
+				);
+		
+		
+		return $actions;
+	}
+	
+	
+	/**
+	 * This is method selectForView_unused
+	 * unused
+	 * @param mixed $params This is a description
+	 * @param mixed $ioparams This is a description
+	 * @return mixed This is the return value description
+	 *
+	 */
+	public function selectForView_unused(&$params=array(), &$ioparams=array())
+	{
+		$data = parent::selectForView($params, $params);	
 		foreach ($params['rows'] as $key=>&$v) {
 			$this->formatForView($v, $ioparams);
 		}
@@ -452,6 +573,11 @@ class CFileModel extends CTableModel
 		return $data;
 	}
 	
+	protected function hasSubDir($id)
+	{
+		$res = $this->getOne(array('pid'=>$id, 'isdir'=>1));
+		return !!$res;
+	}
 	
 	public function getSubDir($pid, $params=array(), &$ioparams=array())
 	{
@@ -459,6 +585,9 @@ class CFileModel extends CTableModel
 		$params['isdir'] = 1;		
 		
 		$rows = $this->select($params, $ioparams);
+		foreach ($rows as $key=>&$v) {
+			$v['hasChildren'] = $this->hasSubDir($v['id']);
+		}
 		
 		return $rows;
 	}
@@ -624,12 +753,14 @@ class CFileModel extends CTableModel
 		//mp4 : 00:00:02
 		$bindir = '';// RPATH_SHELL;
 		$ffmpegcmdline = "ffmpeg -v quiet -i \"$infile\" -y -f image2 -ss 1 -t 1 -s $width".'x'."$height $dst";
-		//rlog($ffmpegcmdline);
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $ffmpegcmdline);
 		
-		if (($res = system($ffmpegcmdline)) != 0) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "call system('$ffmpegcmdline') failed!res=$res");
+		system($ffmpegcmdline, $return_value);
+		if ($res === false || !file_exists($dst)) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "call system('$ffmpegcmdline') failed!");
+			return false;
 		}
-		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "out getVideoPreview");		
+		rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $res, $return_value);		
 		return $dst;
 	}
 	
@@ -713,8 +844,10 @@ class CFileModel extends CTableModel
 		
 		// imagestring ( resource $image , int $font , int $x , int $y , string $s , int $col ) : bool
 		
-		$font = RPATH_SUPPORTS.DS."fonts".DS."song.ttf";
-		
+		$font = RPATH_SUPPORTS.DS."fonts".DS."song.ttf"; 
+		if (!file_exists($font)) 
+			$font = RPATH_SUPPORTS.DS."fonts".DS."CourierNew.ttf"; 
+			
 		$szdb = array(14, 12, 10, 8, 7);
 		foreach ($szdb as $key=>$v) {
 			$size = $v;
@@ -765,7 +898,9 @@ class CFileModel extends CTableModel
 		$extname = s_fileext($src);
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, $extname);
 		if ($fileinfo['type'] == FT_VIDEO) {
-			return $this->getVideoPreview($src, $dst, $width, $height, $mimetype);
+			$res =  $this->getVideoPreview($src, $dst, $width, $height, $mimetype);
+			if ($res)
+				return $res;
 		}
 		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, 'isdir='.$fileinfo['isdir']);
 		
@@ -1030,8 +1165,17 @@ class CFileModel extends CTableModel
 		}
 		
 		$userinfo = get_userinfo();
-		$uid = $userinfo['uid'];
+		$uid = $userinfo['id'];
 		$oid = $userinfo['oid'];
+		
+		//重启名
+		$i=1;
+		$newname = $name;
+		while(($res = $this->getOne(array('pid'=>$pid, 'name'=>$newname)))) {
+			$newname = $name.$i;	
+			$i ++ ;			
+		}
+		$name = $newname;
 		
 		//find
 		$_params = array('pid'=>$pid, 'name'=>$name, 'isdir'=>1, 'cid'=>$uid);
@@ -1041,6 +1185,7 @@ class CFileModel extends CTableModel
 			return false;
 		}
 		
+		$params['name'] = $name;
 		$params['isdir'] = 1;
 		$params['status'] = 1;
 		$params['oid'] = $oid;
@@ -1051,8 +1196,58 @@ class CFileModel extends CTableModel
 	}
 	
 	
+	public function newTxtFile($params, $ioparams)
+	{
+		if (!$params)
+			return false;
+		
+		$name = $params['name'];
+		$pid = intval($params['pid']);
+		if ($pid > 0) {
+			$pinfo = $this->get($pid);	
+			if (!$pinfo) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, "invalid pid '$pid'");
+				return false;
+			}
+		}
+		
+		$userinfo = get_userinfo();
+		$uid = $userinfo['id'];
+		$oid = $userinfo['oid'];
+		
+		//重启名
+		$i=1;
+		$newname = $name;
+		while(($res = $this->getOne(array('pid'=>$pid, 'name'=>$newname)))) {
+			$newname = $name.$i;	
+			$i ++ ;			
+		}
+		$name = $newname;
+		
+		//find
+		$_params = array('pid'=>$pid, 'name'=>$name, 'isdir'=>1, 'cid'=>$uid);
+		$res = $this->getOne($_params);
+		if ($res) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "directory '$name' exists!");
+			return false;
+		}
+		
+		$extname = 'txt';
+		$params['name'] = $name;
+		$params['filename'] = $name.'.'.$extname;
+		$params['extname'] = $extname;
+		$params['type'] = $this->ext2type($extname);
+		$params['isdir'] = 0;
+		$params['status'] = 1;
+		$params['oid'] = $oid;
+		
+		$res = $this->set($params);
+		
+		return $res;
+	}
 	
-	//newDirectory
+	
+	//createDirectory
 	public function createDirectory($path, &$ioparams=array())
 	{
 		if (!$path) {
@@ -1060,12 +1255,19 @@ class CFileModel extends CTableModel
 			return false;
 		}
 		
-		$params = array();			
-		$res = $this->parsePath($path, $params);
-		if (!$res) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "invalid path '$path'!");
+		$params = array();		
+		$userinfo = get_userinfo();
+		
+		//所有者id
+		$uid = $userinfo['id'];		
+		$params = $this->getPathInfo($uid, $path, $ioparams);		
+		if (!$params) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "invalid uid '$uid' or path '$path'!");
 			return false;
 		}
+		
+		//加载文件信息	
+		
 		
 		if ($params['exists']) {
 			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "path '$path' exists!");
@@ -1366,8 +1568,7 @@ class CFileModel extends CTableModel
 					if ($tmpfile && $size < 1024*1024) {
 						$params['content']  = base64_encode(s_read($tmpfile));	
 					}
-					
-					
+					unset($params['tmp_name']);					
 					$fdb[] = $params;
 					
 					break;
@@ -1382,6 +1583,7 @@ class CFileModel extends CTableModel
 				if ($tmpfile && $size < 1024*1024) {
 					$params['content']  = base64_encode(s_read($tmpfile));	
 				}
+				unset($params['tmp_name']);
 				$fdb[] = $params;	
 			}
 		}		
@@ -1714,7 +1916,7 @@ class CFileModel extends CTableModel
 		//查询
 		$path = s_urldecode($_path);
 		//to UTF8
-		$path = safeEncoding($path, PHP_CHARSET);
+		$path = safeEncoding($path, PHP_CHARSET, true);
 		$pathinfo = array();			
 		
 		if (!$path || $path == '/') {
@@ -2045,7 +2247,7 @@ class CFileModel extends CTableModel
 		
 		$res = $this->initUploadParams($params, $ioparams);
 		if (!$res) {
-			rlog(RC_LOG_ERROR, __FILE__, __LINE__, "invalid upload params failed!", $params);
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "invalid upload params failed!", $params);
 			return false;
 		}
 		
@@ -2358,7 +2560,7 @@ class CFileModel extends CTableModel
 		$cmd = 	"ffmpeg -v quiet -i \"$infile\"  -y  -ss 1 -t 1  -f image2 -frames:v 1 \"$outfile\"";	
 		$res = run($cmd);
 		//rlog($cmd.', res='.$res);
-		if (!$res) {
+		if (!$res || !file_exists($outfile)) {
 			rlog(RC_LOG_DEBUG, __FILE__, __LINE__, "call run failed!cmd=$cmd", $fileinfo);
 			$this->delTmpFileInfo($id);
 			return false;
@@ -2609,4 +2811,70 @@ class CFileModel extends CTableModel
 		
 		return $params;
 	}
+	
+	
+	
+	protected function doMoveTo($id, $new_pid)
+	{
+		$fileinfo = $this->get($id);	
+		if (!$fileinfo) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "invalid id '$id'");
+			return false;
+		}
+		
+		if ($new_pid  < 0)
+			$new_pid = 0;
+		
+		if ($new_pid  == $id) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "parent is self!");
+			return false;			
+		}
+		
+		if ($new_pid  == $fileinfo['pid']) {
+			rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "new parent '$new_pid' is old '$fileinfo[pid]'!");
+			return false;			
+		}
+		
+		if ($new_pid > 0) {
+			$res = $this->get($new_pid);
+			if (!$res) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "new parent '$new_pid' not exists!");
+				return false;
+			}
+			if ($res['isdir'] != 1) {
+				rlog(RC_LOG_ERROR, __FILE__, __LINE__, __FUNCTION__, "new parent '$new_pid' is not directory!");
+				return false;
+			}
+		}
+		
+		//变更父目录
+		$params = array();		
+		$params['id'] = $id;
+		$params['pid'] = $new_pid;
+		$res = $this->update($params);
+		
+		return $res;
+	}
+	
+	public function moveto($params, &$ioparams=array())
+	{
+		if (!$params)
+			return false;
+		
+		//rlog(RC_LOG_DEBUG, __FILE__, __LINE__, __FUNCTION__, $params);
+		
+		$id = $params['id'];
+		$new_pid = intval($params['new_pid']);
+		
+		if (is_array($id)) {
+			foreach ($id as $key => $v) {
+				$res = $this->doMoveTo($v, $new_pid);
+			}
+		} else {
+			$res = $this->doMoveTo($id, $new_pid);
+		}
+		
+		return $res;
+	}
+	
 }

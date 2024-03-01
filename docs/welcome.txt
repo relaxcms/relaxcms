@@ -1,6 +1,6 @@
 ﻿
 欢迎您安装使用RelaxCMS内容管理系统，RelaxCMS是一款基于PHP编程语言开发的WEB应用框架，本框架采用面向对象思想设计，主要适用于构建WEB应用系统，如：WEB门户、信息管理系统、API接口服务等。
 
-本系统运行基础环境是PHP, 推存使用<a href='https://crabd.relaxcms.com' target=_blank>CRAB</a>或类LAMP。
+本系统运行基础环境是PHP, 推存使用<a href='https://crab.relaxcms.com' target=_blank>CRAB</a>或类LAMP。
 
 更多请参<a href='https://www.relaxcms.com' target=_blank> www.relaxcms.com </a>
