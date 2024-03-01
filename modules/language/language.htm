@@ -1,0 +1,28 @@
+<!--语言栏菜单 -->
+<!-- BEGIN LANGUAGE BAR -->
+<!-- DOC: Apply "dropdown-dark" class after below "dropdown-extended" to change the dropdown styte -->
+<li class="dropdown dropdown-language">
+
+	<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+	<i class="icon-globe"></i>
+	<span class="langname">$current_language</span>
+	<i class="fa fa-angle-down"></i>
+	</a>
+	<ul class="dropdown-menu languagenavbar" style="margin-top:5px;">
+		<!--# foreach ($languages as $key=>$v) { #-->
+		<li class="$key" >
+			<a href="javascript:;" class="language-item" data-lang='$key'> $v[title] </a>
+		</li>
+		<!--# } #-->
+	</ul>
+</li>
+<!-- END LANGUAGE BAR -->
+<script type="text/javascript">
+jQuery(document).ready(function() {    
+	$('.languagenavbar > li > a').click(function() {
+		var langname = $(this).attr("data-lang");
+		rui.setCookie('langname', langname);
+		rui.reload();
+	}); 
+});
+</script>

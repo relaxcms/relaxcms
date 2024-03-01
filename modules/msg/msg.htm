@@ -1,0 +1,56 @@
+<li class="dropdown  dropdown-extended dropdown-notification" id="header_notification_bar">
+    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+        <i class="icon-bell"></i>
+        <!--# if ($total > 0) { #-->
+        <span class="badge badge-default"> $total </span>
+        <!--# } #-->
+    </a>
+    <ul class="dropdown-menu">
+        <li class="external">
+            <h3>
+                <span class="bold">收到 $total 新消息</h3>
+            <a href="$_basename/msg">全部</a>
+        </li>
+        <li>
+            <ul class="dropdown-menu-list scroller" style="height: 250px;" data-handle-color="#637283">
+                <!--# foreach($udb as $key=>$v) { #-->
+                <li>
+                    <a href="$_basename/msg/detail?id=$v[id]" class="msgitem">
+                        <span class="time">$v[_ctimelong]</span>
+                        <span class="details">
+                            <span class="label label-sm label-icon label-$v[_level]">
+                                <i class="fa $v[_icon]"></i>
+                            </span> $v[name] </span>
+                    </a>
+                </li>
+                <!--# } #-->
+                
+            </ul>
+        </li>
+    </ul>
+</li>
+                            
+
+<script language="javascript">
+     
+    
+    
+jQuery(document).ready(function() {
+    $('.msgitem').on('click', function(e) {
+        e.preventDefault(); 
+        
+        var url = $(this).attr('href')+'&dlg=1';
+        
+        layer.open({
+            type: 2, 
+            title: "详细", 
+            shadeClose: false,
+                shade: 0.2,
+                shift:10,
+                area: ['70%', '65%'],
+                content: url
+        });
+    });   
+});  
+    
+</script>

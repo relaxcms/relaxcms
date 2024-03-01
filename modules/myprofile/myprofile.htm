@@ -1,0 +1,42 @@
+<!--# if ($_userinfo) { #-->
+<li class="dropdown dropdown-user ">
+	<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+	        <img alt="" class="img-circle" src="$_userinfo[avatar]" />
+	        <span class="username username-hide-on-mobile"> $_userinfo[nickname] </span>
+	        <i class="fa fa-angle-down"></i>	    
+	</a>
+	<ul class="dropdown-menu dropdown-menu-default">
+		<li>
+			<a href="$_basename/main">
+			<i class="icon-home"></i> @t[My MainBoard]</a>
+		</li>
+		
+		<li>
+			<a href="$_basename/my_info">
+			<i class="icon-user"></i> @t[My Profile]</a>
+		</li>
+		<!--# if ($has_my_password) { #-->
+		<li>
+			<a href="$_basename/my_password">
+			<i class="icon-key"></i> @t[Change Password] </a>
+		</li>
+		<!--# } #-->
+		
+		<li class="divider">
+		</li>
+		<li>
+			<a href="$_basename/logout" class="logout">
+			<i class="icon-logout"></i> @t[Logout] </a>
+		</li>
+	</ul>
+
+
+</li>
+<!--# } else { #-->
+<li>
+    <span class="dropdown-toggle " style="height:68px; line-height:68px;">
+        <a href="$_basename/login" class="btn btn-primary" >@t[Login]</a>
+        <a href="$_basename/register" class="btn btn-primary" >@t[Sign]</a>
+   </span>
+</li>
+<!--# } #-->

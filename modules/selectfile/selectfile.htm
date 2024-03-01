@@ -1,0 +1,114 @@
+
+<link href="$_dstroot/css/bupload.css" rel="stylesheet" type="text/css" />
+
+<form name="lvform" method="post">
+<input type="hidden" name="modname" value="$modname" class="form-filter" id="param_modname">
+
+<div class="listview lv $nosidebar" id="myfileview" 
+    data-url="$_basename/file"
+    data-modname="file"
+    data-type="$type"
+    data-col="$col"
+    data-nocolumnmenu="1"
+    data-nopub="1"
+    data-nooptmenu="1"
+    data-nodelall="1"
+    data-nomoveto="1"
+    data-keyword="$_keyword"
+    data-uptype="$uptype"
+    data-vmask="5" >
+
+	<template name="toolbar">
+
+    	<div id="toolbar$table_id" class="form-inline searchbar">
+    	<div class="btn-group">           
+	         <span class="btn green fileinput-button" id="fileupload">
+	                <i class="fa fa-plus"></i>
+	                <span> 上传 </span>
+	                <input type="file" name="files[]" multiple="" > 
+	        </span>
+	    </div>
+    	
+<!--# foreach($sfdb as $key=>$v) { if (!$v['searchinput']) continue; #-->
+    <div class="form-group">
+            $v[searchinput]
+    </div>
+<!--# } #-->
+
+<!--# foreach($sfdb as $key=>$v) { if (($v['searchable'] & 2) == 2) { #-->
+    <div class="form-group">
+            $v[input]
+    </div>
+<!--# }} #-->
+    <input type="button" class="btn btn-primary filter-field btnSearch" id="query$table_id" value="搜索"/>
+</div> 
+
+	</template>
+	<template name="mainframe">
+		<div class="row lv-mianframe">
+			<div class="col-md-2 col-sm-2 col-xs-12 lv-sidebar">
+				<!-- FV SIDEBAR MENU -->
+	                    <div class="lv-sidebar-menu">
+	                    	<input type="hidden" name="params[type]" value="$type" class="form-filter" id="param_type">
+	                        <ul class="mainmenu">
+	                            <li class="open active">
+	                                <a href="#" class="lv-menu-item filter-input lv-caption" data-value="" data-field="type">
+	                                    <i class="fa fa-folder"></i> 全部文件 </a>
+	                                <ul class="submenu">
+	                                    <li >
+	                                        <a href="#" class="lv-menu-item filter-input" data-value="4" data-field='type'>
+	                                            <i class="fa fa-image"></i> 图片 </a>
+	                                    </li>
+	                                    <li>
+	                                        <a href="#" class="lv-menu-item filter-input" data-value="8" data-field='type'>
+	                                            <i class="fa fa-file-o"></i> 文档 </a>
+	                                    </li>
+	                                    <li>
+	                                        <a href="#" class="lv-menu-item filter-input" data-value="1" data-field='type'>
+	                                            <i class="fa fa-film"></i> 视频 </a>
+	                                    </li>
+	                                    <li>
+	                                        <a href="#" class="lv-menu-item filter-input" data-value="2" data-field='type'>
+	                                            <i class="fa fa-music"></i> 音乐 </a>
+	                                    </li>
+	                                    <li>
+	                                        <a href="#" class="lv-menu-item filter-input" data-value="16" data-field='type'>
+	                                            <i class="fa fa-archive"></i> 压缩 </a>
+	                                    </li>
+	                                    <li>
+	                                        <a href="#" class="lv-menu-item filter-input" data-value="0" data-field='type'>
+	                                            <i class="fa fa-space"></i> 其它 </a>
+	                                    </li>
+	                                </ul>
+	                            </li>                        
+	                        </ul>
+	                    </div>
+	                    <!-- FV SIDEBAR MENU -->
+			</div>
+			<div class="col-md-10 col-sm-10 col-xs-12 lv-main">	
+				<div class="lv-sidebar-switch">
+                    <i class="fa fa-angle-left"></i>
+				</div>
+
+			</div>
+	</template>
+</div>
+</form>
+
+
+
+<script src="$_dstroot/js/bupload.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ($.fn.listview) {
+            $("#myfileview").listview({
+                onLoad: function(lv) {
+                    listview = lv;
+                },
+                onDone:function (lv) {
+                    ///console.log("onDone....");
+                }
+            });
+        }
+    });
+</script>
